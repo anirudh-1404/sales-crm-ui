@@ -7,6 +7,7 @@ import userRoutes from "./routes/userRoutes.js"
 import companyRoutes from "./routes/companyRoutes.js"
 import contactRoutes from "./routes/contactRoutes.js"
 import dealRoutes from "./routes/dealRoutes.js"
+console.log("MONGO_URI:", process.env.MONGO_URI);
 
 const app = express();
 
@@ -20,10 +21,10 @@ app.use(cors({
 }))
 app.use(cookieParser())
 
-app.use("/api/auth", userRoutes)
-app.use("/api/companies", companyRoutes)
-app.use("/api/contacts", contactRoutes)
-app.use("/api/deals", dealRoutes)
+app.use("/api/auth", userRoutes);
+app.use("/api/companies", companyRoutes);
+app.use("/api/contacts", contactRoutes);
+app.use("/api/deals", dealRoutes);
 
 connectdb()
 
