@@ -179,7 +179,7 @@ export default function UserModal({ isOpen, onClose, user, managers = [], onSave
                     <label className="block text-xs font-semibold text-gray-600 mb-1">Role *</label>
                     {restrictedRole ? (
                         <div className="text-sm font-medium text-gray-800 bg-gray-50 px-3 py-2 rounded-lg border border-gray-200">
-                            {restrictedRole.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())}
+                            {restrictedRole === "sales_rep" ? "Sales Representative" : restrictedRole.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())}
                         </div>
                     ) : (
                         <select name="role" value={form.role} onChange={handleChange} className={inputClass(false)}>
@@ -236,6 +236,6 @@ export default function UserModal({ isOpen, onClose, user, managers = [], onSave
                     </button>
                 </div>
             </form>
-        </ModalOverlay>
+        </ModalOverlay >
     );
 }

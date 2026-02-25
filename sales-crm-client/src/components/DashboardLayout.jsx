@@ -168,7 +168,12 @@ const DashboardLayout = () => {
                         </div>
                         <div className="hidden sm:block truncate max-w-[100px] lg:max-w-[150px]">
                             <p className="text-sm font-bold text-gray-800 leading-none truncate">{user ? `${user.firstName} ${user.lastName}` : "Admin"}</p>
-                            <p className="text-[10px] text-gray-400 mt-1 truncate lowercase">{user?.role?.replace("_", " ") || "Administrator"}</p>
+                            <p className="text-[10px] text-gray-400 mt-1 truncate uppercase tracking-wider">
+                                {user?.role === "admin" ? "Admin" :
+                                    user?.role === "sales_manager" ? "Sales Manager" :
+                                        user?.role === "sales_rep" ? "Sales Representative" :
+                                            (user?.role?.replace("_", " ") || "Administrator")}
+                            </p>
                         </div>
                     </div>
                 </header>

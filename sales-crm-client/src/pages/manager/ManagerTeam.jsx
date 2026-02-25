@@ -32,6 +32,7 @@ const roleBadge = {
     sales_manager: "bg-purple-100 text-purple-700",
     sales_rep: "bg-blue-100 text-blue-700",
 };
+const formatRole = (r) => ({ admin: "Admin", sales_manager: "Sales Manager", sales_rep: "Sales Representative" }[r] || r);
 
 export default function ManagerTeam() {
     const { user: currentUser } = useAuth();
@@ -136,7 +137,7 @@ export default function ManagerTeam() {
                     { label: "Total Members", value: loading ? "..." : String(members.length), color: "bg-purple-50 text-purple-600", icon: Users2 },
                     { label: "Active", value: loading ? "..." : String(activeCount), color: "bg-green-50 text-green-600", icon: CheckCircle2 },
                     { label: "Inactive", value: loading ? "..." : String(inactiveCount), color: "bg-red-50 text-red-500", icon: XCircle },
-                    { label: "Sales Reps", value: loading ? "..." : String(repsOnly.length), color: "bg-blue-50 text-blue-600", icon: UserCheck },
+                    { label: "Sales Representatives", value: loading ? "..." : String(repsOnly.length), color: "bg-blue-50 text-blue-600", icon: UserCheck },
                 ].map(s => (
                     <div key={s.label} className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 sm:p-5 flex items-start gap-4">
                         <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${s.color}`}>
@@ -188,7 +189,7 @@ export default function ManagerTeam() {
                                         </td>
                                         <td className="px-4 py-3 whitespace-nowrap">
                                             <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${roleBadge[m.role] || "bg-red-100 text-red-700"}`}>
-                                                {m.role?.replace(/_/g, " ")}
+                                                {formatRole(m.role)}
                                             </span>
                                         </td>
                                         <td className="px-4 py-3 text-gray-500 text-sm whitespace-nowrap">
@@ -196,8 +197,8 @@ export default function ManagerTeam() {
                                         </td>
                                         <td className="px-4 py-3 whitespace-nowrap">
                                             <span className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full ${m.isActive
-                                                    ? "bg-green-100 text-green-700"
-                                                    : "bg-red-100 text-red-700 border border-red-200"
+                                                ? "bg-green-100 text-green-700"
+                                                : "bg-red-100 text-red-700 border border-red-200"
                                                 }`}>
                                                 <span className={`w-1.5 h-1.5 rounded-full ${m.isActive ? "bg-green-500" : "bg-red-500 animate-pulse"}`} />
                                                 {m.isActive ? "Active" : "Deactivated"}

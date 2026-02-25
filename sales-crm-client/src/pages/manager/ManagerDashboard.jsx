@@ -155,7 +155,7 @@ export default function ManagerDashboard() {
                                 {loading ? (
                                     <tr><td colSpan={6} className="text-center py-10 text-gray-400">Loading team performance...</td></tr>
                                 ) : repStats.length === 0 ? (
-                                    <tr><td colSpan={6} className="text-center py-10 text-gray-400">No sales reps in your team yet.</td></tr>
+                                    <tr><td colSpan={6} className="text-center py-10 text-gray-400">No Sales Representatives in your team yet.</td></tr>
                                 ) : (
                                     repStats.map((rep) => (
                                         <tr key={rep._id} className="hover:bg-gray-50/50 transition-colors">
@@ -217,7 +217,7 @@ export default function ManagerDashboard() {
                     {loading ? (
                         <p className="text-center text-gray-400 text-sm col-span-4 py-6">Loading rep data...</p>
                     ) : repStats.length === 0 ? (
-                        <p className="text-center text-gray-400 text-sm col-span-4 py-6">No reps found in your team.</p>
+                        <p className="text-center text-gray-400 text-sm col-span-4 py-6">No Sales Representatives found in your team.</p>
                     ) : (
                         repStats.map((rep) => (
                             <div key={rep._id} className="flex flex-col items-center gap-3 p-4 rounded-xl bg-gray-50 border border-gray-100">

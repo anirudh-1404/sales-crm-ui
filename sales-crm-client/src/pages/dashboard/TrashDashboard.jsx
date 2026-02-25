@@ -8,6 +8,7 @@ const roleBadge = {
     sales_manager: "bg-purple-100 text-purple-700",
     sales_rep: "bg-blue-100 text-blue-700",
 };
+const formatRole = (r) => ({ admin: "Admin", sales_manager: "Sales Manager", sales_rep: "Sales Representative" }[r] || r);
 
 function Avatar({ name }) {
     const initials = name.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2);
@@ -123,7 +124,7 @@ export default function TrashDashboard() {
                                         </td>
                                         <td className="px-4 py-3 whitespace-nowrap">
                                             <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${roleBadge[u.role] || "bg-gray-100 text-gray-600"}`}>
-                                                {u.role?.replace(/_/g, " ")}
+                                                {formatRole(u.role)}
                                             </span>
                                         </td>
                                         <td className="px-4 py-3 text-gray-500 text-sm whitespace-nowrap">

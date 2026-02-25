@@ -38,10 +38,12 @@ export default function DeactivateModal({ isOpen, onClose, user, activeUsers, on
 
     if (!isOpen || !user) return null;
 
-    const opts = activeUsers.filter(u => u._id !== user._id && u.isActive && u.role !== "admin");
+    const opts = activeUsers.filter(u => u._id !== user._id && u.isActive);
+
+    const fmtRole = (r) => ({ admin: "Admin", sales_manager: "Sales Manager", sales_rep: "Sales Representative" }[r] || r);
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title="Deactivate User">
+        <Modal isOpen={isOpen} onClose={onClose} title={title}>
             <form onSubmit={handleSubmit} className="space-y-5">
 
                 {/* User info banner */}
@@ -119,7 +121,7 @@ export default function DeactivateModal({ isOpen, onClose, user, activeUsers, on
                             <option value="">— Select a user —</option>
                             {opts.map(u => (
                                 <option key={u._id} value={u._id}>
-                                    {u.firstName} {u.lastName} ({u.role.replace(/_/g, " ")})
+                                    {u.firstName} {u.lastName} ({fmtRole(u.role)})
                                 </option>
                             ))}
                         </select>

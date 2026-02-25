@@ -31,6 +31,7 @@ const roleBadge = {
     sales_manager: "bg-purple-100 text-purple-700",
     sales_rep: "bg-blue-100 text-blue-700",
 };
+const formatRole = (r) => ({ admin: "Admin", sales_manager: "Sales Manager", sales_rep: "Sales Representative" }[r] || r);
 const ModalOverlay = ({ children, onClose }) => (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4"
         style={{ background: "rgba(15,15,25,0.5)", backdropFilter: "blur(4px)" }}
@@ -100,7 +101,7 @@ function ReassignModal({ isOpen, onClose, fromUser, activeUsers, onSaved }) {
                     <select value={newOwnerId} onChange={e => setNewOwnerId(e.target.value)} className={`${inputClass} w-full border rounded-full border-slate-200 px-4 py-2 text-center`} required>
                         <option value="">— Select a user —</option>
                         {opts.map(u => (
-                            <option key={u._id} value={u._id}>{u.firstName} {u.lastName} ({u.role.replace(/_/g, " ")})</option>
+                            <option key={u._id} value={u._id}>{u.firstName} {u.lastName} ({formatRole(u.role)})</option>
                         ))}
                     </select>
                 </Field>
@@ -212,7 +213,7 @@ export default function UsersDashboard() {
         }
     };
 
-    const potentialManagers = users.filter(u => (u.role === "sales_manager" || u.role === "admin") && u.isActive);
+    const potentialManagers = users.filter(u => u.isActive);
     const adminCount = users.filter(u => u.role === "admin").length;
     const managerCount = users.filter(u => u.role === "sales_manager").length;
     const repCount = users.filter(u => u.role === "sales_rep").length;
@@ -226,7 +227,7 @@ export default function UsersDashboard() {
     const roleBreakdown = [
         { role: "Admins", count: adminCount, color: "bg-red-500" },
         { role: "Sales Managers", count: managerCount, color: "bg-purple-500" },
-        { role: "Sales Reps", count: repCount, color: "bg-blue-500" },
+        { role: "Sales Representatives", count: repCount, color: "bg-blue-500" },
     ];
 
     return (
@@ -251,7 +252,7 @@ export default function UsersDashboard() {
                     { label: "Total Users", value: loading ? "..." : String(users.length), color: "bg-blue-50 text-blue-600", icon: Users2 },
                     { label: "Admins", value: loading ? "..." : String(adminCount), color: "bg-red-50 text-red-600", icon: ShieldCheck },
                     { label: "Sales Managers", value: loading ? "..." : String(managerCount), color: "bg-purple-50 text-purple-600", icon: Briefcase },
-                    { label: "Sales Reps", value: loading ? "..." : String(repCount), color: "bg-green-50 text-green-600", icon: UserCheck },
+                    { label: "Sales Representatives", value: loading ? "..." : String(repCount), color: "bg-green-50 text-green-600", icon: UserCheck },
                 ].map(s => (
                     <div key={s.label} className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex items-start gap-4">
                         <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${s.color}`}>
@@ -303,7 +304,7 @@ export default function UsersDashboard() {
                                         </td>
                                         <td className="px-4 py-3 whitespace-nowrap">
                                             <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${roleBadge[u.role] || "bg-gray-100 text-gray-600"}`}>
-                                                {u.role?.replace(/_/g, " ")}
+                                                {formatRole(u.role)}
                                             </span>
                                         </td>
                                         <td className="px-4 py-3 text-gray-500 text-sm whitespace-nowrap">

@@ -156,7 +156,7 @@ export default function ContactModal({ isOpen, onClose, contact, onSave, compani
                         >
                             <option value="">Select Owner</option>
                             {potentialOwners.map(u => (
-                                <option key={u._id} value={u._id}>{u.firstName} {u.lastName} ({u.role.replace(/_/g, " ")})</option>
+                                <option key={u._id} value={u._id}>{u.firstName} {u.lastName} ({u.role === "admin" ? "Admin" : u.role === "sales_manager" ? "Sales Manager" : u.role === "sales_rep" ? "Sales Representative" : u.role.replace(/_/g, " ")})</option>
                             ))}
                         </select>
                         <p className="text-[10px] text-gray-400 italic">Only Admins and Managers can reassign records.</p>
