@@ -30,7 +30,7 @@ function DealCard({ deal, onEdit, onDelete }) {
             {/* Header */}
             <div className="flex items-start justify-between gap-2 mb-3">
                 <p className="text-sm font-semibold text-gray-800 leading-tight line-clamp-2">{deal.name}</p>
-                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                <div className="flex items-center gap-1 flex-shrink-0">
                     <button
                         onClick={() => onEdit(deal)}
                         className="p-1 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition"

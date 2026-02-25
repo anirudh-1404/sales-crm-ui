@@ -155,7 +155,7 @@ export default function ManagerCompanies() {
                                         <td className="px-4 py-3 text-purple-700 font-medium">{c.ownerId?.firstName || "Unknown"}</td>
                                         <td className="px-4 py-3 text-gray-600">{c.revenueRange || "—"}</td>
                                         <td className="px-4 py-3">
-                                            <div className="flex items-center gap-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                                            <div className="flex items-center gap-2">
                                                 <button
                                                     onClick={() => { setSelectedCompany(c); setIsCompanyModalOpen(true); }}
                                                     className="p-1.5 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition"

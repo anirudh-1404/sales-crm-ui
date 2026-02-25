@@ -292,8 +292,8 @@ export default function UsersDashboard() {
                                         </td>
                                         <td className="px-4 py-3 whitespace-nowrap">
                                             <span className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full ${u.isActive
-                                                    ? "bg-green-100 text-green-700"
-                                                    : "bg-red-100 text-red-700 border border-red-200"
+                                                ? "bg-green-100 text-green-700"
+                                                : "bg-red-100 text-red-700 border border-red-200"
                                                 }`}>
                                                 <span className={`w-1.5 h-1.5 rounded-full ${u.isActive ? "bg-green-500" : "bg-red-500 animate-pulse"}`} />
                                                 {u.isActive ? "Active" : "Deactivated"}
@@ -303,7 +303,7 @@ export default function UsersDashboard() {
                                             {u.lastLogin ? new Date(u.lastLogin).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "Never"}
                                         </td>
                                         <td className="px-4 py-3 whitespace-nowrap">
-                                            <div className="flex items-center gap-1.5 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                                            <div className="flex items-center gap-1.5">
                                                 {/* Edit */}
                                                 <button
                                                     onClick={() => { setSelectedUser(u); setIsUserModalOpen(true); }}

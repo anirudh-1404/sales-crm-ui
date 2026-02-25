@@ -194,7 +194,7 @@ export default function ManagerDeals() {
                                         </td>
                                         <td className="px-4 py-3 text-gray-500 text-xs whitespace-nowrap">{d.expectedCloseDate ? new Date(d.expectedCloseDate).toLocaleDateString() : "—"}</td>
                                         <td className="px-4 py-3 whitespace-nowrap">
-                                            <div className="flex items-center gap-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                                            <div className="flex items-center gap-2">
                                                 <button
                                                     onClick={() => { setSelectedDeal(d); setIsDealModalOpen(true); }}
                                                     className="p-1.5 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition"

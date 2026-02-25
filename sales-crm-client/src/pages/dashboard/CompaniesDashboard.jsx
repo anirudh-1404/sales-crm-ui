@@ -176,7 +176,7 @@ export default function CompaniesDashboard() {
                                                 <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${statusBg[c.status] || "bg-gray-100 text-gray-600"}`}>{c.status}</span>
                                             </td>
                                             <td className="px-4 py-3 whitespace-nowrap">
-                                                <div className="flex items-center gap-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                                                <div className="flex items-center gap-2">
                                                     <button onClick={() => { setSelectedCompany(c); setIsCompanyModalOpen(true); }}
                                                         className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition">
                                                         <Edit2 size={16} />
