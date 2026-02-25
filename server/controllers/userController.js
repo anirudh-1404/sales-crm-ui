@@ -279,6 +279,7 @@ export const deactivateUser = async (req, res, next) => {
         const { id } = req.params; // user to deactivate
         const { newOwnerId } = req.body; // optional - if omitted, records stay with the user
         const { role: currentUserRole, id: currentUserId } = req.user;
+        console.log("[deactivateUser] req.body:", req.body, "| newOwnerId:", newOwnerId);
 
         const user = await User.findById(id);
         if (!user) {
