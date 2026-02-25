@@ -159,8 +159,12 @@ export default function UsersDashboard() {
 
     const confirmDeactivate = async (newOwnerId) => {
         try {
-            await deactivateUser(selectedUser._id, { newOwnerId });
-            toast.success(`${selectedUser.firstName} deactivated and records reassigned`);
+            const body = newOwnerId ? { newOwnerId } : {};
+            await deactivateUser(selectedUser._id, body);
+            const msg = newOwnerId
+                ? `${selectedUser.firstName} deactivated and records reassigned`
+                : `${selectedUser.firstName} deactivated (data kept with user)`;
+            toast.success(msg);
             fetchUsers();
         } catch (error) {
             toast.error(error.response?.data?.message || "Failed to deactivate user");

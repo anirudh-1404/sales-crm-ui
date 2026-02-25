@@ -270,23 +270,12 @@ export const updateUser = async (req, res, next) => {
 export const deactivateUser = async (req, res, next) => {
     try {
         const { id } = req.params; // user to deactivate
-        const { newOwnerId } = req.body;
+        const { newOwnerId } = req.body; // optional - if omitted, records stay with the user
         const { role: currentUserRole, id: currentUserId } = req.user;
 
-        if (!newOwnerId) {
-            return res.status(400).json({
-                message: "A new owner must be selected to reassign records!"
-            });
-        }
-
         const user = await User.findById(id);
-        const newOwner = await User.findById(newOwnerId);
-
         if (!user) {
             return res.status(404).json({ message: "User not found!" });
-        }
-        if (!newOwner) {
-            return res.status(404).json({ message: "New owner not found!" });
         }
 
         if (currentUserRole === "sales_rep") {
@@ -296,39 +285,61 @@ export const deactivateUser = async (req, res, next) => {
         if (currentUserRole === "sales_manager") {
             const teamUsers = await User.find({ managerId: currentUserId }).select("_id");
             const teamIds = teamUsers.map(u => u._id.toString());
-            // Managers can deactivate their team members and reassign to someone in their team (including themselves)
-            if (!teamIds.includes(id) || (!teamIds.includes(newOwnerId) && newOwnerId !== currentUserId)) {
+            // When reassigning, newOwner must be within the team or the manager themselves
+            if (!teamIds.includes(id)) {
                 return res.status(403).json({
-                    message: "You can only deactivate and reassign within your team!"
+                    message: "You can only deactivate members within your team!"
+                });
+            }
+            if (newOwnerId && !teamIds.includes(newOwnerId) && newOwnerId !== currentUserId) {
+                return res.status(403).json({
+                    message: "You can only reassign to someone within your team!"
                 });
             }
         }
 
-        // Perform bulk reassignment
-        await Company.updateMany({ ownerId: id }, { ownerId: newOwnerId });
-        await Contact.updateMany({ ownerId: id }, { ownerId: newOwnerId });
-        await Deal.updateMany({ ownerId: id }, { ownerId: newOwnerId });
+        let newOwner = null;
+
+        // Only reassign if newOwnerId is provided
+        if (newOwnerId) {
+            newOwner = await User.findById(newOwnerId);
+            if (!newOwner) {
+                return res.status(404).json({ message: "New owner not found!" });
+            }
+            // Perform bulk reassignment
+            await Company.updateMany({ ownerId: id }, { ownerId: newOwnerId });
+            await Contact.updateMany({ ownerId: id }, { ownerId: newOwnerId });
+            await Deal.updateMany({ ownerId: id }, { ownerId: newOwnerId });
+        }
 
         // Deactivate user
         user.isActive = false;
         await user.save();
 
-        res.status(200).json({
-            message: "User deactivated and records reassigned successfully!"
-        });
+        const responseMsg = newOwnerId
+            ? "User deactivated and records reassigned successfully!"
+            : "User deactivated. Records kept under their ownership and will be accessible when reactivated.";
 
-        // Log the deactivation & reassignment
+        res.status(200).json({ message: responseMsg });
+
+        // Log the deactivation
         await logAction({
             entityType: "User",
             entityId: id,
             action: "DEACTIVATE",
             performedBy: currentUserId,
-            details: {
-                message: `User "${user.firstName} ${user.lastName}" deactivated. Records reassigned to ${newOwner.firstName} ${newOwner.lastName}`,
-                newOwnerId,
-                targetName: `${user.firstName} ${user.lastName}`,
-                reassignedToName: `${newOwner.firstName} ${newOwner.lastName}`
-            },
+            details: newOwnerId
+                ? {
+                    message: `User "${user.firstName} ${user.lastName}" deactivated. Records reassigned to ${newOwner.firstName} ${newOwner.lastName}`,
+                    newOwnerId,
+                    targetName: `${user.firstName} ${user.lastName}`,
+                    reassignedToName: `${newOwner.firstName} ${newOwner.lastName}`
+                }
+                : {
+                    message: `User "${user.firstName} ${user.lastName}" deactivated. Records kept with original owner.`,
+                    targetName: `${user.firstName} ${user.lastName}`,
+                    reassignment: "skipped"
+                },
             req
         });
 

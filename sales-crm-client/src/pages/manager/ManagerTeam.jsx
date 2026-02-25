@@ -92,8 +92,12 @@ export default function ManagerTeam() {
 
     const confirmDeactivate = async (newOwnerId) => {
         try {
-            await deactivateUser(selectedMember._id, { newOwnerId });
-            toast.success(`${selectedMember.firstName} deactivated`);
+            const body = newOwnerId ? { newOwnerId } : {};
+            await deactivateUser(selectedMember._id, body);
+            const msg = newOwnerId
+                ? `${selectedMember.firstName} deactivated and records reassigned`
+                : `${selectedMember.firstName} deactivated (data kept with user)`;
+            toast.success(msg);
             fetchTeam();
         } catch (error) {
             console.error(error);
