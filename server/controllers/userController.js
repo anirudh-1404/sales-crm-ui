@@ -1,7 +1,7 @@
 import User from "../models/userSchema.js";
 import bcrypt from "bcrypt";
 import { generateToken } from "../utils/authToken.js";
-import { comparePassword, hashedPassword } from "../utils/hashPassword.js";
+import { comparePassword as verifyPassword, hashedPassword as generateHash } from "../utils/hashPassword.js";
 import { Company } from "../models/companySchema.js";
 import { Contact } from "../models/contactSchema.js";
 import { Deal } from "../models/dealSchema.js";
@@ -26,7 +26,7 @@ export const registerUser = async (req, res, next) => {
             })
         }
 
-        const hashedPass = await hashedPassword(password)
+        const hashedPass = await generateHash(password)
         const user = await User.create({
             firstName,
             lastName,
@@ -85,7 +85,7 @@ export const loginUser = async (req, res, next) => {
             })
         }
 
-        const user = await User.findOne({ email }).select("+password")
+        const user = await User.findOne({ email: email.trim().toLowerCase() }).select("+password")
 
         if (!user || !user.isActive) {
             return res.status(404).json({
@@ -93,7 +93,7 @@ export const loginUser = async (req, res, next) => {
             })
         }
 
-        const isPasswordValid = await comparePassword(password, user.password)
+        const isPasswordValid = await verifyPassword(password, user.password)
         if (!isPasswordValid) {
             return res.status(401).json({
                 message: "Invalid credentials!"
@@ -409,7 +409,7 @@ export const adminResetPassword = async (req, res, next) => {
             return res.status(404).json({ message: "User not found." });
         }
 
-        const hashedPass = await hashedPassword(newPassword);
+        const hashedPass = await generateHash(newPassword);
         user.password = hashedPass;
         await user.save();
 
@@ -462,8 +462,8 @@ export const changePassword = async (req, res, next) => {
             })
         }
 
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
-        user.password = hashedPassword;
+        const hashedPass = await generateHash(newPassword);
+        user.password = hashedPass;
         await user.save();
 
         return res.status(200).json({
@@ -624,7 +624,7 @@ export const resetPassword = async (req, res, next) => {
             });
         }
 
-        user.password = await hashedPassword(password);
+        user.password = await generateHash(password);
         user.resetPasswordToken = null;
         user.resetPasswordExpiry = null;
 
