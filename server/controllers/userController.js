@@ -600,7 +600,11 @@ export const forgotPassword = async (req, res, next) => {
             </div>
         `;
 
+        console.log("Constructed Reset URL:", resetUrl);
+
+        console.log("Triggering sendEmail...");
         await sendEmail(user.email, "Password Reset Request", message);
+        console.log("sendEmail completed successfully.");
 
         res.status(200).json({ message: "Reset link sent to your email!" });
     } catch (error) {

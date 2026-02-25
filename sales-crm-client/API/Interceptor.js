@@ -48,7 +48,8 @@ API.interceptors.response.use(
             console.log("Message", error.response.data.message || error.message);
 
             if (error.response.status === 401) {
-                console.warn("Unauthorized! Maybe session expired or not logged in!");
+                // Silenced 401 logs to reduce console noise for unauthenticated users
+                // console.warn("Unauthorized! Maybe session expired or not logged in!");
             } else if (error.response.status === 500) {
                 console.log("Internal server error");
             } else {
