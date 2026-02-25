@@ -1,32 +1,27 @@
-import nodemailer from "nodemailer";
+import { Resend } from 'resend';
 
-const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false, // true for port 465
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    },
-    // Forcing IPv4 to prevent ENETUNREACH errors with IPv6 on some cloud providers
-    family: 4,
-    // Add timeouts to prevent hangs in production
-    connectionTimeout: 10000, // 10 seconds
-    greetingTimeout: 5000,    // 5 seconds
-    socketTimeout: 15000      // 15 seconds
-})
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const sendEmail = async (to, subject, html) => {
     try {
-        console.log(`Attempting to send email to: ${to} using port 465 (IPv4)`);
-        const info = await transporter.sendMail({
-            from: `"mbdConsulting" <${process.env.EMAIL_USER}>`,
-            to,
-            subject,
-            html
+        console.log(`Attempting to send email to: ${to} using Resend API`);
+
+        // Note: Unless a domain is verified in Resend, you can only send to the email 
+        // associated with the account, or use onboarding@resend.dev as the 'from' address.
+        const { data, error } = await resend.emails.send({
+            from: 'SalesCRM <onboarding@resend.dev>',
+            to: [to],
+            subject: subject,
+            html: html,
         });
-        console.log("Email sent successfully:", info.messageId);
-        return info;
+
+        if (error) {
+            console.error("Resend API Error:", error);
+            throw new Error(error.message);
+        }
+
+        console.log("Email sent successfully via Resend:", data.id);
+        return data;
     } catch (error) {
         console.error("Detailed Email Error:", error);
         throw new Error(`Failed to send email: ${error.message}`);
