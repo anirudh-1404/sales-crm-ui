@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Logo from "../../components/Logo";
 import { Link, useNavigate } from "react-router-dom";
 import loginBg from "../../assets/login-bg.jpg";
@@ -26,7 +26,22 @@ const Login = () => {
     const [submitting, setSubmitting] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({ email: "", password: "" });
+    const [rememberMe, setRememberMe] = useState(false);
+    const [rememberedUser, setRememberedUser] = useState(null);
     const [errors, setErrors] = useState({});
+
+    useEffect(() => {
+        const storedUser = localStorage.getItem("rememberedUser");
+        if (storedUser) {
+            try {
+                const user = JSON.parse(storedUser);
+                setRememberedUser(user);
+                setFormData(prev => ({ ...prev, email: user.email }));
+            } catch (e) {
+                localStorage.removeItem("rememberedUser");
+            }
+        }
+    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -49,6 +64,17 @@ const Login = () => {
         try {
             const response = await API.post("/auth/login", data);
             const user = response.data.data;
+
+            if (rememberMe) {
+                localStorage.setItem("rememberedUser", JSON.stringify({
+                    email: user.email,
+                    firstName: user.firstName,
+                    lastName: user.lastName
+                }));
+            } else {
+                localStorage.removeItem("rememberedUser");
+            }
+
             login(user);
             toast.success("Login successful!");
             if (user.role === "admin") navigate("/dashboard");
@@ -86,74 +112,138 @@ const Login = () => {
             <div className="h-screen overflow-y-auto bg-white p-12">
                 <div className="w-full max-w-md mx-auto">
                     <Logo />
-                    <h2 className="text-3xl font-bold mb-2 text-gray-800">Sign In</h2>
-                    <p className="text-gray-500 mb-6">
-                        Access the CRM panel using your email and passcode
-                    </p>
-                    <form onSubmit={handleSubmission} noValidate>
-                        <div className="mb-5">
-                            <label className="block mb-2 font-medium text-gray-700" htmlFor="email">
-                                Email Address
-                            </label>
-                            <input
-                                type="email"
-                                name="email"
-                                id="email"
-                                value={formData.email}
-                                onChange={handleChange}
-                                className={fieldClass("email")}
-                                placeholder="you@example.com"
-                                autoComplete="email"
-                            />
-                            {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
-                        </div>
-
-                        <div className="mb-4">
-                            <label className="block mb-2 font-medium text-gray-700">
-                                Password
-                            </label>
-                            <div className="relative">
-                                <input
-                                    type={showPassword ? "text" : "password"}
-                                    id="password"
-                                    name="password"
-                                    value={formData.password}
-                                    onChange={handleChange}
-                                    className={fieldClass("password")}
-                                    placeholder="••••••••"
-                                    autoComplete="current-password"
-                                />
-                                <button
-                                    type="button"
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                >
-                                    {showPassword ? <EyeOpen /> : <EyeOff />}
-                                </button>
+                    {rememberedUser ? (
+                        <div className="text-center">
+                            <div className="relative inline-block mb-4">
+                                <div className="w-24 h-24 rounded-full bg-red-100 flex items-center justify-center border-4 border-white shadow-lg overflow-hidden">
+                                    <span className="text-3xl font-bold text-red-600 uppercase">
+                                        {rememberedUser.firstName[0]}{rememberedUser.lastName[0]}
+                                    </span>
+                                </div>
                             </div>
-                            {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
-                        </div>
+                            <h2 className="text-2xl font-bold text-gray-800 mb-1">Welcome back!</h2>
+                            <p className="text-gray-600 mb-8 font-medium">{rememberedUser.firstName} {rememberedUser.lastName}</p>
 
-                        <div className="flex justify-between items-center mb-6">
-                            <label className="flex items-center gap-3 text-gray-700">
-                                <input type="checkbox" className="w-5 h-5 accent-red-600 cursor-pointer" />
-                                Remember me
-                            </label>
-                            <Link to="/forgot-password">
-                                <button type="button" className="text-red-600 font-medium hover:underline cursor-pointer">
-                                    Forgot Password?
+                            <form onSubmit={handleSubmission} noValidate className="text-left">
+                                <div className="mb-6">
+                                    <input
+                                        type={showPassword ? "text" : "password"}
+                                        id="password"
+                                        name="password"
+                                        value={formData.password}
+                                        onChange={handleChange}
+                                        className={fieldClass("password")}
+                                        placeholder="Enter Your Password"
+                                        autoComplete="current-password"
+                                    />
+                                    {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    disabled={submitting}
+                                    className={`w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-bold transition shadow-lg shadow-red-200 cursor-pointer ${submitting ? "opacity-50 cursor-not-allowed" : ""}`}
+                                >
+                                    {submitting ? "Logging In..." : "Log In"}
                                 </button>
-                            </Link>
-                        </div>
 
-                        <button
-                            type="submit"
-                            disabled={submitting}
-                            className={`w-full bg-red-600 hover:bg-orange-400 text-white py-3 rounded-lg font-semibold transition duration-300 cursor-pointer ${submitting ? "opacity-50 cursor-not-allowed" : ""}`}
-                        >
-                            {submitting ? "Signing In..." : "Sign In"}
-                        </button>
-                    </form>
+                                <div className="mt-8 text-center space-y-4">
+                                    <Link to="/forgot-password">
+                                        <button type="button" className="text-red-600 text-sm font-semibold hover:underline cursor-pointer block w-full">
+                                            Forgot Password?
+                                        </button>
+                                    </Link>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setRememberedUser(null);
+                                            setFormData({ email: "", password: "" });
+                                            localStorage.removeItem("rememberedUser");
+                                        }}
+                                        className="text-gray-500 text-sm hover:text-gray-800 transition font-medium cursor-pointer"
+                                    >
+                                        Not you? <span className="text-red-600 underline">Switch account</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    ) : (
+                        <>
+                            <h2 className="text-3xl font-bold mb-2 text-gray-800">Sign In</h2>
+                            <p className="text-gray-500 mb-6">
+                                Access the CRM panel using your email and passcode
+                            </p>
+                            <form onSubmit={handleSubmission} noValidate>
+                                <div className="mb-5">
+                                    <label className="block mb-2 font-medium text-gray-700" htmlFor="email">
+                                        Email Address
+                                    </label>
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        id="email"
+                                        value={formData.email}
+                                        onChange={handleChange}
+                                        className={fieldClass("email")}
+                                        placeholder="you@example.com"
+                                        autoComplete="email"
+                                    />
+                                    {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+                                </div>
+
+                                <div className="mb-4">
+                                    <label className="block mb-2 font-medium text-gray-700">
+                                        Password
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            type={showPassword ? "text" : "password"}
+                                            id="password"
+                                            name="password"
+                                            value={formData.password}
+                                            onChange={handleChange}
+                                            className={fieldClass("password")}
+                                            placeholder="••••••••"
+                                            autoComplete="current-password"
+                                        />
+                                        <button
+                                            type="button"
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
+                                            onClick={() => setShowPassword(!showPassword)}
+                                        >
+                                            {showPassword ? <EyeOpen /> : <EyeOff />}
+                                        </button>
+                                    </div>
+                                    {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
+                                </div>
+
+                                <div className="flex justify-between items-center mb-6 text-sm">
+                                    <label className="flex items-center gap-2 text-gray-600 cursor-pointer group">
+                                        <input
+                                            type="checkbox"
+                                            checked={rememberMe}
+                                            onChange={(e) => setRememberMe(e.target.checked)}
+                                            className="w-4 h-4 accent-red-600 cursor-pointer"
+                                        />
+                                        <span className="group-hover:text-gray-900 transition font-medium">Remember me</span>
+                                    </label>
+                                    <Link to="/forgot-password">
+                                        <button type="button" className="text-red-600 font-semibold hover:underline cursor-pointer">
+                                            Forgot Password?
+                                        </button>
+                                    </Link>
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    disabled={submitting}
+                                    className={`w-full bg-red-600 hover:bg-orange-400 text-white py-3 rounded-lg font-semibold transition duration-300 cursor-pointer shadow-lg shadow-red-100 ${submitting ? "opacity-50 cursor-not-allowed" : ""}`}
+                                >
+                                    {submitting ? "Signing In..." : "Sign In"}
+                                </button>
+                            </form>
+                        </>
+                    )}
                 </div>
             </div>
 
