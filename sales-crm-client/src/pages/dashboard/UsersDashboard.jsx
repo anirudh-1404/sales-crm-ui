@@ -291,9 +291,12 @@ export default function UsersDashboard() {
                                                 : "—"}
                                         </td>
                                         <td className="px-4 py-3 whitespace-nowrap">
-                                            <span className={`flex items-center gap-1.5 text-xs font-semibold w-fit px-2.5 py-1 rounded-full ${u.isActive ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
-                                                <span className={`w-1.5 h-1.5 rounded-full ${u.isActive ? "bg-green-500" : "bg-gray-400"}`} />
-                                                {u.isActive ? "Active" : "Inactive"}
+                                            <span className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full ${u.isActive
+                                                    ? "bg-green-100 text-green-700"
+                                                    : "bg-red-100 text-red-700 border border-red-200"
+                                                }`}>
+                                                <span className={`w-1.5 h-1.5 rounded-full ${u.isActive ? "bg-green-500" : "bg-red-500 animate-pulse"}`} />
+                                                {u.isActive ? "Active" : "Deactivated"}
                                             </span>
                                         </td>
                                         <td className="px-4 py-3 text-gray-500 text-xs whitespace-nowrap">

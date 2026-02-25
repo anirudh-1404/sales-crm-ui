@@ -29,6 +29,7 @@ const Login = () => {
     const [rememberMe, setRememberMe] = useState(false);
     const [rememberedUser, setRememberedUser] = useState(null);
     const [errors, setErrors] = useState({});
+    const [deactivatedScreen, setDeactivatedScreen] = useState(false);
 
     useEffect(() => {
         const storedUser = localStorage.getItem("rememberedUser");
@@ -83,7 +84,12 @@ const Login = () => {
             else navigate("/");
         } catch (error) {
             console.error("Login Error:", error.message);
-            const msg = error.response?.data?.message;
+            const data = error.response?.data;
+            if (data?.code === "ACCOUNT_DEACTIVATED") {
+                setDeactivatedScreen(true);
+                return;
+            }
+            const msg = data?.message;
             toast.error(msg || "Invalid credentials. Please try again.");
         } finally {
             setSubmitting(false);
@@ -105,6 +111,38 @@ const Login = () => {
             ? "border-red-400 focus:ring-red-300 bg-red-50"
             : "border-gray-300 focus:ring-red-500"
         }`;
+
+    // Deactivated user blocked screen
+    if (deactivatedScreen) {
+        return (
+            <section className="h-screen bg-gray-50 flex items-center justify-center p-6">
+                <div className="bg-white rounded-2xl shadow-lg border border-red-100 max-w-md w-full p-8 text-center">
+                    <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-5">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                        </svg>
+                    </div>
+                    <h2 className="text-2xl font-bold text-gray-800 mb-2">Account Deactivated</h2>
+                    <p className="text-gray-500 text-sm mb-2 leading-relaxed">
+                        Your account has been deactivated by an administrator.
+                    </p>
+                    <p className="text-gray-500 text-sm mb-6 leading-relaxed">
+                        All your data remains intact and will be accessible once your account is reactivated.
+                        Please contact your administrator to regain access.
+                    </p>
+                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-800 mb-6">
+                        📧 Reach out to your CRM administrator to request reactivation.
+                    </div>
+                    <button
+                        onClick={() => setDeactivatedScreen(false)}
+                        className="w-full py-2.5 text-sm font-semibold text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition"
+                    >
+                        ← Back to Login
+                    </button>
+                </div>
+            </section>
+        );
+    }
 
     return (
         <section className="h-screen bg-gray-100 grid grid-cols-1 lg:grid-cols-2">

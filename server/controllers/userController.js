@@ -87,9 +87,16 @@ export const loginUser = async (req, res, next) => {
 
         const user = await User.findOne({ email: email.trim().toLowerCase() }).select("+password")
 
-        if (!user || !user.isActive) {
+        if (!user) {
             return res.status(404).json({
-                message: "User does not exists!"
+                message: "User does not exist!"
+            })
+        }
+
+        if (!user.isActive) {
+            return res.status(403).json({
+                message: "Your account has been deactivated. Please contact your administrator.",
+                code: "ACCOUNT_DEACTIVATED"
             })
         }
 
