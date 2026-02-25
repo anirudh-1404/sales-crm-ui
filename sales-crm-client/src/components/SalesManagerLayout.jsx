@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
     LayoutDashboard, Briefcase, Building2, ContactRound, Users2,
-    Bell, Search, Menu, Moon, LayoutGrid, LogOut
+    Bell, Search, Menu, LogOut
 } from "lucide-react";
 import Logo from "./Logo";
 import { useAuth } from "../context/AuthContext";
@@ -10,8 +10,9 @@ import GlobalSearch from "./GlobalSearch";
 import LogoutConfirmModal from "./LogoutConfirmModal";
 
 
-const SidebarLink = ({ to, icon: IconComp, label }) => (
+const SidebarLink = ({ to, icon: IconComp, label, onClick }) => (
     <NavLink to={to}
+        onClick={onClick}
         className={({ isActive }) =>
             `flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 group
       ${isActive ? "bg-purple-600 text-white shadow-md shadow-purple-200" : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"}`
@@ -29,10 +30,23 @@ const SidebarLink = ({ to, icon: IconComp, label }) => (
 
 export default function SalesManagerLayout() {
     const { logout, user } = useAuth();
-    const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 1024);
     const [searchOpen, setSearchOpen] = useState(false);
     const navigate = useNavigate();
     const [showLogout, setShowLogout] = useState(false);
+
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth >= 1024) setSidebarOpen(true);
+            else setSidebarOpen(false);
+        };
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    const closeSidebarOnMobile = () => {
+        if (window.innerWidth < 1024) setSidebarOpen(false);
+    };
 
     const initials = user ? `${user.firstName?.[0] || ""}${user.lastName?.[0] || ""}`.toUpperCase() : "M";
 
@@ -48,18 +62,30 @@ export default function SalesManagerLayout() {
     }, []);
 
     return (
-        <div className="flex h-screen bg-gray-50 font-sans overflow-hidden">
+        <div className="flex h-screen bg-gray-50 font-sans overflow-hidden relative">
 
-            <aside className={`${sidebarOpen ? "w-64" : "w-0 overflow-hidden"} flex-shrink-0 bg-white border-r border-gray-200 flex flex-col transition-all duration-300`}>
+            {/* Mobile Sidebar Overlay */}
+            {sidebarOpen && (
+                <div
+                    className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm transition-opacity duration-300"
+                    onClick={() => setSidebarOpen(false)}
+                />
+            )}
+
+            <aside className={`
+                fixed inset-y-0 left-0 z-50 lg:relative
+                ${sidebarOpen ? "w-64 translate-x-0" : "w-64 -translate-x-full lg:w-0 lg:overflow-hidden"}
+                bg-white border-r border-gray-200 flex flex-col transition-all duration-300 shadow-2xl lg:shadow-none
+            `}>
 
                 <div className="h-16 flex items-center px-5 border-b border-gray-100">
                     <Logo className="flex items-center" />
                 </div>
 
-                <div className="px-4 pt-4 pb-2">
-                    <div className="flex items-center gap-2 bg-purple-50 border border-purple-200 rounded-lg px-3 py-2">
-                        <span className="w-2 h-2 rounded-full bg-purple-500 flex-shrink-0" />
-                        <span className="text-xs font-semibold text-purple-700">Sales Manager</span>
+                <div className="px-4 py-3 border-b border-gray-50 bg-gray-50/30">
+                    <div className="flex items-center gap-2 bg-purple-50 border border-purple-200 rounded-lg px-3 py-1.5 transition-all">
+                        <span className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse" />
+                        <span className="text-[10px] font-bold text-purple-700 uppercase tracking-wider">Manager</span>
                     </div>
                 </div>
 
@@ -67,16 +93,16 @@ export default function SalesManagerLayout() {
                     <div>
                         <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest px-2 mb-2">Overview</p>
                         <div className="space-y-1">
-                            <SidebarLink to="/manager/dashboard" icon={LayoutDashboard} label="Dashboard" />
-                            <SidebarLink to="/manager/team" icon={Users2} label="My Team" />
+                            <SidebarLink to="/manager/dashboard" icon={LayoutDashboard} label="Dashboard" onClick={closeSidebarOnMobile} />
+                            <SidebarLink to="/manager/team" icon={Users2} label="My Team" onClick={closeSidebarOnMobile} />
                         </div>
                     </div>
                     <div>
                         <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest px-2 mb-2">Team CRM</p>
                         <div className="space-y-1">
-                            <SidebarLink to="/manager/deals" icon={Briefcase} label="Team Deals" />
-                            <SidebarLink to="/manager/companies" icon={Building2} label="Team Companies" />
-                            <SidebarLink to="/manager/contacts" icon={ContactRound} label="Team Contacts" />
+                            <SidebarLink to="/manager/deals" icon={Briefcase} label="Team Deals" onClick={closeSidebarOnMobile} />
+                            <SidebarLink to="/manager/companies" icon={Building2} label="Team Companies" onClick={closeSidebarOnMobile} />
+                            <SidebarLink to="/manager/contacts" icon={ContactRound} label="Team Contacts" onClick={closeSidebarOnMobile} />
                         </div>
                     </div>
                 </nav>
@@ -99,36 +125,34 @@ export default function SalesManagerLayout() {
                     </button>
                     <button
                         onClick={() => setSearchOpen(true)}
-                        className="flex items-center gap-2 flex-1 max-w-xs pl-3 pr-4 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg text-gray-400 hover:border-purple-300 hover:bg-purple-50/30 transition text-left"
+                        className="flex items-center gap-2 flex-1 max-w-[140px] sm:max-w-xs pl-3 pr-4 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg text-gray-400 hover:border-purple-300 hover:bg-purple-50/30 transition text-left"
                     >
                         <Search size={15} />
-                        <span className="flex-1">Search...</span>
-                        <kbd className="hidden sm:block text-[10px] bg-gray-200 text-gray-500 px-1.5 py-0.5 rounded font-mono">Ctrl K</kbd>
+                        <span className="flex-1 truncate">Search...</span>
+                        <kbd className="hidden md:block text-[10px] bg-gray-200 text-gray-500 px-1.5 py-0.5 rounded font-mono">Ctrl K</kbd>
                     </button>
                     <div className="flex-1" />
                     <div className="flex items-center gap-1">
-                        <button className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 transition"><LayoutGrid size={18} /></button>
-                        <button className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 transition"><Moon size={18} /></button>
                         <button className="relative p-2 rounded-lg hover:bg-gray-100 text-gray-500 transition">
                             <Bell size={18} />
                             <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-purple-500 rounded-full" />
                         </button>
                     </div>
-                    <div className="flex items-center gap-3 pl-3 border-l border-gray-200">
-                        <div className="relative">
-                            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-500 to-purple-300 flex items-center justify-center text-white font-bold text-sm shadow">{initials}</div>
-                            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-400 border-2 border-white rounded-full" />
+                    <div className="flex items-center gap-2 sm:gap-3 sm:pl-3 sm:border-l border-gray-100">
+                        <div className="relative flex-shrink-0">
+                            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br from-purple-500 to-purple-300 flex items-center justify-center text-white font-bold text-xs sm:text-sm shadow-sm">{initials}</div>
+                            <span className="absolute bottom-0 right-0 w-2 h-2 sm:w-2.5 sm:h-2.5 bg-green-400 border-2 border-white rounded-full" />
                         </div>
-                        <div className="hidden sm:block">
-                            <p className="text-sm font-semibold text-gray-800 leading-none">{user ? `${user.firstName} ${user.lastName}` : "Manager"}</p>
-                            <p className="text-xs text-gray-400 mt-0.5">{user?.email || "Sales Manager"}</p>
+                        <div className="hidden sm:block truncate max-w-[100px] lg:max-w-[150px]">
+                            <p className="text-sm font-bold text-gray-800 leading-none truncate">{user ? `${user.firstName} ${user.lastName}` : "Manager"}</p>
+                            <p className="text-[10px] text-gray-400 mt-1 truncate lowercase">{user?.role?.replace("_", " ") || "Sales Manager"}</p>
                         </div>
                     </div>
                 </header>
 
                 <main className="flex-1 overflow-y-auto"><Outlet /></main>
 
-                <footer className="h-10 bg-white border-t border-gray-100 flex items-center justify-between px-6 text-xs text-gray-400 flex-shrink-0">
+                <footer className="h-auto py-4 sm:h-10 sm:py-0 bg-white border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between px-6 text-[10px] sm:text-xs text-gray-400 flex-shrink-0 gap-2 sm:gap-0">
                     <span>Copyright &copy; <span className="text-purple-500 font-medium">mbdConsulting</span></span>
                     <div className="flex gap-4">
                         <span className="hover:text-gray-600 cursor-pointer">About</span>

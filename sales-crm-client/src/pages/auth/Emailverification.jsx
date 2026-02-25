@@ -1,11 +1,13 @@
 import React from "react";
 import Logo from "../../components/Logo";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import emailVerificationBg from "../../assets/email-verification-bg.jpg";
 
 const Emailverification = () => {
+    const location = useLocation();
+    const email = location.state?.email || "your email";
     return (
-        <section className="h-screen bg-gray-100 grid grid-cols-1 md:grid-cols-2">
+        <section className="h-screen bg-gray-100 grid grid-cols-1 lg:grid-cols-2">
 
             <div className="h-screen overflow-y-auto bg-white p-12 flex flex-col">
                 <div className="w-full max-w-md mx-auto flex-1 flex flex-col">
@@ -32,7 +34,7 @@ const Emailverification = () => {
                         <h2 className="text-2xl font-bold mb-3 text-gray-800">Verify Your Email</h2>
 
                         <p className="text-gray-500 text-sm mb-4 max-w-xs">
-                            We've sent a link to your email ter4@example.com. Please
+                            We've sent a link to your email <strong>{email}</strong>. Please
                             follow the link inside to continue
                         </p>
 
@@ -52,13 +54,13 @@ const Emailverification = () => {
                     </div>
 
                     <div className="text-center py-4">
-                        <p className="text-gray-500 text-sm mb-0">Copyright &copy; - CRMS</p>
+                        <p className="text-gray-500 text-sm mb-0">Copyright &copy; mbdConsulting</p>
                     </div>
 
                 </div>
             </div>
 
-            <div className="hidden md:block h-screen p-3">
+            <div className="hidden lg:block h-screen p-3">
                 <img
                     src={emailVerificationBg}
                     alt="email-verification-img"

@@ -16,8 +16,8 @@ export const updateUser = async (id, userData) => {
 };
 
 // Deactivate a user
-export const deactivateUser = async (id) => {
-    return API.patch(`/auth/${id}/deactivate`);
+export const deactivateUser = async (id, data) => {
+    return API.patch(`/auth/${id}/deactivate`, data);
 };
 
 // Activate (reactivate) a user
@@ -30,7 +30,22 @@ export const changePassword = async (id, passwords) => {
     return API.patch(`/auth/${id}/change-password`, passwords);
 };
 
+// Admin reset password for another user
+export const adminResetPassword = async (id, newPassword) => {
+    return API.patch(`/auth/${id}/admin-reset-password`, { newPassword });
+};
+
 // Bulk reassign records from one user to another
 export const bulkReassignRecords = async (id, newOwnerId) => {
     return API.patch(`/auth/${id}/reassign`, { newOwnerId });
+};
+
+// Forgot Password
+export const forgotPassword = async (email) => {
+    return API.post("/auth/forgot-password", { email });
+};
+
+// Reset Password
+export const resetPassword = async (data) => {
+    return API.post("/auth/reset-password", data);
 };

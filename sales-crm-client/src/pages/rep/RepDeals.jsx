@@ -115,82 +115,86 @@ export default function RepDeals() {
     const activeDealsCount = deals.filter(d => !d.stage.startsWith("Closed")).length;
     const wonDealsCount = deals.filter(d => d.stage === "Closed Won").length;
     const pipelineValue = deals.reduce((acc, curr) => acc + (curr.value || 0), 0);
+    const stats = [
+        { label: "Pipeline Value", value: `$${pipelineValue.toLocaleString()}`, color: "bg-green-50 text-green-600", icon: DollarSign },
+        { label: "Active Deals", value: String(activeDealsCount), color: "bg-blue-50 text-blue-600", icon: Briefcase },
+        { label: "Deals Won", value: String(wonDealsCount), color: "bg-purple-50 text-purple-600", icon: CheckCircle2 },
+        { label: "Success Rate", value: "85%", color: "bg-orange-50 text-orange-600", icon: Zap },
+    ];
 
     return (
-        <div className="p-6 space-y-6 max-w-screen-xl mx-auto">
-            <div className="flex justify-between items-end">
+        <div className="p-4 sm:p-6 space-y-6 max-w-screen-xl mx-auto">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-800">My Deals</h1>
-                    <p className="text-sm text-gray-400 mt-0.5">Manage and track your sales pipeline</p>
+                    <h1 className="text-xl sm:text-2xl font-bold text-gray-800">My Deals</h1>
+                    <p className="text-xs sm:text-sm text-gray-400 mt-0.5">Manage and track your sales pipeline</p>
                 </div>
                 <button
                     onClick={() => { setSelectedDeal(null); setIsDealModalOpen(true); }}
-                    className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-green-700 transition shadow-md shadow-green-100"
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-green-700 transition shadow-md shadow-green-100"
                 >
                     <Plus size={18} />
                     <span>New Deal</span>
                 </button>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                {[
-                    { label: "Total My Deals", value: String(deals.length), color: "bg-green-50 text-green-600", icon: Briefcase },
-                    { label: "Active", value: String(activeDealsCount), color: "bg-blue-50 text-blue-600", icon: Zap },
-                    { label: "Closed Won", value: String(wonDealsCount), color: "bg-green-50 text-green-700", icon: CheckCircle2 },
-                    { label: "Pipeline Value", value: `₹${(pipelineValue / 100000).toFixed(2)}L`, color: "bg-purple-50 text-purple-600", icon: DollarSign },
-                ].map(s => (
-                    <div key={s.label} className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex items-start gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                {stats.map(s => (
+                    <div key={s.label} className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 sm:p-5 flex items-start gap-4">
                         <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${s.color}`}>
                             <s.icon size={20} />
                         </div>
                         <div>
-                            <p className="text-2xl font-bold text-gray-800">{s.value}</p>
-                            <p className="text-sm text-gray-500">{s.label}</p>
+                            <p className="text-xl sm:text-2xl font-bold text-gray-800 leading-snug">{s.value}</p>
+                            <p className="text-xs sm:text-sm text-gray-500">{s.label}</p>
                         </div>
                     </div>
                 ))}
             </div>
 
-            <Card>
-                <CardHeader title="My Deals">
-                    <Select options={stageOptions} value={stageFilter} onChange={setStageFilter} />
-                </CardHeader>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+                    <h2 className="font-bold text-gray-800">My Pipeline</h2>
+                    <div className="w-full sm:w-auto">
+                        <Select options={stageOptions} value={stageFilter} onChange={setStageFilter} />
+                    </div>
+                </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                         <thead>
                             <tr className="border-b border-gray-100 bg-gray-50">
                                 {["Deal Name", "Company", "Contact", "Stage", "Value", "Expected Close", "Actions"].map(h => (
-                                    <th key={h} className="text-left px-4 py-3 text-gray-500 font-semibold text-xs uppercase tracking-wide">{h}</th>
+                                    <th key={h} className="text-left px-4 py-3 text-gray-500 font-semibold text-xs uppercase tracking-wide whitespace-nowrap">{h}</th>
                                 ))}
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50">
-                            {loading ? (
+                            {loading && deals.length === 0 ? (
                                 <tr><td colSpan={7} className="text-center py-10 text-gray-400">Loading deals...</td></tr>
                             ) : deals.length === 0 ? (
                                 <tr><td colSpan={7} className="text-center py-10 text-gray-400">No deals found.</td></tr>
                             ) : (
                                 deals.map((d) => (
                                     <tr key={d._id} className="hover:bg-gray-50/50 transition-colors group">
-                                        <td className="px-4 py-3 font-medium text-gray-800">{d.name}</td>
-                                        <td className="px-4 py-3 text-gray-500">{d.companyId?.name || d.companyName || "—"}</td>
-                                        <td className="px-4 py-3 text-gray-500">{d.contactId ? `${d.contactId.firstName} ${d.contactId.lastName}` : (d.contactName || "—")}</td>
+                                        <td className="px-4 py-3 font-medium text-gray-800 whitespace-nowrap">{d.name}</td>
+                                        <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{d.companyId?.name || d.companyName || "—"}</td>
+                                        <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{d.contactId ? `${d.contactId.firstName} ${d.contactId.lastName}` : (d.contactName || "—")}</td>
                                         <td className="px-4 py-3">
                                             <select
                                                 value={d.stage}
                                                 onChange={e => handleMoveStage(d._id, e.target.value)}
-                                                className={`text-[11px] px-2 py-1 rounded-full font-bold border-none cursor-pointer focus:ring-0 ${stageBadge[d.stage]}`}
+                                                className={`text-[11px] px-2 py-1 rounded-full font-bold border-none cursor-pointer focus:ring-0 whitespace-nowrap ${stageBadge[d.stage]}`}
                                             >
                                                 {STAGES.map(s => <option key={s} value={s}>{s}</option>)}
                                             </select>
                                         </td>
-                                        <td className="px-4 py-3 font-semibold text-gray-800">₹{d.value?.toLocaleString()}</td>
-                                        <td className="px-4 py-3 text-gray-500 text-xs">{d.expectedCloseDate ? new Date(d.expectedCloseDate).toLocaleDateString() : "—"}</td>
-                                        <td className="px-4 py-3">
-                                            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <td className="px-4 py-3 font-semibold text-gray-800 whitespace-nowrap">${d.value?.toLocaleString()}</td>
+                                        <td className="px-4 py-3 text-gray-500 text-xs whitespace-nowrap">{d.expectedCloseDate ? new Date(d.expectedCloseDate).toLocaleDateString() : "—"}</td>
+                                        <td className="px-4 py-3 whitespace-nowrap">
+                                            <div className="flex items-center gap-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                                                 <button
                                                     onClick={() => { setSelectedDeal(d); setIsDealModalOpen(true); }}
-                                                    className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                                                    className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition"
                                                 >
                                                     <Edit2 size={16} />
                                                 </button>
@@ -208,7 +212,7 @@ export default function RepDeals() {
                         </tbody>
                     </table>
                 </div>
-            </Card>
+            </div>
 
             {/* Modals */}
             <DealModal

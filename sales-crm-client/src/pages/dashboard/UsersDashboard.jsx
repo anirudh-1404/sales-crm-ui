@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Users2, ShieldCheck, Briefcase, UserCheck, Edit2, RefreshCw, Plus, X } from "lucide-react";
-import { getTeamUsers, createUser, updateUser, deactivateUser, activateUser, bulkReassignRecords } from "../../../API/services/userService";
+import { Users2, ShieldCheck, Briefcase, UserCheck, Edit2, RefreshCw, Plus, X, Search } from "lucide-react";
+import { getTeamUsers, deactivateUser, activateUser, bulkReassignRecords } from "../../../API/services/userService";
+import UserModal from "../../components/modals/UserModal";
+import DeactivateModal from "../../components/modals/DeactivateModal";
+import ConfirmDialog from "../../components/modals/ConfirmDialog";
 import { toast } from "react-hot-toast";
 
 // ─── Shared UI ────────────────────────────────────────────────
@@ -57,175 +60,7 @@ const inputClass = (err) => err
     : `${baseInput} border-gray-200 focus:ring-red-400`;
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-// ─── Confirm Dialog ───────────────────────────────────────────
-function ConfirmDialog({ isOpen, onClose, onConfirm, title, message, confirmLabel = "Confirm", confirmColor = "bg-red-600 hover:bg-red-700" }) {
-    if (!isOpen) return null;
-    return (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center px-4"
-            style={{ background: "rgba(15,15,25,0.45)", backdropFilter: "blur(4px)" }}
-            onClick={onClose}>
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 flex flex-col items-center text-center"
-                onClick={e => e.stopPropagation()}>
-                {/* Icon */}
-                <div className="w-14 h-14 rounded-full flex items-center justify-center mb-4"
-                    style={{ background: confirmColor.includes("green") ? "#dcfce7" : "#fee2e2" }}>
-                    <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                        strokeWidth={2} style={{ color: confirmColor.includes("green") ? "#16a34a" : "#dc2626" }}>
-                        <path strokeLinecap="round" strokeLinejoin="round"
-                            d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-                    </svg>
-                </div>
-                <h3 className="text-lg font-bold text-gray-800 mb-1">{title}</h3>
-                <p className="text-sm text-gray-500 mb-6 leading-relaxed">{message}</p>
-                <div className="flex gap-3 w-full">
-                    <button onClick={onClose}
-                        className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 transition">
-                        Cancel
-                    </button>
-                    <button onClick={() => { onConfirm(); onClose(); }}
-                        className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition ${confirmColor}`}>
-                        {confirmLabel}
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
-}
 
-// ─── User Modal (Create + Edit) ────────────────────────────────
-function UserModal({ isOpen, onClose, user, managers, onSaved }) {
-    const isEdit = !!user;
-    const [form, setForm] = useState({
-        firstName: "", lastName: "", email: "", password: "",
-        role: "sales_rep", managerId: ""
-    });
-    const [errors, setErrors] = useState({});
-    const [saving, setSaving] = useState(false);
-
-    useEffect(() => {
-        if (isOpen) {
-            setForm(isEdit
-                ? { firstName: user.firstName, lastName: user.lastName, email: user.email, password: "", role: user.role, managerId: user.managerId?._id || user.managerId || "" }
-                : { firstName: "", lastName: "", email: "", password: "", role: "sales_rep", managerId: "" }
-            );
-            setErrors({});
-        }
-    }, [isOpen, user]);
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setForm(prev => ({ ...prev, [name]: value }));
-        if (errors[name]) setErrors(prev => ({ ...prev, [name]: "" }));
-    };
-
-    const validate = () => {
-        const errs = {};
-        if (!form.firstName.trim()) errs.firstName = "First name is required";
-        if (!form.lastName.trim()) errs.lastName = "Last name is required";
-        if (!form.email.trim()) errs.email = "Email is required";
-        else if (!emailRegex.test(form.email.trim())) errs.email = "Enter a valid email address";
-        if (!isEdit) {
-            if (!form.password) errs.password = "Password is required";
-            else if (form.password.length < 6) errs.password = "Password must be at least 6 characters";
-        }
-        return errs;
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const errs = validate();
-        if (Object.keys(errs).length > 0) { setErrors(errs); return; }
-        setSaving(true);
-        try {
-            const payload = {
-                firstName: form.firstName.trim(),
-                lastName: form.lastName.trim(),
-                email: form.email.trim(),
-                role: form.role,
-                managerId: form.role === "sales_rep" ? form.managerId || null : null,
-                ...(!isEdit && { password: form.password })
-            };
-            if (isEdit) {
-                await updateUser(user._id, payload);
-                toast.success("User updated successfully");
-            } else {
-                await createUser(payload);
-                toast.success("User created successfully");
-            }
-            onSaved();
-            onClose();
-        } catch (err) {
-            toast.error(err.response?.data?.message || "Failed to save user");
-        } finally {
-            setSaving(false);
-        }
-    };
-
-    if (!isOpen) return null;
-    return (
-        <ModalOverlay onClose={onClose}>
-            <ModalHeader title={isEdit ? "Edit User" : "Add New User"} onClose={onClose} />
-            <form onSubmit={handleSubmit} noValidate className="px-6 py-5 space-y-4">
-                <div className="grid grid-cols-2 gap-3">
-                    <div>
-                        <label className="block text-xs font-semibold text-gray-600 mb-1">First Name *</label>
-                        <input name="firstName" value={form.firstName} onChange={handleChange}
-                            className={inputClass(errors.firstName)} placeholder="Jane" />
-                        {errors.firstName && <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>}
-                    </div>
-                    <div>
-                        <label className="block text-xs font-semibold text-gray-600 mb-1">Last Name *</label>
-                        <input name="lastName" value={form.lastName} onChange={handleChange}
-                            className={inputClass(errors.lastName)} placeholder="Smith" />
-                        {errors.lastName && <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>}
-                    </div>
-                </div>
-                <div>
-                    <label className="block text-xs font-semibold text-gray-600 mb-1">Email *</label>
-                    <input type="email" name="email" value={form.email} onChange={handleChange}
-                        className={inputClass(errors.email)} placeholder="jane@company.com" />
-                    {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
-                </div>
-                {!isEdit && (
-                    <div>
-                        <label className="block text-xs font-semibold text-gray-600 mb-1">Password *</label>
-                        <input type="password" name="password" value={form.password} onChange={handleChange}
-                            className={inputClass(errors.password)} placeholder="Min. 6 characters" />
-                        {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
-                    </div>
-                )}
-                <div>
-                    <label className="block text-xs font-semibold text-gray-600 mb-1">Role *</label>
-                    <select name="role" value={form.role} onChange={handleChange} className={inputClass(false)}>
-                        <option value="admin">Admin</option>
-                        <option value="sales_manager">Sales Manager</option>
-                        <option value="sales_rep">Sales Representative</option>
-                    </select>
-                </div>
-                {form.role === "sales_rep" && (
-                    <div>
-                        <label className="block text-xs font-semibold text-gray-600 mb-1">Reports To (Manager)</label>
-                        <select name="managerId" value={form.managerId} onChange={handleChange} className={inputClass(false)}>
-                            <option value="">— No Manager —</option>
-                            {managers.map(m => (
-                                <option key={m._id} value={m._id}>{m.firstName} {m.lastName}</option>
-                            ))}
-                        </select>
-                    </div>
-                )}
-                <div className="flex gap-3 pt-2">
-                    <button type="button" onClick={onClose} className="flex-1 px-4 py-2 border border-gray-200 text-sm font-semibold rounded-lg text-gray-600 hover:bg-gray-50">
-                        Cancel
-                    </button>
-                    <button type="submit" disabled={saving}
-                        className="flex-1 px-4 py-2 bg-red-600 text-white text-sm font-semibold rounded-lg hover:bg-red-700 disabled:opacity-60 transition">
-                        {saving ? "Saving..." : isEdit ? "Save Changes" : "Create User"}
-                    </button>
-                </div>
-            </form>
-        </ModalOverlay>
-    );
-}
 
 // ─── Reassign Modal ────────────────────────────────────────────
 function ReassignModal({ isOpen, onClose, fromUser, activeUsers, onSaved }) {
@@ -262,7 +97,7 @@ function ReassignModal({ isOpen, onClose, fromUser, activeUsers, onSaved }) {
                     <p>This will transfer <span className="font-bold">all companies, contacts & deals</span> owned by <span className="font-bold">{fromUser.firstName} {fromUser.lastName}</span> to the selected user.</p>
                 </div>
                 <Field label="Assign all records to *">
-                    <select value={newOwnerId} onChange={e => setNewOwnerId(e.target.value)} className={inputClass} required>
+                    <select value={newOwnerId} onChange={e => setNewOwnerId(e.target.value)} className={`${inputClass} w-full border rounded-full border-slate-200 px-4 py-2 text-center`} required>
                         <option value="">— Select a user —</option>
                         {opts.map(u => (
                             <option key={u._id} value={u._id}>{u.firstName} {u.lastName} ({u.role.replace(/_/g, " ")})</option>
@@ -283,6 +118,7 @@ function ReassignModal({ isOpen, onClose, fromUser, activeUsers, onSaved }) {
     );
 }
 
+
 // ─── Main Dashboard ────────────────────────────────────────────
 export default function UsersDashboard() {
     const [users, setUsers] = useState([]);
@@ -292,6 +128,7 @@ export default function UsersDashboard() {
     // Modal state
     const [isUserModalOpen, setIsUserModalOpen] = useState(false);
     const [isReassignModalOpen, setIsReassignModalOpen] = useState(false);
+    const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
 
     // Confirm dialog state
@@ -316,21 +153,19 @@ export default function UsersDashboard() {
 
     const handleDeactivate = (user) => {
         if (!user.isActive) { toast.error("User is already inactive"); return; }
-        openConfirm({
-            title: "Deactivate User?",
-            message: `Are you sure you want to deactivate ${user.firstName} ${user.lastName}? They will no longer be able to log in.`,
-            confirmLabel: "Deactivate",
-            confirmColor: "bg-red-600 hover:bg-red-700",
-            onConfirm: async () => {
-                try {
-                    await deactivateUser(user._id);
-                    toast.success(`${user.firstName} deactivated`);
-                    fetchUsers();
-                } catch (error) {
-                    toast.error(error.response?.data?.message || "Failed to deactivate user");
-                }
-            }
-        });
+        setSelectedUser(user);
+        setIsDeactivateModalOpen(true);
+    };
+
+    const confirmDeactivate = async (newOwnerId) => {
+        try {
+            await deactivateUser(selectedUser._id, { newOwnerId });
+            toast.success(`${selectedUser.firstName} deactivated and records reassigned`);
+            fetchUsers();
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to deactivate user");
+            throw error;
+        }
     };
 
     const handleActivate = (user) => {
@@ -352,9 +187,9 @@ export default function UsersDashboard() {
         });
     };
 
-    const managers = users.filter(u => u.role === "sales_manager" && u.isActive);
+    const potentialManagers = users.filter(u => (u.role === "sales_manager" || u.role === "admin") && u.isActive);
     const adminCount = users.filter(u => u.role === "admin").length;
-    const managerCount = managers.length;
+    const managerCount = users.filter(u => u.role === "sales_manager").length;
     const repCount = users.filter(u => u.role === "sales_rep").length;
 
     const filtered = users.filter(u => {
@@ -372,22 +207,21 @@ export default function UsersDashboard() {
     return (
         <div className="p-6 space-y-6 max-w-screen-xl mx-auto">
             {/* Header */}
-            <div className="flex items-end justify-between">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-800">Users Dashboard</h1>
-                    <p className="text-sm text-gray-400 mt-0.5">Manage all users and their roles</p>
+                    <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Users Dashboard</h1>
+                    <p className="text-xs sm:text-sm text-gray-400 mt-0.5">Manage all users and their roles</p>
                 </div>
                 <button
                     onClick={() => { setSelectedUser(null); setIsUserModalOpen(true); }}
-                    className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-700 transition shadow-md shadow-red-100"
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-700 transition shadow-md shadow-red-100"
                 >
                     <Plus size={18} />
                     <span>Add User</span>
                 </button>
             </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 {[
                     { label: "Total Users", value: loading ? "..." : String(users.length), color: "bg-blue-50 text-blue-600", icon: Users2 },
                     { label: "Admins", value: loading ? "..." : String(adminCount), color: "bg-red-50 text-red-600", icon: ShieldCheck },
@@ -399,38 +233,41 @@ export default function UsersDashboard() {
                             <s.icon size={20} />
                         </div>
                         <div>
-                            <p className="text-2xl font-bold text-gray-800">{s.value}</p>
+                            <p className="text-xl font-bold text-gray-800 leading-snug">{s.value}</p>
                             <p className="text-sm text-gray-500">{s.label}</p>
                         </div>
                     </div>
                 ))}
             </div>
 
-            {/* Users Table */}
-            <Card>
-                <CardHeader title="All Users">
-                    <input type="text" placeholder="Search users..."
-                        value={search} onChange={e => setSearch(e.target.value)}
-                        className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-red-400 w-48" />
-                </CardHeader>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+                    <h2 className="font-bold text-gray-800">All Users</h2>
+                    <div className="relative">
+                        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                        <input type="text" placeholder="Search users..."
+                            value={search} onChange={e => setSearch(e.target.value)}
+                            className="w-full sm:w-64 text-sm border border-gray-200 rounded-lg pl-9 pr-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-red-400 bg-gray-50/50 transition-all" />
+                    </div>
+                </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                         <thead>
                             <tr className="border-b border-gray-100 bg-gray-50">
                                 {["User", "Role", "Reports To", "Status", "Last Login", "Actions"].map(h => (
-                                    <th key={h} className="text-left px-4 py-3 text-gray-500 font-semibold text-xs uppercase tracking-wide">{h}</th>
+                                    <th key={h} className="text-left px-4 py-3 text-gray-500 font-semibold text-xs uppercase tracking-wide whitespace-nowrap">{h}</th>
                                 ))}
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50">
-                            {loading ? (
+                            {loading && users.length === 0 ? (
                                 <tr><td colSpan={6} className="text-center py-10 text-gray-400">Loading users...</td></tr>
                             ) : filtered.length === 0 ? (
                                 <tr><td colSpan={6} className="text-center py-10 text-gray-400">No users found.</td></tr>
                             ) : (
                                 filtered.map((u) => (
                                     <tr key={u._id} className="hover:bg-gray-50/50 transition-colors group">
-                                        <td className="px-4 py-3">
+                                        <td className="px-4 py-3 whitespace-nowrap">
                                             <div className="flex items-center gap-3">
                                                 <Avatar name={`${u.firstName} ${u.lastName}`} />
                                                 <div>
@@ -439,27 +276,27 @@ export default function UsersDashboard() {
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-4 py-3">
+                                        <td className="px-4 py-3 whitespace-nowrap">
                                             <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${roleBadge[u.role] || "bg-gray-100 text-gray-600"}`}>
                                                 {u.role?.replace(/_/g, " ")}
                                             </span>
                                         </td>
-                                        <td className="px-4 py-3 text-gray-500 text-sm">
+                                        <td className="px-4 py-3 text-gray-500 text-sm whitespace-nowrap">
                                             {u.managerId
                                                 ? `${u.managerId.firstName || ""} ${u.managerId.lastName || ""}`.trim() || "Manager"
                                                 : "—"}
                                         </td>
-                                        <td className="px-4 py-3">
+                                        <td className="px-4 py-3 whitespace-nowrap">
                                             <span className={`flex items-center gap-1.5 text-xs font-semibold w-fit px-2.5 py-1 rounded-full ${u.isActive ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
                                                 <span className={`w-1.5 h-1.5 rounded-full ${u.isActive ? "bg-green-500" : "bg-gray-400"}`} />
                                                 {u.isActive ? "Active" : "Inactive"}
                                             </span>
                                         </td>
-                                        <td className="px-4 py-3 text-gray-500 text-xs">
+                                        <td className="px-4 py-3 text-gray-500 text-xs whitespace-nowrap">
                                             {u.lastLogin ? new Date(u.lastLogin).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "Never"}
                                         </td>
-                                        <td className="px-4 py-3">
-                                            <div className="flex items-center gap-1.5">
+                                        <td className="px-4 py-3 whitespace-nowrap">
+                                            <div className="flex items-center gap-1.5 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                                                 {/* Edit */}
                                                 <button
                                                     onClick={() => { setSelectedUser(u); setIsUserModalOpen(true); }}
@@ -482,7 +319,7 @@ export default function UsersDashboard() {
                                                 {u.role !== "admin" && u.isActive && (
                                                     <button
                                                         onClick={() => handleDeactivate(u)}
-                                                        className="text-xs px-2.5 py-1 rounded-lg font-semibold border border-red-200 text-red-600 hover:bg-red-50 transition"
+                                                        className="text-[10px] sm:text-xs px-2 sm:px-2.5 py-1 rounded-lg font-semibold border border-red-200 text-red-600 hover:bg-red-50 transition"
                                                     >
                                                         Deactivate
                                                     </button>
@@ -491,7 +328,7 @@ export default function UsersDashboard() {
                                                 {u.role !== "admin" && !u.isActive && (
                                                     <button
                                                         onClick={() => handleActivate(u)}
-                                                        className="text-xs px-2.5 py-1 rounded-lg font-semibold border border-green-300 text-green-700 hover:bg-green-50 transition"
+                                                        className="text-[10px] sm:text-xs px-2 sm:px-2.5 py-1 rounded-lg font-semibold border border-green-300 text-green-700 hover:bg-green-50 transition"
                                                     >
                                                         Activate
                                                     </button>
@@ -504,12 +341,12 @@ export default function UsersDashboard() {
                         </tbody>
                     </table>
                 </div>
-            </Card>
+            </div>
 
             {/* Role Breakdown */}
-            <Card>
-                <CardHeader title="Users by Role" />
-                <div className="p-5 space-y-3">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+                <h3 className="font-bold text-gray-800 mb-4">Users by Role</h3>
+                <div className="space-y-3">
                     {roleBreakdown.map(r => {
                         const total = users.length || 1;
                         const pct = Math.round((r.count / total) * 100);
@@ -526,14 +363,14 @@ export default function UsersDashboard() {
                         );
                     })}
                 </div>
-            </Card>
+            </div>
 
             {/* Modals */}
             <UserModal
                 isOpen={isUserModalOpen}
                 onClose={() => setIsUserModalOpen(false)}
                 user={selectedUser}
-                managers={managers}
+                managers={potentialManagers}
                 onSaved={fetchUsers}
             />
             <ReassignModal
@@ -542,6 +379,13 @@ export default function UsersDashboard() {
                 fromUser={selectedUser}
                 activeUsers={users}
                 onSaved={fetchUsers}
+            />
+            <DeactivateModal
+                isOpen={isDeactivateModalOpen}
+                onClose={() => setIsDeactivateModalOpen(false)}
+                user={selectedUser}
+                activeUsers={users}
+                onConfirm={confirmDeactivate}
             />
             <ConfirmDialog
                 isOpen={confirmState.isOpen}

@@ -2,6 +2,7 @@ import { Contact } from "../models/contactSchema.js";
 import { Deal } from "../models/dealSchema.js";
 import User from "../models/userSchema.js";
 import { Company } from "../models/companySchema.js";
+import { logAction } from "../utils/auditLogger.js";
 
 export const createDeal = async (req, res, next) => {
     try {
@@ -15,10 +16,10 @@ export const createDeal = async (req, res, next) => {
 
         let dealData = {
             name, value,
-            currency: currency || "INR",
+            currency: currency || "USD",
             stage: stage || "Lead",
             expectedCloseDate, probability, source, notes,
-            ownerId: userId,
+            ownerId: (role === "admin" || role === "sales_manager") && req.body.ownerId ? req.body.ownerId : userId,
             stageHistory: [{ stage: stage || "Lead", changedBy: userId }]
         };
 
@@ -58,7 +59,18 @@ export const createDeal = async (req, res, next) => {
         }
 
         const deal = await Deal.create(dealData);
-        return res.status(201).json({ message: "Deal created successfully!", data: deal });
+        res.status(201).json({ message: "Deal created successfully!", data: deal });
+
+        // Log deal creation
+        await logAction({
+            entityType: "Deal",
+            entityId: deal._id,
+            action: "CREATE",
+            performedBy: userId,
+            details: { newValues: deal },
+            req
+        });
+        return;
 
     } catch (error) {
         return res.status(500).json({ message: error.message || "Server error!" });
@@ -68,7 +80,7 @@ export const createDeal = async (req, res, next) => {
 export const updateDealInformation = async (req, res, next) => {
     try {
         const { id } = req.params;
-        const { role, id: userId } = req.query;
+        const { role, id: userId } = req.user;
 
         const deal = await Deal.findById(id);
 
@@ -98,10 +110,18 @@ export const updateDealInformation = async (req, res, next) => {
             }
         }
 
-        if (req.body.stage) {
-            return res.status(400).json({
-                message: "Stage update not allowed here!"
-            })
+        const allowedStages = ["Lead", "Qualified", "Proposal", "Negotiation", "Closed Won", "Closed Lost"];
+
+        if (req.body.stage && req.body.stage !== deal.stage) {
+            if (!allowedStages.includes(req.body.stage)) {
+                return res.status(400).json({ message: "Invalid Stage!" });
+            }
+            deal.stageHistory.push({
+                stage: req.body.stage,
+                changedBy: userId
+            });
+            if (req.body.stage === "Closed Won") deal.probability = 100;
+            if (req.body.stage === "Closed Lost") deal.probability = 0;
         }
 
         if (req.body.contactId && req.body.companyId) {
@@ -114,31 +134,57 @@ export const updateDealInformation = async (req, res, next) => {
             }
         }
 
+        if (req.body.ownerId !== undefined && req.body.ownerId !== deal.ownerId.toString()) {
+            if (role === "sales_rep") {
+                return res.status(403).json({ message: "Sales representatives cannot reassign deals!" });
+            }
+            if (role === "sales_manager") {
+                const teamUsers = await User.find({ $or: [{ _id: userId }, { managerId: userId }] }).select("_id");
+                const teamIds = teamUsers.map(u => u._id.toString());
+                if (!teamIds.includes(req.body.ownerId.toString())) {
+                    return res.status(403).json({ message: "You can only reassign deals within your team!" });
+                }
+            }
+        }
+
         const fields = [
-            "name",
-            "companyId",
-            "contactId",
-            "value",
-            "currency",
-            "stage",
-            "expectedCloseDate",
-            "probability",
-            "source",
-            "notes"
-        ]
+            "name", "companyId", "contactId", "value", "currency",
+            "stage", "expectedCloseDate", "probability", "source", "notes", "ownerId"
+        ];
 
         fields.forEach(field => {
             if (req.body[field] !== undefined) {
                 deal[field] = req.body[field];
             }
-        })
+        });
 
         await deal.save();
 
-        return res.status(200).json({
+        let reassignedToName = null;
+        if (req.body.ownerId) {
+            const owner = await User.findById(req.body.ownerId);
+            if (owner) reassignedToName = `${owner.firstName} ${owner.lastName}`;
+        }
+
+        res.status(200).json({
             message: "Deal updated successfuly!",
             data: deal
         })
+
+        // Log deal update
+        await logAction({
+            entityType: "Deal",
+            entityId: id,
+            action: "UPDATE",
+            performedBy: userId,
+            details: {
+                newValues: req.body,
+                message: reassignedToName ? `Deal updated and reassigned to ${reassignedToName}` : `Deal updated`,
+                reassignedToName
+            },
+            req
+        });
+        return;
 
 
     } catch (error) {
@@ -214,10 +260,21 @@ export const moveDealStage = async (req, res, next) => {
 
         await deal.save();
 
-        return res.status(200).json({
+        res.status(200).json({
             message: "Deal stage updated successfully!",
             data: deal
         })
+
+        // Log stage move
+        await logAction({
+            entityType: "Deal",
+            entityId: id,
+            action: "UPDATE",
+            performedBy: userId,
+            details: { message: `Stage moved to ${newStage}`, newStage },
+            req
+        });
+        return;
 
     } catch (error) {
         return res.status(500).json({
@@ -288,10 +345,21 @@ export const markDealResult = async (req, res, next) => {
 
         await deal.save();
 
-        return res.status(200).json({
+        res.status(200).json({
             message: `Deal marked as ${result}`,
             data: deal
         })
+
+        // Log result
+        await logAction({
+            entityType: "Deal",
+            entityId: id,
+            action: "UPDATE",
+            performedBy: userId,
+            details: { message: `Deal marked as ${result}`, result },
+            req
+        });
+        return;
 
 
     } catch (error) {
@@ -336,9 +404,20 @@ export const deleteDeal = async (req, res, next) => {
 
         await deal.deleteOne();
 
-        return res.status(200).json({
+        res.status(200).json({
             message: "Deal deleted successfully!"
         })
+
+        // Log deletion
+        await logAction({
+            entityType: "Deal",
+            entityId: id,
+            action: "DELETE",
+            performedBy: userId,
+            details: { oldValues: deal },
+            req
+        });
+        return;
 
     } catch (error) {
         return res.status(500).json({
@@ -386,7 +465,7 @@ export const getDeals = async (req, res, next) => {
 
         //pagination
         const skip = (page - 1) * limit;
-        const deals = await Deal.find(filter).populate("ownerId", "firstName email").populate("companyId", "name industry").populate("contactId", "name email").sort(sort).skip(skip).limit(Number(limit));
+        const deals = await Deal.find(filter).populate("ownerId", "firstName email").populate("companyId", "name industry").populate("contactId", "firstName lastName email").sort(sort).skip(skip).limit(Number(limit));
 
         const total = await Deal.countDocuments(filter);
 

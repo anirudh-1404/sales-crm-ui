@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Building2, CheckCircle2, Eye, Plus, Edit2, Trash2 } from "lucide-react";
+import { Building2, CheckCircle2, Eye, XCircle, Plus, Edit2, Trash2, Search } from "lucide-react";
 import { getCompanies, createCompany, updateCompany, deleteCompany } from "../../../API/services/companyService";
 import CompanyModal from "../../components/modals/CompanyModal";
 import DeleteConfirmModal from "../../components/modals/DeleteConfirmModal";
@@ -89,47 +89,51 @@ export default function RepCompanies() {
     ];
 
     return (
-        <div className="p-6 space-y-6 max-w-screen-xl mx-auto">
-            <div className="flex justify-between items-end">
+        <div className="p-4 sm:p-6 space-y-6 max-w-screen-xl mx-auto">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-800">My Companies</h1>
-                    <p className="text-sm text-gray-400 mt-0.5">Manage the companies in your portfolio</p>
+                    <h1 className="text-xl sm:text-2xl font-bold text-gray-800">My Companies</h1>
+                    <p className="text-xs sm:text-sm text-gray-400 mt-0.5">Manage the companies in your portfolio</p>
                 </div>
                 <button
                     onClick={() => { setSelectedCompany(null); setIsCompanyModalOpen(true); }}
-                    className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-green-700 transition shadow-md shadow-green-100"
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-green-700 transition shadow-md shadow-green-100"
                 >
                     <Plus size={18} />
                     <span>New Company</span>
                 </button>
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {stats.map(s => (
-                    <div key={s.label} className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex items-start gap-4">
+                    <div key={s.label} className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 sm:p-5 flex items-start gap-4">
                         <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${s.color}`}>
                             <s.icon size={20} />
                         </div>
                         <div>
-                            <p className="text-2xl font-bold text-gray-800">{s.value}</p>
-                            <p className="text-sm text-gray-500">{s.label}</p>
+                            <p className="text-xl sm:text-2xl font-bold text-gray-800 leading-snug">{s.value}</p>
+                            <p className="text-xs sm:text-sm text-gray-500">{s.label}</p>
                         </div>
                     </div>
                 ))}
             </div>
 
             <Card>
-                <CardHeader title="My Companies">
-                    <input type="text" placeholder="Search company..."
-                        value={search} onChange={e => setSearch(e.target.value)}
-                        className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-green-400" />
-                </CardHeader>
+                <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+                    <h3 className="font-semibold text-gray-800 text-base">My Companies List</h3>
+                    <div className="relative">
+                        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                        <input type="text" placeholder="Search company..."
+                            value={search} onChange={e => setSearch(e.target.value)}
+                            className="w-full sm:w-64 text-sm border border-gray-200 rounded-lg pl-9 pr-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-green-400 bg-gray-50/50" />
+                    </div>
+                </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                         <thead>
                             <tr className="border-b border-gray-100 bg-gray-50">
                                 {["Company", "Industry", "Size", "Status", "Revenue Range", "Actions"].map(h => (
-                                    <th key={h} className="text-left px-4 py-3 text-gray-500 font-semibold text-xs uppercase tracking-wide">{h}</th>
+                                    <th key={h} className="text-left px-4 py-3 text-gray-500 font-semibold text-xs uppercase tracking-wide whitespace-nowrap">{h}</th>
                                 ))}
                             </tr>
                         </thead>
@@ -149,7 +153,7 @@ export default function RepCompanies() {
                                         </td>
                                         <td className="px-4 py-3 text-gray-600">{c.revenueRange || "—"}</td>
                                         <td className="px-4 py-3">
-                                            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <div className="flex items-center gap-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                                                 <button
                                                     onClick={() => { setSelectedCompany(c); setIsCompanyModalOpen(true); }}
                                                     className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition"

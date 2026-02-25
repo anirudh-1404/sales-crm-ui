@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Users, Building2, Linkedin, Phone, Plus, Edit2, Trash2 } from "lucide-react";
+import { Users, Building2, MapPin, Mail, Phone, ExternalLink, Plus, Edit2, Trash2, Search, Linkedin } from "lucide-react";
 import { getContacts, createContact, updateContact, deleteContact } from "../../../API/services/contactService";
 import { getCompanies } from "../../../API/services/companyService";
 import ContactModal from "../../components/modals/ContactModal";
@@ -100,47 +100,51 @@ export default function RepContacts() {
     ];
 
     return (
-        <div className="p-6 space-y-6 max-w-screen-xl mx-auto">
-            <div className="flex justify-between items-end">
+        <div className="p-4 sm:p-6 space-y-6 max-w-screen-xl mx-auto">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-800">My Contacts</h1>
-                    <p className="text-sm text-gray-400 mt-0.5">Manage your personal business network</p>
+                    <h1 className="text-xl sm:text-2xl font-bold text-gray-800">My Contacts</h1>
+                    <p className="text-xs sm:text-sm text-gray-400 mt-0.5">Manage your personal business network</p>
                 </div>
                 <button
                     onClick={() => { setSelectedContact(null); setIsContactModalOpen(true); }}
-                    className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-green-700 transition shadow-md shadow-green-100"
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-green-700 transition shadow-md shadow-green-100"
                 >
                     <Plus size={18} />
                     <span>New Contact</span>
                 </button>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 {stats.map(s => (
-                    <div key={s.label} className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex items-start gap-4">
+                    <div key={s.label} className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 sm:p-5 flex items-start gap-4">
                         <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${s.color}`}>
                             <s.icon size={20} />
                         </div>
                         <div>
-                            <p className="text-2xl font-bold text-gray-800">{s.value}</p>
-                            <p className="text-sm text-gray-500">{s.label}</p>
+                            <p className="text-xl sm:text-2xl font-bold text-gray-800 leading-snug">{s.value}</p>
+                            <p className="text-xs sm:text-sm text-gray-500">{s.label}</p>
                         </div>
                     </div>
                 ))}
             </div>
 
-            <Card>
-                <CardHeader title="My Contacts">
-                    <input type="text" placeholder="Search contact, company..."
-                        value={search} onChange={e => setSearch(e.target.value)}
-                        className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-green-400 w-52" />
-                </CardHeader>
-                <div className="overflow-x-auto">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+                    <h2 className="font-bold text-gray-800">My Contacts</h2>
+                    <div className="relative">
+                        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                        <input type="text" placeholder="Search contact, company..."
+                            value={search} onChange={e => setSearch(e.target.value)}
+                            className="w-full sm:w-64 text-sm border border-gray-200 rounded-lg pl-9 pr-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-green-400 bg-gray-50/50" />
+                    </div>
+                </div>
+                <div className="overflow-x-auto min-h-[300px]">
                     <table className="w-full text-sm">
                         <thead>
                             <tr className="border-b border-gray-100 bg-gray-50">
                                 {["Contact", "Job Title", "Company", "Phone", "LinkedIn", "Actions"].map(h => (
-                                    <th key={h} className="text-left px-4 py-3 text-gray-500 font-semibold text-xs uppercase tracking-wide">{h}</th>
+                                    <th key={h} className="text-left px-4 py-3 text-gray-500 font-semibold text-xs uppercase tracking-wide whitespace-nowrap">{h}</th>
                                 ))}
                             </tr>
                         </thead>
@@ -152,7 +156,7 @@ export default function RepContacts() {
                             ) : (
                                 contacts.map((c) => (
                                     <tr key={c._id} className="hover:bg-gray-50/50 transition-colors group">
-                                        <td className="px-4 py-3">
+                                        <td className="px-4 py-3 whitespace-nowrap">
                                             <div className="flex items-center gap-3">
                                                 <Avatar name={`${c.firstName} ${c.lastName}`} />
                                                 <div>
@@ -161,12 +165,12 @@ export default function RepContacts() {
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-4 py-3 text-gray-600">{c.jobTitle || "—"}</td>
-                                        <td className="px-4 py-3">
+                                        <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{c.jobTitle || "—"}</td>
+                                        <td className="px-4 py-3 whitespace-nowrap">
                                             <span className="text-xs px-2.5 py-1 rounded-full bg-green-50 text-green-700 font-medium">{c.companyId?.name || "—"}</span>
                                         </td>
-                                        <td className="px-4 py-3 text-gray-500 text-xs">{c.phone || c.mobile || "—"}</td>
-                                        <td className="px-4 py-3">
+                                        <td className="px-4 py-3 text-gray-500 text-xs whitespace-nowrap">{c.phone || c.mobile || "—"}</td>
+                                        <td className="px-4 py-3 whitespace-nowrap">
                                             {c.linkedin ? (
                                                 <a href={c.linkedin.startsWith('http') ? c.linkedin : `https://${c.linkedin}`} target="_blank" rel="noreferrer"
                                                     className="text-xs text-blue-600 hover:underline">View Profile</a>
@@ -174,8 +178,8 @@ export default function RepContacts() {
                                                 <span className="text-xs text-gray-400">—</span>
                                             )}
                                         </td>
-                                        <td className="px-4 py-3">
-                                            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <td className="px-4 py-3 whitespace-nowrap">
+                                            <div className="flex items-center gap-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                                                 <button
                                                     onClick={() => { setSelectedContact(c); setIsContactModalOpen(true); }}
                                                     className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition"
@@ -196,7 +200,7 @@ export default function RepContacts() {
                         </tbody>
                     </table>
                 </div>
-            </Card>
+            </div>
 
             <ContactModal
                 isOpen={isContactModalOpen}

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
     LayoutDashboard, Briefcase, Building2, Users, ContactRound,
-    Bell, Search, Menu, Moon, LayoutGrid, LogOut, ChevronDown
+    Bell, Search, Menu, LogOut, ChevronDown, History
 } from "lucide-react";
 import Logo from "./Logo";
 import { useAuth } from "../context/AuthContext";
@@ -10,8 +10,9 @@ import GlobalSearch from "./GlobalSearch";
 import LogoutConfirmModal from "./LogoutConfirmModal";
 
 
-const SidebarLink = ({ to, icon: IconComp, label, badge }) => (
+const SidebarLink = ({ to, icon: IconComp, label, badge, onClick }) => (
     <NavLink to={to}
+        onClick={onClick}
         className={({ isActive }) =>
             `flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 group
       ${isActive ? "bg-red-600 text-white shadow-md shadow-red-200" : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"}`
@@ -35,11 +36,25 @@ const SidebarLink = ({ to, icon: IconComp, label, badge }) => (
 const DashboardLayout = () => {
     const { logout, user } = useAuth();
     const navigate = useNavigate();
-    const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 1024);
     const [searchOpen, setSearchOpen] = useState(false);
     const [showLogout, setShowLogout] = useState(false);
 
     const initials = user ? `${user.firstName?.[0] || ""}${user.lastName?.[0] || ""}`.toUpperCase() : "A";
+
+    // Initial load: set sidebar based on screen width
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth >= 1024) setSidebarOpen(true);
+            else setSidebarOpen(false);
+        };
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    const closeSidebarOnMobile = () => {
+        if (window.innerWidth < 1024) setSidebarOpen(false);
+    };
 
     // Ctrl+K / Cmd+K to open search
     useEffect(() => {
@@ -54,10 +69,22 @@ const DashboardLayout = () => {
     }, []);
 
     return (
-        <div className="flex h-screen bg-gray-50 font-sans overflow-hidden">
+        <div className="flex h-screen bg-gray-50 font-sans overflow-hidden relative">
+
+            {/* Mobile Sidebar Overlay */}
+            {sidebarOpen && (
+                <div
+                    className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm transition-opacity duration-300"
+                    onClick={() => setSidebarOpen(false)}
+                />
+            )}
 
             {/* Sidebar */}
-            <aside className={`${sidebarOpen ? "w-64" : "w-0 overflow-hidden"} flex-shrink-0 bg-white border-r border-gray-200 flex flex-col transition-all duration-300 ease-in-out`}>
+            <aside className={`
+                fixed inset-y-0 left-0 z-50 lg:relative
+                ${sidebarOpen ? "w-64 translate-x-0" : "w-64 -translate-x-full lg:w-0 lg:overflow-hidden"}
+                bg-white border-r border-gray-200 flex flex-col transition-all duration-300 ease-in-out shadow-2xl lg:shadow-none
+            `}>
 
                 {/* Brand */}
                 <div className="h-16 flex items-center px-5 border-b border-gray-100">
@@ -65,10 +92,10 @@ const DashboardLayout = () => {
                 </div>
 
                 {/* Role badge */}
-                <div className="px-4 pt-4 pb-2">
-                    <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-                        <span className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0" />
-                        <span className="text-xs font-semibold text-red-700">Administrator</span>
+                <div className="px-4 py-3 border-b border-gray-50 bg-gray-50/30">
+                    <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-lg px-3 py-1.5 transition-all">
+                        <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                        <span className="text-[10px] font-bold text-red-700 uppercase tracking-wider">Administrator</span>
                     </div>
                 </div>
 
@@ -76,16 +103,22 @@ const DashboardLayout = () => {
                     <div>
                         <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest px-2 mb-2">Main Menu</p>
                         <div className="space-y-1">
-                            <SidebarLink to="/dashboard/deals" icon={LayoutDashboard} label="Dashboard" />
+                            <SidebarLink to="/dashboard/deals" icon={LayoutDashboard} label="Dashboard" onClick={closeSidebarOnMobile} />
                         </div>
                     </div>
                     <div>
                         <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest px-2 mb-2">CRM</p>
                         <div className="space-y-1">
-                            <SidebarLink to="/dashboard/deals" icon={Briefcase} label="Deals" />
-                            <SidebarLink to="/dashboard/companies" icon={Building2} label="Companies" />
-                            <SidebarLink to="/dashboard/contacts" icon={ContactRound} label="Contacts" />
-                            <SidebarLink to="/dashboard/users" icon={Users} label="Users" />
+                            <SidebarLink to="/dashboard/deals" icon={Briefcase} label="Deals" onClick={closeSidebarOnMobile} />
+                            <SidebarLink to="/dashboard/companies" icon={Building2} label="Companies" onClick={closeSidebarOnMobile} />
+                            <SidebarLink to="/dashboard/contacts" icon={ContactRound} label="Contacts" onClick={closeSidebarOnMobile} />
+                            <SidebarLink to="/dashboard/users" icon={Users} label="Users" onClick={closeSidebarOnMobile} />
+                        </div>
+                    </div>
+                    <div>
+                        <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest px-2 mb-2">Technical</p>
+                        <div className="space-y-1">
+                            <SidebarLink to="/dashboard/audit-logs" icon={History} label="Audit History" onClick={closeSidebarOnMobile} />
                         </div>
                     </div>
                 </nav>
@@ -104,43 +137,44 @@ const DashboardLayout = () => {
 
             {/* Main */}
             <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-                <header className="h-16 bg-white border-b border-gray-200 flex items-center px-5 gap-4 flex-shrink-0">
-                    <button onClick={() => setSidebarOpen(p => !p)} className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 transition">
+                <header className="h-16 bg-white border-b border-gray-200 flex items-center px-4 sm:px-6 gap-3 sm:gap-4 flex-shrink-0">
+                    <button onClick={() => setSidebarOpen(p => !p)} className="p-2 -ml-2 rounded-lg hover:bg-gray-100 text-gray-500 transition lg:hidden">
+                        <Menu size={20} />
+                    </button>
+                    <button onClick={() => setSidebarOpen(p => !p)} className="p-2 -ml-2 rounded-lg hover:bg-gray-100 text-gray-500 transition hidden lg:block">
                         <Menu size={18} />
                     </button>
                     {/* Search trigger */}
                     <button
                         onClick={() => setSearchOpen(true)}
-                        className="flex items-center gap-2 flex-1 max-w-xs pl-3 pr-4 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg text-gray-400 hover:border-red-300 hover:bg-red-50/30 transition text-left"
+                        className="flex items-center gap-2 flex-1 max-w-[160px] sm:max-w-xs pl-3 pr-4 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg text-gray-400 hover:border-red-300 hover:bg-red-50/30 transition text-left group"
                     >
-                        <Search size={15} />
-                        <span className="flex-1">Search...</span>
-                        <kbd className="hidden sm:block text-[10px] bg-gray-200 text-gray-500 px-1.5 py-0.5 rounded font-mono">Ctrl K</kbd>
+                        <Search size={15} className="group-hover:text-red-500 transition-colors" />
+                        <span className="flex-1 truncate">Search...</span>
+                        <kbd className="hidden lg:block text-[10px] bg-gray-200 text-gray-500 px-1.5 py-0.5 rounded font-mono">Ctrl K</kbd>
                     </button>
                     <div className="flex-1" />
                     <div className="flex items-center gap-1">
-                        <button className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 transition"><LayoutGrid size={18} /></button>
-                        <button className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 transition"><Moon size={18} /></button>
                         <button className="relative p-2 rounded-lg hover:bg-gray-100 text-gray-500 transition">
                             <Bell size={18} />
                             <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
                         </button>
                     </div>
-                    <div className="flex items-center gap-3 pl-3 border-l border-gray-200">
-                        <div className="relative">
-                            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-red-500 to-orange-400 flex items-center justify-center text-white font-bold text-sm shadow">{initials}</div>
-                            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-400 border-2 border-white rounded-full" />
+                    <div className="flex items-center gap-2 sm:gap-3 sm:pl-3 sm:border-l border-gray-100">
+                        <div className="relative flex-shrink-0">
+                            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br from-red-500 to-orange-400 flex items-center justify-center text-white font-bold text-xs sm:text-sm shadow-sm">{initials}</div>
+                            <span className="absolute bottom-0 right-0 w-2 h-2 sm:w-2.5 sm:h-2.5 bg-green-500 border-2 border-white rounded-full" />
                         </div>
-                        <div className="hidden sm:block">
-                            <p className="text-sm font-semibold text-gray-800 leading-none">{user ? `${user.firstName} ${user.lastName}` : "Admin"}</p>
-                            <p className="text-xs text-gray-400 mt-0.5">{user?.email || "Administrator"}</p>
+                        <div className="hidden sm:block truncate max-w-[100px] lg:max-w-[150px]">
+                            <p className="text-sm font-bold text-gray-800 leading-none truncate">{user ? `${user.firstName} ${user.lastName}` : "Admin"}</p>
+                            <p className="text-[10px] text-gray-400 mt-1 truncate lowercase">{user?.role?.replace("_", " ") || "Administrator"}</p>
                         </div>
                     </div>
                 </header>
 
                 <main className="flex-1 overflow-y-auto"><Outlet /></main>
 
-                <footer className="h-10 bg-white border-t border-gray-100 flex items-center justify-between px-6 text-xs text-gray-400 flex-shrink-0">
+                <footer className="h-auto py-4 sm:h-10 sm:py-0 bg-white border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between px-6 text-[10px] sm:text-xs text-gray-400 flex-shrink-0 gap-2 sm:gap-0">
                     <span>Copyright &copy; <span className="text-red-500 font-medium">mbdConsulting</span></span>
                     <div className="flex gap-4">
                         <span className="hover:text-gray-600 cursor-pointer">About</span>

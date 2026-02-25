@@ -5,12 +5,12 @@ const STAGES = ["Lead", "Qualified", "Proposal", "Negotiation", "Closed Won", "C
 const CURRENCIES = [{ value: "INR", label: "INR (₹)" }, { value: "USD", label: "USD ($)" }, { value: "EUR", label: "EUR (€)" }];
 const SOURCE_OPTIONS = ["Inbound", "Outbound", "Referral", "Website", "Cold Call", "Event", "Partner", "Other"];
 
-export default function DealModal({ isOpen, onClose, deal, onSave, companies, contacts, freeText = false }) {
+export default function DealModal({ isOpen, onClose, deal, onSave, companies, contacts, freeText = false, userRole, potentialOwners = [] }) {
     const emptyForm = {
         name: "", companyId: "", contactId: "",
         companyName: "", contactName: "",
-        value: "", currency: "INR", stage: "Lead",
-        expectedCloseDate: "", probability: 10, source: "", notes: ""
+        value: "", currency: "USD", stage: "Lead",
+        expectedCloseDate: "", probability: 10, source: "", notes: "", ownerId: ""
     };
 
     const [formData, setFormData] = useState(emptyForm);
@@ -26,13 +26,14 @@ export default function DealModal({ isOpen, onClose, deal, onSave, companies, co
                 companyName: deal.companyName || deal.companyId?.name || "",
                 contactName: deal.contactName || (deal.contactId ? `${deal.contactId.firstName || ""} ${deal.contactId.lastName || ""}`.trim() : ""),
                 value: deal.value || "",
-                currency: deal.currency || "INR",
+                currency: deal.currency || "USD",
                 stage: deal.stage || "Lead",
                 expectedCloseDate: deal.expectedCloseDate
                     ? new Date(deal.expectedCloseDate).toISOString().split("T")[0] : "",
                 probability: deal.probability || 10,
                 source: deal.source || "",
-                notes: deal.notes || ""
+                notes: deal.notes || "",
+                ownerId: deal.ownerId?._id || deal.ownerId || ""
             });
         } else {
             setFormData(emptyForm);
@@ -48,13 +49,9 @@ export default function DealModal({ isOpen, onClose, deal, onSave, companies, co
     const validate = () => {
         const errs = {};
         if (!formData.name.trim()) errs.name = "Deal name is required";
-        if (freeText) {
-            if (!formData.companyName.trim()) errs.companyName = "Company name is required";
-            if (!formData.contactName.trim()) errs.contactName = "Contact name is required";
-        } else {
-            if (!formData.companyId) errs.companyId = "Please select a company";
-            if (!formData.contactId) errs.contactId = "Please select a contact";
-        }
+        if (!formData.companyName.trim()) errs.companyName = "Company name is required";
+        if (!formData.contactName.trim()) errs.contactName = "Contact name is required";
+
         if (!formData.value || Number(formData.value) <= 0) errs.value = "Enter a valid deal value greater than 0";
         if (!formData.expectedCloseDate) errs.expectedCloseDate = "Expected close date is required";
         if (formData.probability < 0 || formData.probability > 100) errs.probability = "Probability must be between 0 and 100";
@@ -95,58 +92,31 @@ export default function DealModal({ isOpen, onClose, deal, onSave, companies, co
                 </div>
 
                 {/* Company + Contact */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1">
-                        <label className="text-xs font-semibold text-gray-500 uppercase">Company *</label>
-                        {freeText ? (
-                            <input type="text" className={inputClass("companyName")}
-                                value={formData.companyName}
-                                onChange={e => set("companyName", e.target.value)}
-                                placeholder="e.g. Acme Corp" />
-                        ) : (
-                            <select className={inputClass("companyId") + " bg-white"}
-                                value={formData.companyId}
-                                onChange={e => { set("companyId", e.target.value); setFormData(prev => ({ ...prev, contactId: "" })); }}>
-                                <option value="">Select Company</option>
-                                {companies?.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
-                            </select>
-                        )}
+                        <label className="text-xs font-semibold text-gray-500 uppercase">Company Name *</label>
+                        <input type="text" className={inputClass("companyName")}
+                            value={formData.companyName}
+                            onChange={e => set("companyName", e.target.value)}
+                            placeholder="e.g. Acme Corp" />
                         {errors.companyName && <p className="text-red-500 text-xs">{errors.companyName}</p>}
-                        {errors.companyId && <p className="text-red-500 text-xs">{errors.companyId}</p>}
                     </div>
                     <div className="space-y-1">
-                        <label className="text-xs font-semibold text-gray-500 uppercase">Contact *</label>
-                        {freeText ? (
-                            <input type="text" className={inputClass("contactName")}
-                                value={formData.contactName}
-                                onChange={e => set("contactName", e.target.value)}
-                                placeholder="e.g. Jane Smith" />
-                        ) : (
-                            <select className={inputClass("contactId") + " bg-white"}
-                                value={formData.contactId}
-                                onChange={e => set("contactId", e.target.value)}
-                                disabled={!formData.companyId}>
-                                <option value="">Select Contact</option>
-                                {(formData.companyId
-                                    ? contacts?.filter(c => (c.companyId?._id || c.companyId) === formData.companyId)
-                                    : contacts
-                                )?.map(c => (
-                                    <option key={c._id} value={c._id}>{c.firstName} {c.lastName}</option>
-                                ))}
-                            </select>
-                        )}
-                        {!freeText && !formData.companyId && <p className="text-[10px] text-gray-400 italic">Select company first</p>}
+                        <label className="text-xs font-semibold text-gray-500 uppercase">Contact Name *</label>
+                        <input type="text" className={inputClass("contactName")}
+                            value={formData.contactName}
+                            onChange={e => set("contactName", e.target.value)}
+                            placeholder="e.g. Jane Smith" />
                         {errors.contactName && <p className="text-red-500 text-xs">{errors.contactName}</p>}
-                        {errors.contactId && <p className="text-red-500 text-xs">{errors.contactId}</p>}
                     </div>
                 </div>
 
                 {/* Value + Currency */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1">
                         <label className="text-xs font-semibold text-gray-500 uppercase">Value *</label>
                         <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">₹</span>
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
                             <input type="number" min="1"
                                 className={`w-full pl-7 pr-3 py-2 text-sm border rounded-lg focus:ring-2 transition ${errors.value ? "border-red-400 focus:ring-red-200 bg-red-50" : "border-gray-200 focus:ring-green-400"}`}
                                 value={formData.value}
@@ -164,7 +134,7 @@ export default function DealModal({ isOpen, onClose, deal, onSave, companies, co
                 </div>
 
                 {/* Stage + Expected Close */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1">
                         <label className="text-xs font-semibold text-gray-500 uppercase">Pipeline Stage *</label>
                         <select className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-400 bg-white"
@@ -182,7 +152,7 @@ export default function DealModal({ isOpen, onClose, deal, onSave, companies, co
                 </div>
 
                 {/* Probability + Source */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1">
                         <label className="text-xs font-semibold text-gray-500 uppercase">Probability (%)</label>
                         <input type="number" min="0" max="100"
@@ -208,6 +178,24 @@ export default function DealModal({ isOpen, onClose, deal, onSave, companies, co
                         value={formData.notes} onChange={e => set("notes", e.target.value)}
                         placeholder="Next steps, requirements..." />
                 </div>
+
+                {/* Owner field - visible to Admin/Manager */}
+                {(userRole === "admin" || userRole === "sales_manager") && (
+                    <div className="space-y-1 pt-2 border-t border-gray-100 mt-4">
+                        <label className="text-xs font-semibold text-gray-500 uppercase">Deal Owner</label>
+                        <select
+                            className={inputClass("ownerId") + " bg-slate-50 border-slate-200"}
+                            value={formData.ownerId}
+                            onChange={e => set("ownerId", e.target.value)}
+                        >
+                            <option value="">Select Owner</option>
+                            {potentialOwners.map(u => (
+                                <option key={u._id} value={u._id}>{u.firstName} {u.lastName} ({u.role.replace(/_/g, " ")})</option>
+                            ))}
+                        </select>
+                        <p className="text-[10px] text-gray-400 italic">Only Admins and Managers can reassign records.</p>
+                    </div>
+                )}
 
                 <div className="flex gap-3 pt-2">
                     <button type="button" onClick={onClose}

@@ -24,7 +24,11 @@ const contactSchema = new mongoose.Schema({
     companyId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Company",
-        required: true
+        required: false
+    },
+    companyName: {
+        type: String,
+        trim: true
     },
     ownerId: {
         type: mongoose.Schema.Types.ObjectId,

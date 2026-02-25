@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import Modal from "./Modal";
 
-export default function ContactModal({ isOpen, onClose, contact, onSave, companies }) {
+export default function ContactModal({ isOpen, onClose, contact, onSave, companies, userRole, potentialOwners = [] }) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const phoneRegex = /^[+\d\s\-()]{7,15}$/;
 
     const [formData, setFormData] = useState({
         firstName: "", lastName: "", email: "", jobTitle: "",
-        companyId: "", phone: "", mobile: "", linkedin: "", notes: ""
+        companyId: "", companyName: "", phone: "", mobile: "", linkedin: "", notes: "", ownerId: ""
     });
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
@@ -20,13 +20,15 @@ export default function ContactModal({ isOpen, onClose, contact, onSave, compani
                 email: contact.email || "",
                 jobTitle: contact.jobTitle || "",
                 companyId: contact.companyId?._id || contact.companyId || "",
+                companyName: contact.companyName || contact.companyId?.name || "",
                 phone: contact.phone || "",
                 mobile: contact.mobile || "",
                 linkedin: contact.linkedin || "",
-                notes: contact.notes || ""
+                notes: contact.notes || "",
+                ownerId: contact.ownerId?._id || contact.ownerId || ""
             });
         } else {
-            setFormData({ firstName: "", lastName: "", email: "", jobTitle: "", companyId: "", phone: "", mobile: "", linkedin: "", notes: "" });
+            setFormData({ firstName: "", lastName: "", email: "", jobTitle: "", companyId: "", companyName: "", phone: "", mobile: "", linkedin: "", notes: "", ownerId: "" });
         }
         setErrors({});
     }, [contact, isOpen]);
@@ -44,7 +46,7 @@ export default function ContactModal({ isOpen, onClose, contact, onSave, compani
         else if (formData.lastName.trim().length < 2) errs.lastName = "Last name must be at least 2 characters";
         if (!formData.email.trim()) errs.email = "Email is required";
         else if (!emailRegex.test(formData.email.trim())) errs.email = "Enter a valid email address";
-        if (!formData.companyId) errs.companyId = "Please select a company";
+        if (!formData.companyName.trim()) errs.companyName = "Company name is required";
         if (formData.phone && !phoneRegex.test(formData.phone)) errs.phone = "Enter a valid phone number";
         if (formData.mobile && !phoneRegex.test(formData.mobile)) errs.mobile = "Enter a valid mobile number";
         if (formData.linkedin && !formData.linkedin.includes("linkedin.com")) errs.linkedin = "Enter a valid LinkedIn URL";
@@ -76,7 +78,7 @@ export default function ContactModal({ isOpen, onClose, contact, onSave, compani
         <Modal isOpen={isOpen} onClose={onClose} title={contact ? "Edit Contact" : "Create New Contact"}>
             <form onSubmit={handleSubmit} noValidate className="space-y-4">
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1">
                         <label className="text-xs font-semibold text-gray-500 uppercase">First Name *</label>
                         <input type="text" className={inputClass("firstName")} value={formData.firstName}
@@ -98,24 +100,23 @@ export default function ContactModal({ isOpen, onClose, contact, onSave, compani
                     {errors.email && <p className="text-red-500 text-xs">{errors.email}</p>}
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1">
                         <label className="text-xs font-semibold text-gray-500 uppercase">Job Title</label>
                         <input type="text" className={inputClass("jobTitle")} value={formData.jobTitle}
                             onChange={e => set("jobTitle", e.target.value)} placeholder="Sales Director" />
                     </div>
                     <div className="space-y-1">
-                        <label className="text-xs font-semibold text-gray-500 uppercase">Company *</label>
-                        <select className={inputClass("companyId") + " bg-white"} value={formData.companyId}
-                            onChange={e => set("companyId", e.target.value)}>
-                            <option value="">Select Company</option>
-                            {companies?.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
-                        </select>
-                        {errors.companyId && <p className="text-red-500 text-xs">{errors.companyId}</p>}
+                        <label className="text-xs font-semibold text-gray-500 uppercase">Company Name *</label>
+                        <input type="text" className={inputClass("companyName")}
+                            value={formData.companyName}
+                            onChange={e => set("companyName", e.target.value)}
+                            placeholder="e.g. Acme Corp" />
+                        {errors.companyName && <p className="text-red-500 text-xs">{errors.companyName}</p>}
                     </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1">
                         <label className="text-xs font-semibold text-gray-500 uppercase">Phone</label>
                         <input type="text" className={inputClass("phone")} value={formData.phone}
@@ -143,6 +144,24 @@ export default function ContactModal({ isOpen, onClose, contact, onSave, compani
                         value={formData.notes} onChange={e => set("notes", e.target.value)}
                         placeholder="Additional details..." />
                 </div>
+
+                {/* Owner field - visible to Admin/Manager */}
+                {(userRole === "admin" || userRole === "sales_manager") && (
+                    <div className="space-y-1 pt-2 border-t border-gray-100 mt-4">
+                        <label className="text-xs font-semibold text-gray-500 uppercase">Contact Owner</label>
+                        <select
+                            className={inputClass("ownerId") + " bg-slate-50 border-slate-200"}
+                            value={formData.ownerId}
+                            onChange={e => set("ownerId", e.target.value)}
+                        >
+                            <option value="">Select Owner</option>
+                            {potentialOwners.map(u => (
+                                <option key={u._id} value={u._id}>{u.firstName} {u.lastName} ({u.role.replace(/_/g, " ")})</option>
+                            ))}
+                        </select>
+                        <p className="text-[10px] text-gray-400 italic">Only Admins and Managers can reassign records.</p>
+                    </div>
+                )}
 
                 <div className="flex gap-3 pt-2">
                     <button type="button" onClick={onClose}

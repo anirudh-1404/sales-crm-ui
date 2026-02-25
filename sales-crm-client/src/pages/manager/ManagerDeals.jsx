@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Briefcase, Zap, CheckCircle2, XCircle, ChevronDown, Plus, Edit2, Trash2 } from "lucide-react";
+import { Briefcase, Zap, CheckCircle2, XCircle, ChevronDown, Plus, Edit2, Trash2, Building2, Users2, ContactRound } from "lucide-react";
 import { getDeals, createDeal, updateDeal, deleteDeal, updateDealStage } from "../../../API/services/dealService";
 import { getCompanies } from "../../../API/services/companyService";
 import { getContacts } from "../../../API/services/contactService";
@@ -20,10 +20,16 @@ const Select = ({ options, value, onChange }) => (
 const Card = ({ children, className = "" }) => (
     <div className={`bg-white rounded-xl border border-gray-100 shadow-sm ${className}`}>{children}</div>
 );
-const CardHeader = ({ title, children }) => (
-    <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-        <h3 className="font-semibold text-gray-800 text-base">{title}</h3>
-        <div className="flex items-center gap-2">{children}</div>
+
+const StatCard = ({ label, value, color, icon: IconComp }) => (
+    <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 sm:p-5 flex items-start gap-4">
+        <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${color}`}>
+            <IconComp size={20} />
+        </div>
+        <div>
+            <p className="text-xl sm:text-2xl font-bold text-gray-800 leading-snug">{value}</p>
+            <p className="text-xs sm:text-sm text-gray-500">{label}</p>
+        </div>
     </div>
 );
 
@@ -33,6 +39,7 @@ const stageBadge = {
     "Closed Won": "bg-green-100 text-green-700", "Closed Lost": "bg-red-100 text-red-700",
 };
 
+const getStageStyles = (stage) => stageBadge[stage] || "bg-gray-100 text-gray-700";
 const stageOptions = ["All Stages", "Lead", "Qualified", "Proposal", "Negotiation", "Closed Won", "Closed Lost"];
 const periodOptions = ["Last 30 Days", "Last 7 Days", "Last 90 Days", "This Year"];
 const STAGES = ["Lead", "Qualified", "Proposal", "Negotiation", "Closed Won", "Closed Lost"];
@@ -43,11 +50,9 @@ export default function ManagerDeals() {
     const [contacts, setContacts] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    // Filters
     const [stageFilter, setStageFilter] = useState("All Stages");
     const [period, setPeriod] = useState("Last 30 Days");
 
-    // Modal states
     const [isDealModalOpen, setIsDealModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedDeal, setSelectedDeal] = useState(null);
@@ -119,83 +124,77 @@ export default function ManagerDeals() {
         }
     };
 
-    const activeDealsCount = deals.filter(d => !d.stage.startsWith("Closed")).length;
-    const wonDealsCount = deals.filter(d => d.stage === "Closed Won").length;
-    const pipelineValue = deals.reduce((acc, curr) => acc + (curr.value || 0), 0);
-
     return (
-        <div className="p-6 space-y-6 max-w-screen-xl mx-auto">
-            <div className="flex justify-between items-end">
+        <div className="p-4 sm:p-6 space-y-6 max-w-screen-xl mx-auto">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-800">Team Deals</h1>
-                    <p className="text-sm text-gray-400 mt-0.5">Overview of all deals owned by you and your team</p>
+                    <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Team Deals</h1>
+                    <p className="text-xs sm:text-sm text-gray-400 mt-0.5">Overview of all deals owned by you and your team</p>
                 </div>
                 <button
                     onClick={() => { setSelectedDeal(null); setIsDealModalOpen(true); }}
-                    className="flex items-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-purple-700 transition shadow-md shadow-purple-100"
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-purple-700 transition shadow-md shadow-purple-100"
                 >
                     <Plus size={18} />
                     <span>Create Deal</span>
                 </button>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                {[
-                    { label: "Total Team Deals", value: String(deals.length), color: "bg-purple-50 text-purple-600", icon: Briefcase },
-                    { label: "Active Deals", value: String(activeDealsCount), color: "bg-blue-50 text-blue-600", icon: Zap },
-                    { label: "Closed Won", value: String(wonDealsCount), color: "bg-green-50 text-green-600", icon: CheckCircle2 },
-                    { label: "Pipeline Value", value: `₹${(pipelineValue / 100000).toFixed(2)}L`, color: "bg-red-50 text-red-500", icon: XCircle },
-                ].map(s => (
-                    <div key={s.label} className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex items-start gap-4">
-                        <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${s.color}`}>
-                            <s.icon size={20} />
-                        </div>
-                        <div>
-                            <p className="text-xl font-bold text-gray-800 leading-snug">{s.value}</p>
-                            <p className="text-sm text-gray-500">{s.label}</p>
-                        </div>
-                    </div>
-                ))}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <StatCard icon={Briefcase} label="Team Deals" value={deals.length} color="bg-purple-50 text-purple-600" />
+                <StatCard icon={Zap} label="Active Deals" value={deals.filter(d => !d.stage.startsWith("Closed")).length} color="bg-blue-50 text-blue-600" />
+                <StatCard icon={CheckCircle2} label="Closed Won" value={deals.filter(d => d.stage === "Closed Won").length} color="bg-green-50 text-green-600" />
+                <StatCard icon={Building2} label="Total Value" value={`$${deals.reduce((sum, d) => sum + (d.value || 0), 0).toLocaleString()}`} color="bg-orange-50 text-orange-600" />
             </div>
 
-            <Card>
-                <CardHeader title="All Team Deals">
-                    <Select options={stageOptions} value={stageFilter} onChange={setStageFilter} />
-                    <Select options={periodOptions} value={period} onChange={setPeriod} />
-                </CardHeader>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+                    <h2 className="font-bold text-gray-800">All Team Deals</h2>
+                    <div className="flex flex-wrap items-stretch sm:items-center gap-2">
+                        <div className="flex-1 sm:flex-none">
+                            <Select options={stageOptions} value={stageFilter} onChange={setStageFilter} />
+                        </div>
+                        <div className="flex-1 sm:flex-none">
+                            <Select options={periodOptions} value={period} onChange={setPeriod} />
+                        </div>
+                    </div>
+                </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                         <thead>
                             <tr className="border-b border-gray-100 bg-gray-50">
-                                {["Deal Name", "Owned By", "Company", "Stage", "Value", "Close Date", "Actions"].map(h => (
-                                    <th key={h} className="text-left px-4 py-3 text-gray-500 font-semibold text-xs uppercase tracking-wide">{h}</th>
+                                {["Deal Name", "Owned By", "Company", "Contact", "Stage", "Value", "Expected Close", "Actions"].map(h => (
+                                    <th key={h} className="text-left px-4 py-3 text-gray-500 font-semibold text-xs uppercase tracking-wide whitespace-nowrap">{h}</th>
                                 ))}
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50">
                             {loading && deals.length === 0 ? (
-                                <tr><td colSpan={7} className="text-center py-10 text-gray-400">Loading team deals...</td></tr>
+                                <tr><td colSpan={8} className="text-center py-10 text-gray-400">Loading team deals...</td></tr>
                             ) : deals.length === 0 ? (
-                                <tr><td colSpan={7} className="text-center py-10 text-gray-400">No deals found for your team.</td></tr>
+                                <tr><td colSpan={8} className="text-center py-10 text-gray-400">No deals found for your team.</td></tr>
                             ) : (
                                 deals.map((d) => (
                                     <tr key={d._id} className="hover:bg-gray-50/50 transition-colors group">
-                                        <td className="px-4 py-3 font-medium text-gray-800">{d.name}</td>
-                                        <td className="px-4 py-3 text-purple-700 font-medium">{d.ownerId?.firstName || "Unknown"}</td>
-                                        <td className="px-4 py-3 text-gray-500">{d.companyId?.name || "—"}</td>
+                                        <td className="px-4 py-3 font-medium text-gray-800 whitespace-nowrap">{d.name}</td>
+                                        <td className="px-4 py-3 text-purple-700 font-medium whitespace-nowrap">{d.ownerId?.firstName || "Unknown"}</td>
+                                        <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{d.companyId?.name || d.companyName || "—"}</td>
+                                        <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{d.contactId ? `${d.contactId.firstName} ${d.contactId.lastName}`.trim() : (d.contactName || "—")}</td>
                                         <td className="px-4 py-3">
                                             <select
                                                 value={d.stage}
                                                 onChange={e => handleMoveStage(d._id, e.target.value)}
-                                                className={`text-[11px] px-2 py-1 rounded-full font-bold border-none cursor-pointer focus:ring-0 ${stageBadge[d.stage]}`}
+                                                className={`text-[11px] px-2 py-1 rounded-full font-bold border-none cursor-pointer focus:ring-0 whitespace-nowrap ${getStageStyles(d.stage)}`}
                                             >
                                                 {STAGES.map(s => <option key={s} value={s}>{s}</option>)}
                                             </select>
                                         </td>
-                                        <td className="px-4 py-3 font-semibold text-gray-800">₹{d.value?.toLocaleString()}</td>
-                                        <td className="px-4 py-3 text-gray-500 text-xs">{d.expectedCloseDate ? new Date(d.expectedCloseDate).toLocaleDateString() : "—"}</td>
-                                        <td className="px-4 py-3">
-                                            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <td className="px-4 py-3 font-semibold text-gray-800 whitespace-nowrap">
+                                            ${d.value?.toLocaleString()}
+                                        </td>
+                                        <td className="px-4 py-3 text-gray-500 text-xs whitespace-nowrap">{d.expectedCloseDate ? new Date(d.expectedCloseDate).toLocaleDateString() : "—"}</td>
+                                        <td className="px-4 py-3 whitespace-nowrap">
+                                            <div className="flex items-center gap-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                                                 <button
                                                     onClick={() => { setSelectedDeal(d); setIsDealModalOpen(true); }}
                                                     className="p-1.5 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition"
@@ -216,7 +215,7 @@ export default function ManagerDeals() {
                         </tbody>
                     </table>
                 </div>
-            </Card>
+            </div>
 
             <DealModal
                 isOpen={isDealModalOpen}

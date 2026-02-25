@@ -1,5 +1,6 @@
 import { Company } from "../models/companySchema.js";
 import User from "../models/userSchema.js";
+import { logAction } from "../utils/auditLogger.js";
 
 export const createCompany = async (req, res) => {
     try {
@@ -15,6 +16,8 @@ export const createCompany = async (req, res) => {
             revenueRange,
             notes
         } = req.body;
+
+        const { role } = req.user;
 
         if (!name) {
             return res.status(400).json({
@@ -33,13 +36,24 @@ export const createCompany = async (req, res) => {
             phone,
             revenueRange,
             notes,
-            ownerId: req.user.id
+            ownerId: (role === "admin" || role === "sales_manager") && req.body.ownerId ? req.body.ownerId : req.user.id
         });
 
-        return res.status(201).json({
+        res.status(201).json({
             message: "Company created successfully!",
             data: company
         });
+
+        // Log company creation
+        await logAction({
+            entityType: "Company",
+            entityId: company._id,
+            action: "CREATE",
+            performedBy: req.user.id,
+            details: { newValues: company },
+            req
+        });
+        return;
 
     } catch (error) {
         return res.status(500).json({
@@ -136,17 +150,22 @@ export const updateCompany = async (req, res) => {
             }
         }
 
+        if (req.body.ownerId !== undefined && req.body.ownerId !== company.ownerId.toString()) {
+            if (role === "sales_rep") {
+                return res.status(403).json({ message: "Sales representatives cannot reassign companies!" });
+            }
+            if (role === "sales_manager") {
+                const teamUsers = await User.find({ $or: [{ _id: userId }, { managerId: userId }] }).select("_id");
+                const teamIds = teamUsers.map(u => u._id.toString());
+                if (!teamIds.includes(req.body.ownerId.toString())) {
+                    return res.status(403).json({ message: "You can only reassign companies within your team!" });
+                }
+            }
+        }
+
         const fields = [
-            "name",
-            "industry",
-            "size",
-            "website",
-            "primaryContact",
-            "status",
-            "address",
-            "phone",
-            "revenueRange",
-            "notes"
+            "name", "industry", "size", "website", "primaryContact",
+            "status", "address", "phone", "revenueRange", "notes", "ownerId"
         ];
 
         fields.forEach(field => {
@@ -157,10 +176,21 @@ export const updateCompany = async (req, res) => {
 
         await company.save();
 
-        return res.json({
+        res.json({
             message: "Company updated successfully!",
             data: company
         });
+
+        // Log company update
+        await logAction({
+            entityType: "Company",
+            entityId: id,
+            action: "UPDATE",
+            performedBy: userId,
+            details: { newValues: req.body },
+            req
+        });
+        return;
 
     } catch (error) {
         return res.status(500).json({
@@ -209,9 +239,20 @@ export const deleteCompany = async (req, res) => {
 
         await company.deleteOne();
 
-        return res.json({
+        res.json({
             message: "Company deleted successfully!"
         });
+
+        // Log company deletion
+        await logAction({
+            entityType: "Company",
+            entityId: id,
+            action: "DELETE",
+            performedBy: userId,
+            details: { oldValues: company },
+            req
+        });
+        return;
 
     } catch (error) {
         return res.status(500).json({
@@ -257,10 +298,27 @@ export const changeOwnership = async (req, res) => {
         company.ownerId = newOwnerId;
         await company.save();
 
-        return res.json({
+        const newOwner = await User.findById(newOwnerId);
+
+        res.json({
             message: "Ownership changed successfully!",
             data: company
         });
+
+        // Log ownership change
+        await logAction({
+            entityType: "Company",
+            entityId: id,
+            action: "REASSIGN",
+            performedBy: userId,
+            details: {
+                message: `Company ownership changed to ${newOwner ? `${newOwner.firstName} ${newOwner.lastName}` : newOwnerId}`,
+                newOwnerId,
+                reassignedToName: newOwner ? `${newOwner.firstName} ${newOwner.lastName}` : null
+            },
+            req
+        });
+        return;
 
     } catch (error) {
         return res.status(500).json({

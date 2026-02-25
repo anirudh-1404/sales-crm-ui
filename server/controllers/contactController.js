@@ -1,45 +1,48 @@
 import { Company } from "../models/companySchema.js";
 import { Contact } from "../models/contactSchema.js";
 import User from "../models/userSchema.js";
+import { logAction } from "../utils/auditLogger.js";
 
 export const createContact = async (req, res, next) => {
     try {
-        const { firstName, lastName, email, jobTitle, companyId, phone, mobile, linkedin, notes } = req.body
+        const { firstName, lastName, email, jobTitle, companyId, companyName, phone, mobile, linkedin, notes } = req.body
         const { id, role } = req.user;
 
-        if (!firstName || !lastName || !email || !jobTitle || !companyId) {
+        if (!firstName || !lastName || !email || !jobTitle || (!companyId && !companyName)) {
             return res.status(400).json({
                 message: "All required fields must be filled!"
             })
         }
 
-        const company = await Company.findById(companyId);
+        if (companyId) {
+            const company = await Company.findById(companyId);
 
-        if (!company) {
-            return res.status(404).json({
-                message: "Associated company not found!"
-            })
-        }
+            if (!company) {
+                return res.status(404).json({
+                    message: "Associated company not found!"
+                })
+            }
 
-        if (role !== "admin") {
-            if (role === "sales_manager") {
-                const teamUsers = await User.find({ $or: [{ _id: id }, { managerId: id }] }).select("_id");
+            if (role !== "admin") {
+                if (role === "sales_manager") {
+                    const teamUsers = await User.find({ $or: [{ _id: id }, { managerId: id }] }).select("_id");
 
-                const teamIds = teamUsers.map(user => user._id.toString());
+                    const teamIds = teamUsers.map(user => user._id.toString());
 
-                if (!teamIds.includes(company.ownerId.toString())) {
-                    return res.status(403).json({
-                        message: "You can only add contacts to your team companies!"
-                    })
+                    if (!teamIds.includes(company.ownerId.toString())) {
+                        return res.status(403).json({
+                            message: "You can only add contacts to your team companies!"
+                        })
+                    }
                 }
             }
-        }
 
-        if (role === "sales_rep") {
-            if (company.ownerId.toString() !== id) {
-                return res.status(403).json({
-                    message: "You can only add contacts to your own companies!"
-                })
+            if (role === "sales_rep") {
+                if (company.ownerId.toString() !== id) {
+                    return res.status(403).json({
+                        message: "You can only add contacts to your own companies!"
+                    })
+                }
             }
         }
 
@@ -49,17 +52,29 @@ export const createContact = async (req, res, next) => {
             email,
             jobTitle,
             companyId,
-            ownerId: id,
+            companyName,
+            ownerId: (role === "admin" || role === "sales_manager") && req.body.ownerId ? req.body.ownerId : id,
             phone,
             mobile,
             linkedin,
             notes
         })
 
-        return res.status(201).json({
+        res.status(201).json({
             message: "Contact created successfully!",
             data: contact
         })
+
+        // Log contact creation
+        await logAction({
+            entityType: "Contact",
+            entityId: contact._id,
+            action: "CREATE",
+            performedBy: id,
+            details: { newValues: contact },
+            req
+        });
+        return;
 
     } catch (error) {
         return res.status(500).json({
@@ -154,31 +169,57 @@ export const updateContact = async (req, res, next) => {
             }
         }
 
+        if (req.body.ownerId !== undefined && req.body.ownerId !== contact.ownerId.toString()) {
+            if (role === "sales_rep") {
+                return res.status(403).json({ message: "Sales representatives cannot reassign contacts!" });
+            }
+            if (role === "sales_manager") {
+                const teamUsers = await User.find({ $or: [{ _id: userId }, { managerId: userId }] }).select("_id");
+                const teamIds = teamUsers.map(u => u._id.toString());
+                if (!teamIds.includes(req.body.ownerId.toString())) {
+                    return res.status(403).json({ message: "You can only reassign contacts within your team!" });
+                }
+            }
+        }
+
         const fields = [
-            "firstName",
-            "lastName",
-            "email",
-            "jobTitle",
-            "companyId",
-            "ownerId",
-            "phone",
-            "mobile",
-            "linkedin",
-            "notes"
-        ]
+            "firstName", "lastName", "email", "jobTitle", "companyId",
+            "ownerId", "phone", "mobile", "linkedin", "notes"
+        ];
 
         fields.forEach(field => {
             if (req.body[field] !== undefined) {
                 contact[field] = req.body[field]
             }
-        })
+        });
 
         await contact.save();
 
-        return res.status(200).json({
+        let reassignedToName = null;
+        if (req.body.ownerId) {
+            const owner = await User.findById(req.body.ownerId);
+            if (owner) reassignedToName = `${owner.firstName} ${owner.lastName}`;
+        }
+
+        res.status(200).json({
             message: "Contact updated successfully!",
             data: contact
         })
+
+        // Log contact update
+        await logAction({
+            entityType: "Contact",
+            entityId: id,
+            action: "UPDATE",
+            performedBy: userId,
+            details: {
+                newValues: req.body,
+                message: reassignedToName ? `Contact updated and reassigned to ${reassignedToName}` : `Contact updated`,
+                reassignedToName
+            },
+            req
+        });
+        return;
 
     } catch (error) {
         return res.status(500).json({
@@ -224,9 +265,20 @@ export const deleteContact = async (req, res, next) => {
 
         await contact.deleteOne();
 
-        return res.status(200).json({
+        res.status(200).json({
             message: "Contact deleted successfully!"
         })
+
+        // Log contact deletion
+        await logAction({
+            entityType: "Contact",
+            entityId: id,
+            action: "DELETE",
+            performedBy: userId,
+            details: { oldValues: contact },
+            req
+        });
+        return;
 
     } catch (error) {
         return res.status(500).json({

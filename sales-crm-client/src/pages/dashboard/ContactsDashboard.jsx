@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import {
-    Users, Link2, Linkedin, CalendarPlus, ChevronDown, Plus, Edit2, Trash2
+    Users, Link2, Linkedin, CalendarPlus, ChevronDown, Plus, Edit2, Trash2, Search
 } from "lucide-react";
 import { getContacts, createContact, updateContact, deleteContact } from "../../../API/services/contactService";
 import { getCompanies } from "../../../API/services/companyService";
+import { getTeamUsers } from "../../../API/services/userService";
+import { useAuth } from "../../context/AuthContext";
 import ContactModal from "../../components/modals/ContactModal";
 import DeleteConfirmModal from "../../components/modals/DeleteConfirmModal";
 import { toast } from "react-hot-toast";
@@ -57,6 +59,8 @@ export default function ContactsDashboard() {
     const [companies, setCompanies] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
+    const [users, setUsers] = useState([]);
+    const { currentUser } = useAuth();
 
     // Modal states
     const [isContactModalOpen, setIsContactModalOpen] = useState(false);
@@ -66,12 +70,14 @@ export default function ContactsDashboard() {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const [contactsRes, companiesRes] = await Promise.all([
+            const [contactsRes, companiesRes, usersRes] = await Promise.all([
                 getContacts({ name: search || undefined, limit: 100 }),
-                getCompanies({ limit: 1000 })
+                getCompanies({ limit: 1000 }),
+                getTeamUsers()
             ]);
             setContacts(contactsRes.data.data);
             setCompanies(companiesRes.data.data);
+            setUsers(usersRes.data.data || []);
         } catch (error) {
             console.error(error);
             toast.error("Failed to load contacts dashboard");
@@ -133,22 +139,22 @@ export default function ContactsDashboard() {
         .map(([title, count]) => ({ title, count }));
 
     return (
-        <div className="p-6 space-y-6 max-w-screen-xl mx-auto">
-            <div className="flex justify-between items-end">
+        <div className="p-4 sm:p-6 space-y-6 max-w-screen-xl mx-auto">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-800">Contacts Dashboard</h1>
-                    <p className="text-sm text-gray-400 mt-0.5">Global oversight of all professional connections</p>
+                    <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Contacts Dashboard</h1>
+                    <p className="text-xs sm:text-sm text-gray-400 mt-0.5">Global oversight of all professional connections</p>
                 </div>
                 <button
                     onClick={() => { setSelectedContact(null); setIsContactModalOpen(true); }}
-                    className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-700 transition shadow-md shadow-red-100"
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-700 transition shadow-md shadow-red-100"
                 >
                     <Plus size={18} />
                     <span>New Contact</span>
                 </button>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 <StatCard label="Total Contacts" value={String(contacts.length)} sub="Organization wide" color="bg-blue-50 text-blue-600" icon={Users} />
                 <StatCard label="With Company" value={String(withCompany)} sub={`${Math.round((withCompany / contacts.length) * 100 || 0)}% coverage`} color="bg-green-50 text-green-600" icon={Link2} />
                 <StatCard label="On LinkedIn" value={String(withLinkedIn)} sub={`${Math.round((withLinkedIn / contacts.length) * 100 || 0)}% verified`} color="bg-purple-50 text-purple-600" icon={Linkedin} />
@@ -156,17 +162,21 @@ export default function ContactsDashboard() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-                <Card className="lg:col-span-3">
-                    <CardHeader title="All Contacts">
-                        <input type="text" placeholder="Search..." value={search} onChange={e => setSearch(e.target.value)}
-                            className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-red-400 w-48" />
-                    </CardHeader>
+                <div className="lg:col-span-3 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+                        <h2 className="font-bold text-gray-800">All Contacts</h2>
+                        <div className="relative">
+                            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                            <input type="text" placeholder="Search contacts..." value={search} onChange={e => setSearch(e.target.value)}
+                                className="w-full sm:w-64 text-sm border border-gray-200 rounded-lg pl-9 pr-3 py-1.5 focus:ring-2 focus:ring-red-400 bg-gray-50/50 focus:outline-none transition-all" />
+                        </div>
+                    </div>
                     <div className="overflow-x-auto min-h-[300px]">
                         <table className="w-full text-sm">
                             <thead>
                                 <tr className="border-b border-gray-100 bg-gray-50">
                                     {["Contact", "Company", "Owner", "Actions"].map(h => (
-                                        <th key={h} className="text-left px-4 py-3 text-gray-500 font-semibold text-xs uppercase tracking-wide">{h}</th>
+                                        <th key={h} className="text-left px-4 py-3 text-gray-500 font-semibold text-xs uppercase tracking-wide whitespace-nowrap">{h}</th>
                                     ))}
                                 </tr>
                             </thead>
@@ -176,7 +186,7 @@ export default function ContactsDashboard() {
                                 ) : (
                                     contacts.map((c) => (
                                         <tr key={c._id} className="hover:bg-gray-50/50 transition-colors group">
-                                            <td className="px-4 py-3">
+                                            <td className="px-4 py-3 whitespace-nowrap">
                                                 <div className="flex items-center gap-3">
                                                     <Avatar name={`${c.firstName} ${c.lastName}`} />
                                                     <div>
@@ -185,10 +195,10 @@ export default function ContactsDashboard() {
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-4 py-3 text-gray-500 font-medium">{c.companyId?.name || "—"}</td>
-                                            <td className="px-4 py-3 text-red-600 font-semibold">{c.ownerId?.firstName || "System"}</td>
-                                            <td className="px-4 py-3">
-                                                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <td className="px-4 py-3 text-gray-500 font-medium whitespace-nowrap">{c.companyId?.name || "—"}</td>
+                                            <td className="px-4 py-3 text-red-600 font-semibold whitespace-nowrap">{c.ownerId?.firstName || "System"}</td>
+                                            <td className="px-4 py-3 whitespace-nowrap">
+                                                <div className="flex items-center gap-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                                                     <button onClick={() => { setSelectedContact(c); setIsContactModalOpen(true); }}
                                                         className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition">
                                                         <Edit2 size={16} />
@@ -205,11 +215,11 @@ export default function ContactsDashboard() {
                             </tbody>
                         </table>
                     </div>
-                </Card>
+                </div>
 
-                <Card className="lg:col-span-2">
-                    <CardHeader title="Top Job Titles" />
-                    <div className="p-5 space-y-4">
+                <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+                    <h3 className="font-bold text-gray-800 mb-4">Top Job Titles</h3>
+                    <div className="space-y-4">
                         {jobTitles.length > 0 ? jobTitles.map((j, i) => {
                             const total = contacts.length || 1;
                             const pct = Math.round((j.count / total) * 100);
@@ -227,10 +237,18 @@ export default function ContactsDashboard() {
                             );
                         }) : <p className="text-center py-10 text-gray-400 text-sm">No data available</p>}
                     </div>
-                </Card>
+                </div>
             </div>
 
-            <ContactModal isOpen={isContactModalOpen} onClose={() => setIsContactModalOpen(false)} contact={selectedContact} onSave={handleSaveContact} companies={companies} />
+            <ContactModal
+                isOpen={isContactModalOpen}
+                onClose={() => setIsContactModalOpen(false)}
+                contact={selectedContact}
+                onSave={handleSaveContact}
+                companies={companies}
+                userRole={currentUser?.role}
+                potentialOwners={users}
+            />
             <DeleteConfirmModal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)} onConfirm={handleDeleteContact} itemName={`${selectedContact?.firstName} ${selectedContact?.lastName}`} />
         </div>
     );

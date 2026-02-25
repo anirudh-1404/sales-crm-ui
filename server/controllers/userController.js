@@ -4,6 +4,10 @@ import { generateToken } from "../utils/authToken.js";
 import { comparePassword, hashedPassword } from "../utils/hashPassword.js";
 import { Company } from "../models/companySchema.js";
 import { Contact } from "../models/contactSchema.js";
+import { Deal } from "../models/dealSchema.js";
+import { logAction } from "../utils/auditLogger.js";
+import crypto from "crypto";
+import { sendEmail } from "../utils/sendEmail.js";
 
 export const registerUser = async (req, res, next) => {
     try {
@@ -32,14 +36,16 @@ export const registerUser = async (req, res, next) => {
             managerId: role === "sales_rep" ? managerId : null
         })
 
-        const token = await generateToken(user._id, user.role)
+        const existingToken = req.cookies?.token || (req.headers.authorization && req.headers.authorization.startsWith("Bearer") ? req.headers.authorization.split(" ")[1] : null);
 
-        res.cookie("token", token, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "strict",
-            maxAge: 24 * 60 * 60 * 1000
-        })
+        if (!existingToken) {
+            res.cookie("token", token, {
+                httpOnly: true,
+                secure: true,
+                sameSite: "strict",
+                maxAge: 24 * 60 * 60 * 1000
+            })
+        }
 
         res.status(201).json({
             message: "User registered successfully!",
@@ -49,6 +55,17 @@ export const registerUser = async (req, res, next) => {
                 role: user.role
             }
         })
+
+        // Log registration
+        await logAction({
+            entityType: "User",
+            entityId: user._id,
+            action: "CREATE",
+            performedBy: req.user?.id || user._id, // If self-registering, performer is self
+            details: { message: `New user registered: ${user.email}`, email: user.email },
+            req
+        });
+        return;
 
     } catch (error) {
         return res.status(500).json({
@@ -92,15 +109,18 @@ export const loginUser = async (req, res, next) => {
             maxAge: 24 * 60 * 60 * 1000
         })
 
-        user.lastLogin = Date.now()
-        await user.save()
+        const lastLogin = new Date();
+        await User.findByIdAndUpdate(user._id, { lastLogin });
 
         res.status(200).json({
             message: "User logged in successfully!",
             data: {
                 id: user._id,
+                firstName: user.firstName,
+                lastName: user.lastName,
                 email: user.email,
-                role: user.role
+                role: user.role,
+                lastLogin
             }
         })
 
@@ -155,20 +175,21 @@ export const adminTest = async (req, res, next) => {
 export const getTeamUsers = async (req, res, next) => {
     try {
 
-        const { id, role } = req.user;
+        const id = req.user._id;
+        const role = req.user.role;
 
         if (role === "admin") {
-            const users = await User.find().select("-password")
+            const users = await User.find().populate("managerId", "firstName lastName").select("-password").sort({ createdAt: -1 })
             return res.json(users)
         }
 
         if (role === "sales_manager") {
-            const users = await User.find({ $or: [{ _id: id }, { managerId: id }] }).select("-password")
+            const users = await User.find({ $or: [{ _id: id }, { managerId: id }] }).populate("managerId", "firstName lastName").select("-password").sort({ createdAt: -1 })
             return res.json(users)
         }
 
         if (role === "sales_rep") {
-            const users = await User.find({ _id: id }).select("-password");
+            const users = await User.find({ _id: id }).populate("managerId", "firstName lastName").select("-password");
             return res.json(users)
         }
 
@@ -179,7 +200,7 @@ export const getTeamUsers = async (req, res, next) => {
     }
 }
 
-export const updteUser = async (req, res, next) => {
+export const updateUser = async (req, res, next) => {
     try {
 
         const { id } = req.params;
@@ -213,7 +234,12 @@ export const updteUser = async (req, res, next) => {
 
         if (currentUserRole === "admin") {
             user.role = role || user.role;
-            user.managerId = managerId || user.managerId;
+            // Only sales_rep has a managerId in this system
+            if (user.role !== "sales_rep") {
+                user.managerId = null;
+            } else if (managerId !== undefined) {
+                user.managerId = managerId || null;
+            }
         }
 
         await user.save();
@@ -222,6 +248,17 @@ export const updteUser = async (req, res, next) => {
             message: "User update successfull!",
             data: user
         })
+
+        // Log update
+        await logAction({
+            entityType: "User",
+            entityId: id,
+            action: "UPDATE",
+            performedBy: currentUserId,
+            details: { newValues: req.body },
+            req
+        });
+        return;
 
     } catch (error) {
         return res.status(500).json({
@@ -232,46 +269,73 @@ export const updteUser = async (req, res, next) => {
 
 export const deactivateUser = async (req, res, next) => {
     try {
-
-        const { id } = req.params; //user to deactivate
+        const { id } = req.params; // user to deactivate
+        const { newOwnerId } = req.body;
         const { role: currentUserRole, id: currentUserId } = req.user;
 
+        if (!newOwnerId) {
+            return res.status(400).json({
+                message: "A new owner must be selected to reassign records!"
+            });
+        }
+
         const user = await User.findById(id);
+        const newOwner = await User.findById(newOwnerId);
+
         if (!user) {
-            return res.status(404).json({
-                message: "User not found!"
-            })
+            return res.status(404).json({ message: "User not found!" });
+        }
+        if (!newOwner) {
+            return res.status(404).json({ message: "New owner not found!" });
         }
 
         if (currentUserRole === "sales_rep") {
-            return res.status(403).json({
-                message: "Access denied!"
-            })
+            return res.status(403).json({ message: "Access denied!" });
         }
 
         if (currentUserRole === "sales_manager") {
             const teamUsers = await User.find({ managerId: currentUserId }).select("_id");
-
             const teamIds = teamUsers.map(u => u._id.toString());
-
-            if (!teamIds.includes(id)) {
+            // Managers can deactivate their team members and reassign to someone in their team (including themselves)
+            if (!teamIds.includes(id) || (!teamIds.includes(newOwnerId) && newOwnerId !== currentUserId)) {
                 return res.status(403).json({
-                    message: "You can only deactivate your team members!"
-                })
+                    message: "You can only deactivate and reassign within your team!"
+                });
             }
         }
 
+        // Perform bulk reassignment
+        await Company.updateMany({ ownerId: id }, { ownerId: newOwnerId });
+        await Contact.updateMany({ ownerId: id }, { ownerId: newOwnerId });
+        await Deal.updateMany({ ownerId: id }, { ownerId: newOwnerId });
+
+        // Deactivate user
         user.isActive = false;
         await user.save();
 
         res.status(200).json({
-            message: "User deactivated successfully!"
-        })
+            message: "User deactivated and records reassigned successfully!"
+        });
+
+        // Log the deactivation & reassignment
+        await logAction({
+            entityType: "User",
+            entityId: id,
+            action: "DEACTIVATE",
+            performedBy: currentUserId,
+            details: {
+                message: `User "${user.firstName} ${user.lastName}" deactivated. Records reassigned to ${newOwner.firstName} ${newOwner.lastName}`,
+                newOwnerId,
+                targetName: `${user.firstName} ${user.lastName}`,
+                reassignedToName: `${newOwner.firstName} ${newOwner.lastName}`
+            },
+            req
+        });
 
     } catch (error) {
         return res.status(500).json({
             message: error.message || "Server error!"
-        })
+        });
     }
 }
 
@@ -310,10 +374,59 @@ export const activateUser = async (req, res, next) => {
             message: "User activated successfully!"
         })
 
+        // Log the activation
+        await logAction({
+            entityType: "User",
+            entityId: id,
+            action: "ACTIVATE",
+            performedBy: currentUserId,
+            req
+        });
+
     } catch (error) {
         return res.status(500).json({
             message: error.message || "Server error!"
         })
+    }
+}
+
+export const adminResetPassword = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { newPassword } = req.body;
+        const { role: currentUserRole, id: currentUserId } = req.user;
+
+        if (currentUserRole !== "admin") {
+            return res.status(403).json({ message: "Access denied. Admins only." });
+        }
+
+        if (!newPassword || newPassword.length < 6) {
+            return res.status(400).json({ message: "A valid new password (min 6 characters) is required." });
+        }
+
+        const user = await User.findById(id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found." });
+        }
+
+        const hashedPass = await hashedPassword(newPassword);
+        user.password = hashedPass;
+        await user.save();
+
+        res.status(200).json({ message: "User password reset successfully." });
+
+        // Log the action
+        await logAction({
+            entityType: "User",
+            entityId: id,
+            action: "UPDATE",
+            performedBy: currentUserId,
+            details: { message: `Admin reset password for user: ${user.email}` },
+            req
+        });
+
+    } catch (error) {
+        return res.status(500).json({ message: error.message || "Server error!" });
     }
 }
 
@@ -414,9 +527,25 @@ export const bulkReassignRecords = async (req, res, next) => {
             { ownerId: newOwnerId }
         );
 
+        // Log the bulk reassignment
+        await logAction({
+            entityType: "User",
+            entityId: id,
+            action: "REASSIGN",
+            performedBy: currentUserId,
+            details: {
+                message: `Records reassigned from ${oldUser.firstName} ${oldUser.lastName} to ${newUser.firstName} ${newUser.lastName}`,
+                fromUserId: id,
+                toUserId: newOwnerId,
+                fromUserName: `${oldUser.firstName} ${oldUser.lastName}`,
+                toUserName: `${newUser.firstName} ${newUser.lastName}`
+            },
+            req
+        });
+
         return res.status(200).json({
             message: "All records reassigned successfully!"
-        })
+        });
 
     } catch (error) {
         return res.status(500).json({
@@ -431,4 +560,80 @@ export const logoutUser = (req, res) => {
         sameSite: "strict"
     });
     return res.status(200).json({ message: "Logged out successfully!" });
+}
+
+
+export const forgotPassword = async (req, res, next) => {
+    try {
+        const { email } = req.body;
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found!"
+            })
+        }
+
+        const resetToken = crypto.randomBytes(32).toString("hex");
+        const hashedToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+
+        user.resetPasswordToken = hashedToken;
+        user.resetPasswordExpiry = Date.now() + 3600000; // 1 hour
+
+        await user.save();
+
+        const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password?token=${resetToken}`;
+
+        const message = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; rounded: 8px;">
+                <h2 style="color: #e11d48; text-align: center;">Password Reset Request</h2>
+                <p>Hello ${user.firstName},</p>
+                <p>We received a request to reset your password. If you didn't make this request, you can safely ignore this email.</p>
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="${resetUrl}" style="background-color: #e11d48; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">Reset Password</a>
+                </div>
+                <p>Or copy and paste this link into your browser:</p>
+                <p style="word-break: break-all; color: #64748b; font-size: 14px;">${resetUrl}</p>
+                <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
+                <p style="font-size: 12px; color: #94a3b8; text-align: center;">&copy; ${new Date().getFullYear()} mbdConsulting. All rights reserved.</p>
+            </div>
+        `;
+
+        await sendEmail(user.email, "Password Reset Request", message);
+
+        res.status(200).json({ message: "Reset link sent to your email!" });
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message || "Server error!"
+        })
+    }
+}
+
+export const resetPassword = async (req, res, next) => {
+    try {
+        const { token, password } = req.body;
+        const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+        const user = await User.findOne({
+            resetPasswordToken: hashedToken,
+            resetPasswordExpiry: { $gt: Date.now() }
+        });
+
+        if (!user) {
+            return res.status(400).json({
+                message: "Invalid or expired token!"
+            });
+        }
+
+        user.password = await hashedPassword(password);
+        user.resetPasswordToken = null;
+        user.resetPasswordExpiry = null;
+
+        await user.save();
+
+        res.status(200).json({ message: "Password reset successful! You can now login." });
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message || "Server error!"
+        });
+    }
 }

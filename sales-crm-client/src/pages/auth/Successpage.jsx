@@ -5,7 +5,7 @@ import successBg from "../../assets/success-bg.jpg";
 
 const Successpage = () => {
     return (
-        <section className="h-screen bg-gray-100 grid grid-cols-1 md:grid-cols-2">
+        <section className="h-screen bg-gray-100 grid grid-cols-1 lg:grid-cols-2">
 
             <div className="h-screen overflow-y-auto bg-white p-12 flex flex-col">
                 <div className="w-full max-w-md mx-auto flex-1 flex flex-col">
@@ -33,7 +33,7 @@ const Successpage = () => {
 
                         <h2 className="text-2xl font-bold mb-1 text-gray-800">Success</h2>
                         <p className="text-gray-500 text-sm mb-6">
-                            Your Passwrod Reset Successfully!
+                            Your Password Reset Successfully!
                         </p>
 
                         <Link to="/login" className="w-full">
@@ -46,14 +46,14 @@ const Successpage = () => {
 
 
                     <div className="text-center py-4">
-                        <p className="text-gray-500 text-sm mb-0">Copyright &copy; - CRMS</p>
+                        <p className="text-gray-500 text-sm mb-0">Copyright &copy; mbdConsulting</p>
                     </div>
 
                 </div>
             </div>
 
 
-            <div className="hidden md:block h-screen p-3">
+            <div className="hidden lg:block h-screen p-3">
                 <img
                     src={successBg}
                     alt="success-img"

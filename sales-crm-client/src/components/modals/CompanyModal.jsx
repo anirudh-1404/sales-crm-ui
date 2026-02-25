@@ -4,13 +4,13 @@ import Modal from "./Modal";
 const SIZES = ["", "1-10", "11-50", "51-200", "201-500", "500+"];
 const STATUSES = ["Lead", "Prospect", "Customer", "Churned"];
 
-export default function CompanyModal({ isOpen, onClose, company, onSave }) {
+export default function CompanyModal({ isOpen, onClose, company, onSave, userRole, potentialOwners = [] }) {
     const phoneRegex = /^[+\d\s\-()]{7,15}$/;
     const urlRegex = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?$/;
 
     const [formData, setFormData] = useState({
         name: "", industry: "", size: "", website: "", primaryContact: "",
-        status: "Lead", address: "", phone: "", revenueRange: "", notes: ""
+        status: "Lead", address: "", phone: "", revenueRange: "", notes: "", ownerId: ""
     });
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
@@ -27,10 +27,11 @@ export default function CompanyModal({ isOpen, onClose, company, onSave }) {
                 address: company.address || "",
                 phone: company.phone || "",
                 revenueRange: company.revenueRange || "",
-                notes: company.notes || ""
+                notes: company.notes || "",
+                ownerId: company.ownerId?._id || company.ownerId || ""
             });
         } else {
-            setFormData({ name: "", industry: "", size: "", website: "", primaryContact: "", status: "Lead", address: "", phone: "", revenueRange: "", notes: "" });
+            setFormData({ name: "", industry: "", size: "", website: "", primaryContact: "", status: "Lead", address: "", phone: "", revenueRange: "", notes: "", ownerId: "" });
         }
         setErrors({});
     }, [company, isOpen]);
@@ -81,7 +82,7 @@ export default function CompanyModal({ isOpen, onClose, company, onSave }) {
                     {errors.name && <p className="text-red-500 text-xs">{errors.name}</p>}
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1">
                         <label className="text-xs font-semibold text-gray-500 uppercase">Industry</label>
                         <input type="text" className={inputClass("industry")} value={formData.industry}
@@ -97,7 +98,7 @@ export default function CompanyModal({ isOpen, onClose, company, onSave }) {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1">
                         <label className="text-xs font-semibold text-gray-500 uppercase">Website</label>
                         <input type="text" className={inputClass("website")} value={formData.website}
@@ -113,11 +114,11 @@ export default function CompanyModal({ isOpen, onClose, company, onSave }) {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1">
                         <label className="text-xs font-semibold text-gray-500 uppercase">Revenue Range</label>
                         <input type="text" className={inputClass("revenueRange")} value={formData.revenueRange}
-                            onChange={e => set("revenueRange", e.target.value)} placeholder="₹1Cr – ₹5Cr" />
+                            onChange={e => set("revenueRange", e.target.value)} placeholder="$1M – $5M" />
                     </div>
                     <div className="space-y-1">
                         <label className="text-xs font-semibold text-gray-500 uppercase">Phone</label>
@@ -139,6 +140,24 @@ export default function CompanyModal({ isOpen, onClose, company, onSave }) {
                         value={formData.notes} onChange={e => set("notes", e.target.value)}
                         placeholder="Additional details..." />
                 </div>
+
+                {/* Owner field - visible to Admin/Manager */}
+                {(userRole === "admin" || userRole === "sales_manager") && (
+                    <div className="space-y-1 pt-2 border-t border-gray-100 mt-4">
+                        <label className="text-xs font-semibold text-gray-500 uppercase">Strategic Owner</label>
+                        <select
+                            className={inputClass("ownerId") + " bg-slate-50 border-slate-200"}
+                            value={formData.ownerId}
+                            onChange={e => set("ownerId", e.target.value)}
+                        >
+                            <option value="">Select Owner</option>
+                            {potentialOwners.map(u => (
+                                <option key={u._id} value={u._id}>{u.firstName} {u.lastName} ({u.role.replace(/_/g, " ")})</option>
+                            ))}
+                        </select>
+                        <p className="text-[10px] text-gray-400 italic">Only Admins and Managers can reassign records.</p>
+                    </div>
+                )}
 
                 <div className="flex gap-3 pt-2">
                     <button type="button" onClick={onClose}

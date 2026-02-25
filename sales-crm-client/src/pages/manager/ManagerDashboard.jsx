@@ -89,8 +89,9 @@ export default function ManagerDashboard() {
     const wonRevenue = wonDeals.reduce((acc, d) => acc + (d.value || 0), 0);
 
     const formatCurrency = (val) => {
-        if (val >= 100000) return `₹${(val / 100000).toFixed(1)}L`;
-        return `₹${val.toLocaleString()}`;
+        if (val >= 1000000) return `$${(val / 1000000).toFixed(1)}M`;
+        if (val >= 1000) return `$${(val / 1000).toFixed(1)}K`;
+        return `$${val.toLocaleString()}`;
     };
 
     // Per-rep stats
@@ -121,10 +122,12 @@ export default function ManagerDashboard() {
     }));
 
     return (
-        <div className="p-6 space-y-6 max-w-screen-xl mx-auto">
-            <div>
-                <h1 className="text-2xl font-bold text-gray-800">Team Dashboard</h1>
-                <p className="text-sm text-gray-400 mt-0.5">Overview of your team's CRM activity</p>
+        <div className="p-4 sm:p-6 space-y-6 max-w-screen-xl mx-auto">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+                <div>
+                    <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Team Dashboard</h1>
+                    <p className="text-xs sm:text-sm text-gray-400 mt-0.5">Overview of your team's CRM activity</p>
+                </div>
             </div>
 
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

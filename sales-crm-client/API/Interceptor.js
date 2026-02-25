@@ -37,15 +37,6 @@ API.interceptors.response.use(
             console.log("Status", error.response.status);
             console.log("Message", error.response.data.message || error.message);
 
-            if (error.response.status === 400) {
-                toast.error(error.response.data.message || "Something went wrong!");
-            }
-            if (error.response.status === 403) {
-                toast.error(error.response.data.message);
-            }
-            if (error.response.status === 404) {
-                toast.error(error.response.data.message);
-            }
             if (error.response.status === 401) {
                 console.warn("Unauthorized! Maybe session expired or not logged in!");
             } else if (error.response.status === 500) {

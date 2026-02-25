@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import {
-    Building2, CheckCircle2, Eye, XCircle, ChevronDown, Plus, Edit2, Trash2
+    Building2, CheckCircle2, Eye, XCircle, ChevronDown, Plus, Edit2, Trash2, Search
 } from "lucide-react";
 import { getCompanies, createCompany, updateCompany, deleteCompany } from "../../../API/services/companyService";
+import { getTeamUsers } from "../../../API/services/userService";
+import { useAuth } from "../../context/AuthContext";
 import CompanyModal from "../../components/modals/CompanyModal";
 import DeleteConfirmModal from "../../components/modals/DeleteConfirmModal";
 import { toast } from "react-hot-toast";
@@ -46,12 +48,18 @@ export default function CompaniesDashboard() {
     const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedCompany, setSelectedCompany] = useState(null);
+    const [users, setUsers] = useState([]);
+    const { currentUser } = useAuth();
 
     const fetchData = async () => {
         setLoading(true);
         try {
-            const res = await getCompanies({ name: search || undefined, limit: 100 });
-            setCompanies(res.data.data);
+            const [companiesRes, usersRes] = await Promise.all([
+                getCompanies({ name: search || undefined, limit: 100 }),
+                getTeamUsers()
+            ]);
+            setCompanies(companiesRes.data.data);
+            setUsers(usersRes.data.data || []);
         } catch (error) {
             console.error(error);
             toast.error("Failed to load companies dashboard");
@@ -114,22 +122,22 @@ export default function CompaniesDashboard() {
         .map(([name, count]) => ({ name, count }));
 
     return (
-        <div className="p-6 space-y-6 max-w-screen-xl mx-auto">
-            <div className="flex justify-between items-end">
+        <div className="p-4 sm:p-6 space-y-6 max-w-screen-xl mx-auto">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-800">Companies Dashboard</h1>
-                    <p className="text-sm text-gray-400 mt-0.5">Global oversight of all corporate entities</p>
+                    <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Companies Dashboard</h1>
+                    <p className="text-xs sm:text-sm text-gray-400 mt-0.5">Global oversight of all corporate entities</p>
                 </div>
                 <button
                     onClick={() => { setSelectedCompany(null); setIsCompanyModalOpen(true); }}
-                    className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition shadow-md shadow-indigo-100"
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-700 transition shadow-md shadow-red-100"
                 >
                     <Plus size={18} />
                     <span>New Company</span>
                 </button>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 <StatCard label="Total Companies" value={String(companies.length)} sub="Organization wide" color="bg-blue-50 text-blue-600" icon={Building2} />
                 <StatCard label="Active Customers" value={String(activeCount)} sub={`${Math.round((activeCount / companies.length) * 100 || 0)}% of total`} color="bg-green-50 text-green-600" icon={CheckCircle2} />
                 <StatCard label="Prospects" value={String(prospectCount)} sub={`${Math.round((prospectCount / companies.length) * 100 || 0)}% potential`} color="bg-purple-50 text-purple-600" icon={Eye} />
@@ -137,17 +145,21 @@ export default function CompaniesDashboard() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-                <Card className="lg:col-span-3">
-                    <CardHeader title="All Companies">
-                        <input type="text" placeholder="Search..." value={search} onChange={e => setSearch(e.target.value)}
-                            className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-indigo-400 w-48" />
-                    </CardHeader>
+                <div className="lg:col-span-3 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <h2 className="font-bold text-gray-800">All Companies</h2>
+                        <div className="w-full sm:w-64 relative">
+                            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                            <input type="text" placeholder="Search companies..." value={search} onChange={e => setSearch(e.target.value)}
+                                className="w-full text-sm border border-gray-200 rounded-lg pl-9 pr-3 py-1.5 focus:ring-2 focus:ring-indigo-400 focus:outline-none bg-gray-50/50" />
+                        </div>
+                    </div>
                     <div className="overflow-x-auto min-h-[300px]">
                         <table className="w-full text-sm">
                             <thead>
                                 <tr className="border-b border-gray-100 bg-gray-50">
                                     {["Company", "Industry", "Owner", "Status", "Actions"].map(h => (
-                                        <th key={h} className="text-left px-4 py-3 text-gray-500 font-semibold text-xs uppercase tracking-wide">{h}</th>
+                                        <th key={h} className="text-left px-4 py-3 text-gray-500 font-semibold text-xs uppercase tracking-wide whitespace-nowrap">{h}</th>
                                     ))}
                                 </tr>
                             </thead>
@@ -157,14 +169,14 @@ export default function CompaniesDashboard() {
                                 ) : (
                                     companies.map((c) => (
                                         <tr key={c._id} className="hover:bg-gray-50/50 transition-colors group">
-                                            <td className="px-4 py-3 font-medium text-gray-800">{c.name}</td>
-                                            <td className="px-4 py-3 text-gray-500">{c.industry || "—"}</td>
-                                            <td className="px-4 py-3 text-indigo-700 font-bold">{c.ownerId?.firstName || "System"}</td>
-                                            <td className="px-4 py-3">
+                                            <td className="px-4 py-3 font-medium text-gray-800 whitespace-nowrap">{c.name}</td>
+                                            <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{c.industry || "—"}</td>
+                                            <td className="px-4 py-3 text-indigo-700 font-bold whitespace-nowrap">{c.ownerId?.firstName || "System"}</td>
+                                            <td className="px-4 py-3 whitespace-nowrap">
                                                 <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${statusBg[c.status] || "bg-gray-100 text-gray-600"}`}>{c.status}</span>
                                             </td>
-                                            <td className="px-4 py-3">
-                                                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <td className="px-4 py-3 whitespace-nowrap">
+                                                <div className="flex items-center gap-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                                                     <button onClick={() => { setSelectedCompany(c); setIsCompanyModalOpen(true); }}
                                                         className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition">
                                                         <Edit2 size={16} />
@@ -181,11 +193,11 @@ export default function CompaniesDashboard() {
                             </tbody>
                         </table>
                     </div>
-                </Card>
+                </div>
 
-                <Card className="lg:col-span-2">
-                    <CardHeader title="Industry Mix" />
-                    <div className="p-5 space-y-4">
+                <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+                    <h3 className="font-bold text-gray-800 mb-4">Industry Mix</h3>
+                    <div className="space-y-4">
                         {industries.length > 0 ? industries.map((ind, i) => {
                             const total = companies.length || 1;
                             const pct = Math.round((ind.count / total) * 100);
@@ -203,10 +215,17 @@ export default function CompaniesDashboard() {
                             );
                         }) : <p className="text-center py-10 text-gray-400 text-sm">No industry data</p>}
                     </div>
-                </Card>
+                </div>
             </div>
 
-            <CompanyModal isOpen={isCompanyModalOpen} onClose={() => setIsCompanyModalOpen(false)} company={selectedCompany} onSave={handleSaveCompany} />
+            <CompanyModal
+                isOpen={isCompanyModalOpen}
+                onClose={() => setIsCompanyModalOpen(false)}
+                company={selectedCompany}
+                onSave={handleSaveCompany}
+                userRole={currentUser?.role}
+                potentialOwners={users}
+            />
             <DeleteConfirmModal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)} onConfirm={handleDeleteCompany} itemName={selectedCompany?.name} />
         </div>
     );

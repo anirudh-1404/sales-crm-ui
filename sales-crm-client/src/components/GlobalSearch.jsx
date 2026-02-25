@@ -133,7 +133,7 @@ export default function GlobalSearch({ isOpen, onClose }) {
                                         </div>
                                         <div className="flex-shrink-0 flex items-center gap-2">
                                             <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${stageBadge[d.stage] || "bg-gray-100 text-gray-600"}`}>{d.stage}</span>
-                                            <span className="text-xs font-semibold text-gray-700">₹{d.value?.toLocaleString()}</span>
+                                            <span className="text-xs font-semibold text-gray-700">${d.value?.toLocaleString()}</span>
                                         </div>
                                     </div>
                                 </div>

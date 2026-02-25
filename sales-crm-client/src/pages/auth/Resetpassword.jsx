@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import Logo from "../../components/Logo";
-import { Link, useNavigate } from "react-router-dom";
 import resetBg from "../../assets/reset-password-bg.webp";
 import toast from "react-hot-toast";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { resetPassword } from "../../../API/services/userService";
 
 const EyeOpen = () => (
     <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -18,6 +19,8 @@ const EyeOff = () => (
 
 const Resetpassword = () => {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const token = searchParams.get("token");
     const [show, setShow] = useState({ password: false, confirm: false });
     const [form, setForm] = useState({ password: "", confirm: "" });
     const [errors, setErrors] = useState({});
@@ -37,12 +40,8 @@ const Resetpassword = () => {
         const errs = {};
         if (!form.password) {
             errs.password = "New password is required";
-        } else if (form.password.length < 8) {
-            errs.password = "Password must be at least 8 characters";
-        } else if (!/[A-Z]/.test(form.password)) {
-            errs.password = "Password must contain at least one uppercase letter";
-        } else if (!/[0-9]/.test(form.password)) {
-            errs.password = "Password must contain at least one number";
+        } else if (form.password.length < 6) {
+            errs.password = "Password must be at least 6 characters";
         }
         if (!form.confirm) {
             errs.confirm = "Please confirm your password";
@@ -52,16 +51,27 @@ const Resetpassword = () => {
         return errs;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const errs = validate();
         if (Object.keys(errs).length > 0) { setErrors(errs); return; }
+
+        if (!token) {
+            toast.error("Invalid or missing reset token");
+            return;
+        }
+
         setSubmitting(true);
-        setTimeout(() => {
-            setSubmitting(false);
+        try {
+            await resetPassword({ token, password: form.password });
             toast.success("Password reset successfully!");
-            navigate("/login");
-        }, 800);
+            navigate("/success");
+        } catch (error) {
+            console.error(error);
+            toast.error(error.response?.data?.message || "Failed to reset password");
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     const fieldClass = (name) =>
@@ -71,7 +81,7 @@ const Resetpassword = () => {
         }`;
 
     return (
-        <section className="h-screen bg-gray-100 grid grid-cols-1 md:grid-cols-2">
+        <section className="h-screen bg-gray-100 grid grid-cols-1 lg:grid-cols-2">
 
             <div className="h-screen overflow-y-auto bg-white p-12 flex flex-col">
                 <div className="w-full max-w-md mx-auto flex-1 flex flex-col">
@@ -97,7 +107,7 @@ const Resetpassword = () => {
                                         value={form.password}
                                         onChange={handleChange}
                                         className={fieldClass("password")}
-                                        placeholder="Min 8 chars, 1 uppercase, 1 number"
+                                        placeholder="Min 6 characters"
                                     />
                                     <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2"
                                         onClick={() => setShow(s => ({ ...s, password: !s.password }))}>
@@ -105,24 +115,6 @@ const Resetpassword = () => {
                                     </button>
                                 </div>
                                 {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
-                                {/* Strength hint */}
-                                {form.password && (
-                                    <div className="mt-1.5 flex gap-1">
-                                        {[
-                                            form.password.length >= 8,
-                                            /[A-Z]/.test(form.password),
-                                            /[0-9]/.test(form.password),
-                                            /[^A-Za-z0-9]/.test(form.password),
-                                        ].map((ok, i) => (
-                                            <div key={i} className={`h-1 flex-1 rounded-full transition-colors ${ok ? "bg-green-400" : "bg-gray-200"}`} />
-                                        ))}
-                                    </div>
-                                )}
-                                {form.password && (
-                                    <p className="text-[10px] text-gray-400 mt-0.5">
-                                        {[form.password.length >= 8, /[A-Z]/.test(form.password), /[0-9]/.test(form.password), /[^A-Za-z0-9]/.test(form.password)].filter(Boolean).length} / 4 requirements met
-                                    </p>
-                                )}
                             </div>
 
                             {/* Confirm Password */}
@@ -168,12 +160,12 @@ const Resetpassword = () => {
                     </div>
 
                     <div className="text-center py-4">
-                        <p className="text-gray-500 text-sm mb-0">Copyright &copy; - CRMS</p>
+                        <p className="text-gray-500 text-sm mb-0">Copyright &copy; mbdConsulting</p>
                     </div>
                 </div>
             </div>
 
-            <div className="hidden md:block h-screen p-3">
+            <div className="hidden lg:block h-screen p-3">
                 <img src={resetBg} alt="reset-password-img" className="w-full h-full object-cover rounded-lg" />
             </div>
 

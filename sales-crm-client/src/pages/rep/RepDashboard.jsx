@@ -84,18 +84,21 @@ export default function RepDashboard() {
     })).filter(s => s.count > 0);
 
     const formatCurrency = (val) => {
-        if (val >= 100000) return `₹${(val / 100000).toFixed(2)}L`;
-        return `₹${val.toLocaleString()}`;
+        if (val >= 1000000) return `$${(val / 1000000).toFixed(1)}M`;
+        if (val >= 1000) return `$${(val / 1000).toFixed(1)}K`;
+        return `$${val.toLocaleString()}`;
     };
 
     return (
-        <div className="p-6 space-y-6 max-w-screen-xl mx-auto">
-            <div>
-                <h1 className="text-2xl font-bold text-gray-800">My Dashboard</h1>
-                <p className="text-sm text-gray-400 mt-0.5">Your personal CRM activity overview</p>
+        <div className="p-4 sm:p-6 space-y-6 max-w-screen-xl mx-auto">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+                <div>
+                    <h1 className="text-xl sm:text-2xl font-bold text-gray-800">My Dashboard</h1>
+                    <p className="text-xs sm:text-sm text-gray-400 mt-0.5">Your personal CRM activity overview</p>
+                </div>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 {[
                     { label: "My Deals", value: loading ? "..." : String(deals.length), sub: "Across all stages", color: "bg-green-50 text-green-600", icon: Briefcase },
                     { label: "Deals Won", value: loading ? "..." : String(wonDeals.length), sub: `${formatCurrency(totalWon)} won`, color: "bg-blue-50 text-blue-600", icon: CheckCircle2 },
@@ -116,16 +119,17 @@ export default function RepDashboard() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-                <Card className="lg:col-span-3">
-                    <CardHeader title="My Recent Deals">
+                <div className="lg:col-span-3 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <h2 className="font-bold text-gray-800">My Recent Deals</h2>
                         <Select options={periodOptions} value={period} onChange={setPeriod} />
-                    </CardHeader>
+                    </div>
                     <div className="overflow-x-auto min-h-[200px]">
                         <table className="w-full text-sm">
                             <thead>
                                 <tr className="border-b border-gray-100 bg-gray-50">
                                     {["Deal Name", "Company", "Stage", "Value", "Close Date"].map(h => (
-                                        <th key={h} className="text-left px-4 py-3 text-gray-500 font-semibold text-xs uppercase tracking-wide">{h}</th>
+                                        <th key={h} className="text-left px-4 py-3 text-gray-500 font-semibold text-xs uppercase tracking-wide whitespace-nowrap">{h}</th>
                                     ))}
                                 </tr>
                             </thead>
@@ -137,12 +141,12 @@ export default function RepDashboard() {
                                 ) : (
                                     deals.slice(0, 10).map((d) => (
                                         <tr key={d._id} className="hover:bg-gray-50/50 transition-colors">
-                                            <td className="px-4 py-3 font-medium text-gray-800">{d.name}</td>
-                                            <td className="px-4 py-3 text-gray-500">{d.companyId?.name || "—"}</td>
-                                            <td className="px-4 py-3"><StageBadge stage={d.stage} /></td>
-                                            <td className="px-4 py-3 font-semibold text-green-700">{formatCurrency(d.value || 0)}</td>
-                                            <td className="px-4 py-3 text-gray-500 text-xs">
-                                                {d.closeDate ? new Date(d.closeDate).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : "—"}
+                                            <td className="px-4 py-3 font-medium text-gray-800 whitespace-nowrap">{d.name}</td>
+                                            <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{d.companyId?.name || d.companyName || "—"}</td>
+                                            <td className="px-4 py-3 whitespace-nowrap"><StageBadge stage={d.stage} /></td>
+                                            <td className="px-4 py-3 font-semibold text-green-700 whitespace-nowrap">{formatCurrency(d.value || 0)}</td>
+                                            <td className="px-4 py-3 text-gray-500 text-xs whitespace-nowrap">
+                                                {d.expectedCloseDate ? new Date(d.expectedCloseDate).toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" }) : "—"}
                                             </td>
                                         </tr>
                                     ))
@@ -150,11 +154,11 @@ export default function RepDashboard() {
                             </tbody>
                         </table>
                     </div>
-                </Card>
+                </div>
 
-                <Card className="lg:col-span-2">
-                    <CardHeader title="My Pipeline Stages" />
-                    <div className="p-5 space-y-4">
+                <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+                    <h3 className="font-bold text-gray-800 mb-4">My Pipeline Stages</h3>
+                    <div className="space-y-4">
                         {deals.length === 0 && !loading ? (
                             <p className="text-center py-6 text-gray-400 text-sm">No pipeline data yet</p>
                         ) : (
@@ -184,7 +188,7 @@ export default function RepDashboard() {
                             </div>
                         </div>
                     </div>
-                </Card>
+                </div>
             </div>
 
             {/* Recent Activity: shows last 5 deals as activity feed */}
