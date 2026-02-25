@@ -15,13 +15,31 @@ const app = express();
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+const allowedOrigins = [
+    process.env.FRONTEND_URL,
+    "https://sales-crm-ui-87gs.vercel.app"
+].filter(Boolean); // Remove undefined/null values
+
 app.use(cors({
-    origin: [process.env.FRONTEND_URL, "https://sales-crm-ui-87gs.vercel.app"],
+    origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps or curl)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) !== -1 || origin.startsWith("http://localhost")) {
+            callback(null, true);
+        } else {
+            console.error(`Status: CORS Error - Origin ${origin} not allowed`);
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
     credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"]
 }))
 app.use(cookieParser())
+
+// Health check and root route
+app.get("/", (req, res) => res.status(200).send("Sales CRM API is running..."));
+app.get("/health", (req, res) => res.status(200).json({ status: "ok" }));
 
 app.use("/api/auth", userRoutes);
 app.use("/api/companies", companyRoutes);
