@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Modal from "./Modal";
 
 const STAGES = ["Lead", "Qualified", "Proposal", "Negotiation", "Closed Won", "Closed Lost"];
-const CURRENCIES = [{ value: "INR", label: "INR (₹)" }, { value: "USD", label: "USD ($)" }, { value: "EUR", label: "EUR (€)" }];
+const CURRENCIES = [{ value: "USD", label: "USD ($)" }, { value: "EUR", label: "EUR (€)" }, { value: "INR", label: "INR (₹)" }];
 const SOURCE_OPTIONS = ["Inbound", "Outbound", "Referral", "Website", "Cold Call", "Event", "Partner", "Other"];
 
 export default function DealModal({ isOpen, onClose, deal, onSave, companies, contacts, freeText = false, userRole, potentialOwners = [] }) {
@@ -24,7 +24,7 @@ export default function DealModal({ isOpen, onClose, deal, onSave, companies, co
                 companyId: deal.companyId?._id || deal.companyId || "",
                 contactId: deal.contactId?._id || deal.contactId || "",
                 companyName: deal.companyName || deal.companyId?.name || "",
-                contactName: deal.contactName || (deal.contactId ? `${deal.contactId.firstName || ""} ${deal.contactId.lastName || ""}`.trim() : ""),
+                contactName: deal.contactName || (deal.contactId ? `${deal.contactId.firstName || ""} ${deal.contactId.lastName || ""} `.trim() : ""),
                 value: deal.value || "",
                 currency: deal.currency || "USD",
                 stage: deal.stage || "Lead",
@@ -74,10 +74,10 @@ export default function DealModal({ isOpen, onClose, deal, onSave, companies, co
     };
 
     const inputClass = (field) =>
-        `w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 transition ${errors[field]
+        `w - full px - 3 py - 2 text - sm border rounded - lg focus: ring - 2 transition ${errors[field]
             ? "border-red-400 focus:ring-red-200 bg-red-50"
             : "border-gray-200 focus:ring-green-400"
-        }`;
+        } `;
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} title={deal ? "Edit Deal" : "Create New Deal"}>
@@ -118,7 +118,7 @@ export default function DealModal({ isOpen, onClose, deal, onSave, companies, co
                         <div className="relative">
                             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
                             <input type="number" min="1"
-                                className={`w-full pl-7 pr-3 py-2 text-sm border rounded-lg focus:ring-2 transition ${errors.value ? "border-red-400 focus:ring-red-200 bg-red-50" : "border-gray-200 focus:ring-green-400"}`}
+                                className={`w - full pl - 7 pr - 3 py - 2 text - sm border rounded - lg focus: ring - 2 transition ${errors.value ? "border-red-400 focus:ring-red-200 bg-red-50" : "border-gray-200 focus:ring-green-400"} `}
                                 value={formData.value}
                                 onChange={e => set("value", e.target.value)} placeholder="0" />
                         </div>

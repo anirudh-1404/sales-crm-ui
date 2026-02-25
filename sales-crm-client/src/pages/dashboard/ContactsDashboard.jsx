@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
-    Users, Link2, Linkedin, CalendarPlus, ChevronDown, Plus, Edit2, Trash2, Search
+    Users, Link2, Linkedin, CalendarPlus, ChevronDown, Plus, Edit2, Trash2, Search, ExternalLink
 } from "lucide-react";
 import { getContacts, createContact, updateContact, deleteContact } from "../../../API/services/contactService";
 import { getCompanies } from "../../../API/services/companyService";
@@ -175,7 +175,7 @@ export default function ContactsDashboard() {
                         <table className="w-full text-sm">
                             <thead>
                                 <tr className="border-b border-gray-100 bg-gray-50">
-                                    {["Contact", "Company", "Owner", "Actions"].map(h => (
+                                    {["Contact", "Company", "Owner", "LinkedIn", "Actions"].map(h => (
                                         <th key={h} className="text-left px-4 py-3 text-gray-500 font-semibold text-xs uppercase tracking-wide whitespace-nowrap">{h}</th>
                                     ))}
                                 </tr>
@@ -195,8 +195,17 @@ export default function ContactsDashboard() {
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-4 py-3 text-gray-500 font-medium whitespace-nowrap">{c.companyId?.name || "—"}</td>
+                                            <td className="px-4 py-3 text-gray-500 font-medium whitespace-nowrap">{c.companyId?.name || c.companyName || "—"}</td>
                                             <td className="px-4 py-3 text-red-600 font-semibold whitespace-nowrap">{c.ownerId?.firstName || "System"}</td>
+                                            <td className="px-4 py-3 whitespace-nowrap">
+                                                {c.linkedin ? (
+                                                    <a href={c.linkedin.startsWith("http") ? c.linkedin : `https://${c.linkedin}`}
+                                                        target="_blank" rel="noopener noreferrer"
+                                                        className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 hover:underline text-xs font-medium">
+                                                        <Linkedin size={13} /><ExternalLink size={11} />
+                                                    </a>
+                                                ) : <span className="text-gray-300 text-xs">—</span>}
+                                            </td>
                                             <td className="px-4 py-3 whitespace-nowrap">
                                                 <div className="flex items-center gap-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                                                     <button onClick={() => { setSelectedContact(c); setIsContactModalOpen(true); }}

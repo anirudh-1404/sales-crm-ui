@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Users, Building2, Users2, ChevronDown, Plus, Edit2, Trash2, Search } from "lucide-react";
+import { Users, Building2, Users2, ChevronDown, Plus, Edit2, Trash2, Search, Linkedin, ExternalLink } from "lucide-react";
 import { getContacts, createContact, updateContact, deleteContact } from "../../../API/services/contactService";
 import { getCompanies } from "../../../API/services/companyService";
 import ContactModal from "../../components/modals/ContactModal";
@@ -152,7 +152,7 @@ export default function ManagerContacts() {
                     <table className="w-full text-sm">
                         <thead>
                             <tr className="border-b border-gray-100 bg-gray-50">
-                                {["Contact", "Job Title", "Company", "Owner", "Actions"].map(h => (
+                                {["Contact", "Job Title", "Company", "Owner", "LinkedIn", "Actions"].map(h => (
                                     <th key={h} className="text-left px-4 py-3 text-gray-500 font-semibold text-xs uppercase tracking-wide whitespace-nowrap">{h}</th>
                                 ))}
                             </tr>
@@ -176,9 +176,18 @@ export default function ManagerContacts() {
                                         </td>
                                         <td className="px-4 py-3 text-gray-600">{c.jobTitle || "—"}</td>
                                         <td className="px-4 py-3">
-                                            <span className="text-xs px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 font-medium">{c.companyId?.name || "—"}</span>
+                                            <span className="text-xs px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 font-medium">{c.companyId?.name || c.companyName || "—"}</span>
                                         </td>
                                         <td className="px-4 py-3 text-purple-700 font-medium">{c.ownerId?.firstName || "Unknown"}</td>
+                                        <td className="px-4 py-3 whitespace-nowrap">
+                                            {c.linkedin ? (
+                                                <a href={c.linkedin.startsWith("http") ? c.linkedin : `https://${c.linkedin}`}
+                                                    target="_blank" rel="noopener noreferrer"
+                                                    className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 hover:underline text-xs font-medium">
+                                                    <Linkedin size={13} /><ExternalLink size={11} />
+                                                </a>
+                                            ) : <span className="text-gray-300 text-xs">—</span>}
+                                        </td>
                                         <td className="px-4 py-3">
                                             <div className="flex items-center gap-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                                                 <button
