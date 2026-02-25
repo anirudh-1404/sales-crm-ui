@@ -74,10 +74,10 @@ export default function DealModal({ isOpen, onClose, deal, onSave, companies, co
     };
 
     const inputClass = (field) =>
-        `w - full px - 3 py - 2 text - sm border rounded - lg focus: ring - 2 transition ${errors[field]
+        `w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 transition ${errors[field]
             ? "border-red-400 focus:ring-red-200 bg-red-50"
             : "border-gray-200 focus:ring-green-400"
-        } `;
+        }`;
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} title={deal ? "Edit Deal" : "Create New Deal"}>
@@ -118,7 +118,7 @@ export default function DealModal({ isOpen, onClose, deal, onSave, companies, co
                         <div className="relative">
                             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
                             <input type="number" min="1"
-                                className={`w - full pl - 7 pr - 3 py - 2 text - sm border rounded - lg focus: ring - 2 transition ${errors.value ? "border-red-400 focus:ring-red-200 bg-red-50" : "border-gray-200 focus:ring-green-400"} `}
+                                className={`w-full pl-7 pr-3 py-2 text-sm border rounded-lg focus:ring-2 transition ${errors.value ? "border-red-400 focus:ring-red-200 bg-red-50" : "border-gray-200 focus:ring-green-400"}`}
                                 value={formData.value}
                                 onChange={e => set("value", e.target.value)} placeholder="0" />
                         </div>
