@@ -16,21 +16,14 @@ const app = express();
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 const allowedOrigins = [
-    process.env.FRONTEND_URL,
+    "http://localhost:5173",
     "https://sales-crm-ui-87gs.vercel.app"
-].filter(Boolean); // Remove undefined/null values
-
+];
 app.use(cors({
     origin: (origin, callback) => {
-        // Allow requests with no origin (like mobile apps or curl)
-        if (!origin) return callback(null, true);
-
-        const isAllowed = allowedOrigins.indexOf(origin) !== -1 || origin.startsWith("http://localhost");
-
-        if (isAllowed) {
+        if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
-            console.error(`Status: CORS Error - Origin ${origin} not allowed. Allowed origins:`, allowedOrigins);
             callback(new Error("Not allowed by CORS"));
         }
     },
@@ -38,6 +31,7 @@ app.use(cors({
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"]
 }))
+// app.options("/(.*)", cors())
 app.use(cookieParser())
 
 // Health check and root route
