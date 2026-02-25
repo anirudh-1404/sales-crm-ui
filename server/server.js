@@ -16,16 +16,29 @@ const app = express();
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 const allowedOrigins = [
-    "http://localhost:5173",
-    "https://sales-crm-ui-87gs.vercel.app"
-];
+    process.env.FRONTEND_URL,
+    "https://sales-crm-ui-87gs.vercel.app",
+    "http://localhost:5173"
+].filter(Boolean);
+
 app.use(cors({
     origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error("Not allowed by CORS"));
+        // Allow requests with no origin (like mobile apps)
+        if (!origin) return callback(null, true);
+
+        // 1. Check if it's in our explicit list
+        if (allowedOrigins.includes(origin) || origin.startsWith("http://localhost")) {
+            return callback(null, true);
         }
+
+        // 2. Allow any vercel deployment for this specific project pattern
+        const isVercelPreview = origin.startsWith("https://sales-crm-ui-87gs") && origin.endsWith(".vercel.app");
+        if (isVercelPreview) {
+            return callback(null, true);
+        }
+
+        console.error(`Status: CORS Error - Origin ${origin} not allowed by policy`);
+        callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
