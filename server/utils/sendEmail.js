@@ -1,7 +1,9 @@
 import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true, // true for port 465
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
@@ -14,7 +16,7 @@ const transporter = nodemailer.createTransport({
 
 export const sendEmail = async (to, subject, html) => {
     try {
-        console.log(`Attempting to send email to: ${to}`);
+        console.log(`Attempting to send email to: ${to} using port 465`);
         const info = await transporter.sendMail({
             from: `"mbdConsulting" <${process.env.EMAIL_USER}>`,
             to,
@@ -24,7 +26,7 @@ export const sendEmail = async (to, subject, html) => {
         console.log("Email sent successfully:", info.messageId);
         return info;
     } catch (error) {
-        console.error("Email Sending Error:", error);
-        throw new Error("Failed to send email. Please check server logs.");
+        console.error("Detailed Email Error:", error);
+        throw new Error(`Failed to send email: ${error.message}`);
     }
 }
