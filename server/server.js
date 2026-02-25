@@ -51,7 +51,7 @@ app.use("/api/deals", dealRoutes);
 app.use("/api/audit-logs", auditLogRoutes);
 
 // Catch-all route for debugging 404s
-app.use("*", (req, res) => {
+app.use((req, res) => {
     console.log(`404 Not Found: ${req.method} ${req.originalUrl}`);
     res.status(404).json({
         message: `Route not found: ${req.method} ${req.originalUrl}`,
