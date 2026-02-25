@@ -24,10 +24,13 @@ app.use(cors({
     origin: (origin, callback) => {
         // Allow requests with no origin (like mobile apps or curl)
         if (!origin) return callback(null, true);
-        if (allowedOrigins.indexOf(origin) !== -1 || origin.startsWith("http://localhost")) {
+
+        const isAllowed = allowedOrigins.indexOf(origin) !== -1 || origin.startsWith("http://localhost");
+
+        if (isAllowed) {
             callback(null, true);
         } else {
-            console.error(`Status: CORS Error - Origin ${origin} not allowed`);
+            console.error(`Status: CORS Error - Origin ${origin} not allowed. Allowed origins:`, allowedOrigins);
             callback(new Error("Not allowed by CORS"));
         }
     },
@@ -46,6 +49,15 @@ app.use("/api/companies", companyRoutes);
 app.use("/api/contacts", contactRoutes);
 app.use("/api/deals", dealRoutes);
 app.use("/api/audit-logs", auditLogRoutes);
+
+// Catch-all route for debugging 404s
+app.use("*", (req, res) => {
+    console.log(`404 Not Found: ${req.method} ${req.originalUrl}`);
+    res.status(404).json({
+        message: `Route not found: ${req.method} ${req.originalUrl}`,
+        hint: "Make sure you are prefixing your requests with /api"
+    });
+});
 
 connectdb()
 

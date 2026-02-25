@@ -1,8 +1,18 @@
 import axios from "axios";
 import toast from "react-hot-toast";
 
+const getBaseURL = () => {
+    let url = import.meta.env.VITE_BASE_URL || "http://localhost:8000/api";
+    url = url.trim();
+    // Remove trailing slash if present
+    if (url.endsWith("/")) url = url.slice(0, -1);
+    // Ensure it ends with /api
+    if (!url.endsWith("/api")) url += "/api";
+    return url;
+};
+
 const API = axios.create({
-    baseURL: import.meta.env.VITE_BASE_URL || "http://localhost:8000/api",
+    baseURL: getBaseURL(),
     headers: {
         "Content-Type": "application/json"
     },
