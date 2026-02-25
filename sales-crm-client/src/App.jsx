@@ -18,6 +18,7 @@ import CompaniesDashboard from "./pages/dashboard/CompaniesDashboard";
 import ContactsDashboard from "./pages/dashboard/ContactsDashboard";
 import UsersDashboard from "./pages/dashboard/UsersDashboard";
 import AuditLogs from "./pages/dashboard/AuditLogs";
+import TrashDashboard from "./pages/dashboard/TrashDashboard";
 
 // Sales Manager dashboard
 import SalesManagerLayout from "./components/SalesManagerLayout";
@@ -76,6 +77,7 @@ const router = createBrowserRouter([
       { path: "contacts", element: <ContactsDashboard /> },
       { path: "users", element: <UsersDashboard /> },
       { path: "audit-logs", element: <AuditLogs /> },
+      { path: "trash", element: <TrashDashboard /> },
     ]
   },
   {

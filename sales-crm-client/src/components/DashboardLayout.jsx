@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
     LayoutDashboard, Briefcase, Building2, Users, ContactRound,
-    Bell, Search, Menu, LogOut, ChevronDown, History
+    Bell, Search, Menu, LogOut, ChevronDown, History, Trash2
 } from "lucide-react";
 import Logo from "./Logo";
 import { useAuth } from "../context/AuthContext";
@@ -113,6 +113,7 @@ const DashboardLayout = () => {
                             <SidebarLink to="/dashboard/companies" icon={Building2} label="Companies" onClick={closeSidebarOnMobile} />
                             <SidebarLink to="/dashboard/contacts" icon={ContactRound} label="Contacts" onClick={closeSidebarOnMobile} />
                             <SidebarLink to="/dashboard/users" icon={Users} label="Users" onClick={closeSidebarOnMobile} />
+                            <SidebarLink to="/dashboard/trash" icon={Trash2} label="Trash" onClick={closeSidebarOnMobile} />
                         </div>
                     </div>
                     <div>

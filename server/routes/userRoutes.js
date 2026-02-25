@@ -1,5 +1,5 @@
 import express from "express"
-import { adminTest, activateUser, adminResetPassword, bulkReassignRecords, changePassword, deactivateUser, forgotPassword, getProfile, getTeamUsers, loginUser, logoutUser, registerUser, resetPassword, updateUser } from "../controllers/userController.js"
+import { adminTest, activateUser, adminResetPassword, bulkReassignRecords, changePassword, deactivateUser, forgotPassword, getProfile, getTeamUsers, loginUser, logoutUser, registerUser, resetPassword, updateUser, softDeleteUser, getDeletedUsers, restoreUser } from "../controllers/userController.js"
 import { protect } from "../middlewares/authMiddleware.js"
 import { requireRole } from "../middlewares/roleMiddleware.js"
 const router = express.Router()
@@ -18,6 +18,9 @@ router.patch("/:id/activate", protect, activateUser)
 router.patch("/:id/change-password", protect, changePassword)
 router.patch("/:id/admin-reset-password", protect, requireRole("admin"), adminResetPassword)
 router.patch("/:id/reassign", protect, bulkReassignRecords)
+router.patch("/:id/soft-delete", protect, requireRole("admin"), softDeleteUser)
+router.get("/trash", protect, requireRole("admin"), getDeletedUsers)
+router.patch("/:id/restore", protect, requireRole("admin"), restoreUser)
 
 
 export default router;

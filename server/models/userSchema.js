@@ -38,6 +38,14 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
+    isDeleted: {
+        type: Boolean,
+        default: false
+    },
+    deletedAt: {
+        type: Date,
+        default: null
+    },
     lastLogin: {
         type: Date,
         default: null

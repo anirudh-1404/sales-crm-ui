@@ -40,6 +40,21 @@ export const bulkReassignRecords = async (id, newOwnerId) => {
     return API.patch(`/auth/${id}/reassign`, { newOwnerId });
 };
 
+// Soft-delete a user (moves to trash, keeps in DB)
+export const softDeleteUser = async (id, data) => {
+    return API.patch(`/auth/${id}/soft-delete`, data);
+};
+
+// Get all soft-deleted users (trash)
+export const getDeletedUsers = async () => {
+    return API.get("/auth/trash");
+};
+
+// Restore a soft-deleted user from trash
+export const restoreUser = async (id) => {
+    return API.patch(`/auth/${id}/restore`);
+};
+
 // Forgot Password
 export const forgotPassword = async (email) => {
     return API.post("/auth/forgot-password", { email });

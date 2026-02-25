@@ -7,7 +7,7 @@ const inputClass = (err) => err
     ? `${baseInput} border-red-400 focus:ring-red-200 bg-red-50`
     : `${baseInput} border-gray-200 focus:ring-purple-400`;
 
-export default function DeactivateModal({ isOpen, onClose, user, activeUsers, onConfirm }) {
+export default function DeactivateModal({ isOpen, onClose, user, activeUsers, onConfirm, title = "Deactivate User", actionLabel = "Deactivate User", actionColor = "bg-red-600 hover:bg-red-700" }) {
     const [reassignMode, setReassignMode] = useState("reassign"); // "reassign" | "keep"
     const [newOwnerId, setNewOwnerId] = useState("");
     const [saving, setSaving] = useState(false);
@@ -62,8 +62,8 @@ export default function DeactivateModal({ isOpen, onClose, user, activeUsers, on
                     {/* Option 1: Reassign */}
                     <label
                         className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${reassignMode === "reassign"
-                                ? "border-purple-400 bg-purple-50"
-                                : "border-gray-200 bg-white hover:border-gray-300"
+                            ? "border-purple-400 bg-purple-50"
+                            : "border-gray-200 bg-white hover:border-gray-300"
                             }`}
                     >
                         <input
@@ -85,8 +85,8 @@ export default function DeactivateModal({ isOpen, onClose, user, activeUsers, on
                     {/* Option 2: Keep */}
                     <label
                         className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${reassignMode === "keep"
-                                ? "border-blue-400 bg-blue-50"
-                                : "border-gray-200 bg-white hover:border-gray-300"
+                            ? "border-blue-400 bg-blue-50"
+                            : "border-gray-200 bg-white hover:border-gray-300"
                             }`}
                     >
                         <input
@@ -146,10 +146,10 @@ export default function DeactivateModal({ isOpen, onClose, user, activeUsers, on
                     <button
                         type="submit"
                         disabled={saving || (reassignMode === "reassign" && !newOwnerId)}
-                        className="flex-1 px-4 py-2 bg-red-600 text-white text-sm font-semibold rounded-lg hover:bg-red-700 disabled:opacity-60 transition flex items-center justify-center gap-2"
+                        className={`flex-1 px-4 py-2 text-white text-sm font-semibold rounded-lg disabled:opacity-60 transition flex items-center justify-center gap-2 ${actionColor}`}
                     >
                         <UserX size={14} />
-                        {saving ? "Processing..." : "Deactivate User"}
+                        {saving ? "Processing..." : actionLabel}
                     </button>
                 </div>
             </form>

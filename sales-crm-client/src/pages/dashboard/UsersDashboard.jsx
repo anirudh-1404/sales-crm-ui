@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Users2, ShieldCheck, Briefcase, UserCheck, Edit2, RefreshCw, Plus, X, Search } from "lucide-react";
-import { getTeamUsers, deactivateUser, activateUser, bulkReassignRecords } from "../../../API/services/userService";
+import { Users2, ShieldCheck, Briefcase, UserCheck, Edit2, RefreshCw, Plus, X, Search, Trash2 } from "lucide-react";
+import { getTeamUsers, deactivateUser, activateUser, bulkReassignRecords, softDeleteUser } from "../../../API/services/userService";
 import UserModal from "../../components/modals/UserModal";
 import DeactivateModal from "../../components/modals/DeactivateModal";
 import ConfirmDialog from "../../components/modals/ConfirmDialog";
@@ -129,6 +129,7 @@ export default function UsersDashboard() {
     const [isUserModalOpen, setIsUserModalOpen] = useState(false);
     const [isReassignModalOpen, setIsReassignModalOpen] = useState(false);
     const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
 
     // Confirm dialog state
@@ -189,6 +190,26 @@ export default function UsersDashboard() {
                 }
             }
         });
+    };
+
+    const handleSoftDelete = (user) => {
+        setSelectedUser(user);
+        setIsDeleteModalOpen(true);
+    };
+
+    const confirmSoftDelete = async (newOwnerId) => {
+        try {
+            const body = newOwnerId ? { newOwnerId } : {};
+            await softDeleteUser(selectedUser._id, body);
+            const msg = newOwnerId
+                ? `${selectedUser.firstName} moved to trash and records reassigned`
+                : `${selectedUser.firstName} moved to trash (data kept with user)`;
+            toast.success(msg);
+            fetchUsers();
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to delete user");
+            throw error;
+        }
     };
 
     const potentialManagers = users.filter(u => (u.role === "sales_manager" || u.role === "admin") && u.isActive);
@@ -340,6 +361,16 @@ export default function UsersDashboard() {
                                                         Activate
                                                     </button>
                                                 )}
+                                                {/* Soft Delete (non-admins only) */}
+                                                {u.role !== "admin" && (
+                                                    <button
+                                                        onClick={() => handleSoftDelete(u)}
+                                                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                                                        title="Move to trash"
+                                                    >
+                                                        <Trash2 size={15} />
+                                                    </button>
+                                                )}
                                             </div>
                                         </td>
                                     </tr>
@@ -393,6 +424,16 @@ export default function UsersDashboard() {
                 user={selectedUser}
                 activeUsers={users}
                 onConfirm={confirmDeactivate}
+            />
+            <DeactivateModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                user={selectedUser}
+                activeUsers={users}
+                onConfirm={confirmSoftDelete}
+                title="Move User to Trash"
+                actionLabel="Move to Trash"
+                actionColor="bg-gray-800 hover:bg-gray-900"
             />
             <ConfirmDialog
                 isOpen={confirmState.isOpen}

@@ -186,17 +186,17 @@ export const getTeamUsers = async (req, res, next) => {
         const role = req.user.role;
 
         if (role === "admin") {
-            const users = await User.find().populate("managerId", "firstName lastName").select("-password").sort({ createdAt: -1 })
+            const users = await User.find({ isDeleted: { $ne: true } }).populate("managerId", "firstName lastName").select("-password").sort({ createdAt: -1 })
             return res.json(users)
         }
 
         if (role === "sales_manager") {
-            const users = await User.find({ $or: [{ _id: id }, { managerId: id }] }).populate("managerId", "firstName lastName").select("-password").sort({ createdAt: -1 })
+            const users = await User.find({ $or: [{ _id: id }, { managerId: id }], isDeleted: { $ne: true } }).populate("managerId", "firstName lastName").select("-password").sort({ createdAt: -1 })
             return res.json(users)
         }
 
         if (role === "sales_rep") {
-            const users = await User.find({ _id: id }).populate("managerId", "firstName lastName").select("-password");
+            const users = await User.find({ _id: id, isDeleted: { $ne: true } }).populate("managerId", "firstName lastName").select("-password");
             return res.json(users)
         }
 
@@ -204,6 +204,96 @@ export const getTeamUsers = async (req, res, next) => {
         return res.status(500).json({
             message: error.message || "Server error!"
         })
+    }
+}
+
+export const softDeleteUser = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { newOwnerId } = req.body; // optional
+        const { role: currentUserRole, id: currentUserId } = req.user;
+
+        if (currentUserRole !== "admin") {
+            return res.status(403).json({ message: "Only admins can delete users!" });
+        }
+
+        const user = await User.findById(id);
+        if (!user) return res.status(404).json({ message: "User not found!" });
+        if (user.role === "admin") return res.status(403).json({ message: "Cannot delete an admin account!" });
+
+        let newOwner = null;
+        if (newOwnerId) {
+            newOwner = await User.findById(newOwnerId);
+            if (!newOwner) return res.status(404).json({ message: "New owner not found!" });
+            await Company.updateMany({ ownerId: id }, { ownerId: newOwnerId });
+            await Contact.updateMany({ ownerId: id }, { ownerId: newOwnerId });
+            await Deal.updateMany({ ownerId: id }, { ownerId: newOwnerId });
+        }
+
+        user.isDeleted = true;
+        user.isActive = false;
+        user.deletedAt = new Date();
+        await user.save();
+
+        const msg = newOwnerId
+            ? "User deleted and records reassigned successfully!"
+            : "User deleted. Records kept under their ownership.";
+
+        res.status(200).json({ message: msg });
+
+        await logAction({
+            entityType: "User",
+            entityId: id,
+            action: "DELETE",
+            performedBy: currentUserId,
+            details: newOwnerId
+                ? { message: `User "${user.firstName} ${user.lastName}" soft-deleted. Records reassigned to ${newOwner.firstName} ${newOwner.lastName}`, targetName: `${user.firstName} ${user.lastName}`, reassignedToName: `${newOwner.firstName} ${newOwner.lastName}` }
+                : { message: `User "${user.firstName} ${user.lastName}" soft-deleted. Records kept with original owner.`, targetName: `${user.firstName} ${user.lastName}`, reassignment: "skipped" },
+            req
+        });
+
+    } catch (error) {
+        return res.status(500).json({ message: error.message || "Server error!" });
+    }
+}
+
+export const getDeletedUsers = async (req, res, next) => {
+    try {
+        const { role } = req.user;
+        if (role !== "admin") return res.status(403).json({ message: "Access denied!" });
+        const users = await User.find({ isDeleted: true }).populate("managerId", "firstName lastName").select("-password").sort({ deletedAt: -1 });
+        res.status(200).json({ data: users });
+    } catch (error) {
+        return res.status(500).json({ message: error.message || "Server error!" });
+    }
+}
+
+export const restoreUser = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { role, id: currentUserId } = req.user;
+        if (role !== "admin") return res.status(403).json({ message: "Access denied!" });
+
+        const user = await User.findById(id);
+        if (!user) return res.status(404).json({ message: "User not found!" });
+
+        user.isDeleted = false;
+        user.deletedAt = null;
+        user.isActive = true;
+        await user.save();
+
+        res.status(200).json({ message: `${user.firstName} ${user.lastName} restored successfully!` });
+
+        await logAction({
+            entityType: "User",
+            entityId: id,
+            action: "ACTIVATE",
+            performedBy: currentUserId,
+            details: { message: `User "${user.firstName} ${user.lastName}" restored from trash.`, targetName: `${user.firstName} ${user.lastName}` },
+            req
+        });
+    } catch (error) {
+        return res.status(500).json({ message: error.message || "Server error!" });
     }
 }
 
