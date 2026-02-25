@@ -22,6 +22,19 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         fetchProfile();
+
+        // Failsafe: If server doesn't respond in 4s, stop loading to allow redirect to login
+        const failsafe = setTimeout(() => {
+            setLoading(currentLoading => {
+                if (currentLoading) {
+                    console.warn("Auth check timed out. Defaulting to logged out state.");
+                    return false;
+                }
+                return currentLoading;
+            });
+        }, 4000);
+
+        return () => clearTimeout(failsafe);
     }, []);
 
     const login = (userData) => {
