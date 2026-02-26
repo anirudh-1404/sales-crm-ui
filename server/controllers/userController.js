@@ -38,13 +38,17 @@ export const registerUser = async (req, res, next) => {
 
         const token = await generateToken(user._id, user.role);
 
-        res.cookie("token", token, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "none",
-            partitioned: true,
-            maxAge: 15 * 60 * 1000
-        })
+        // Only set the auth cookie if no valid token already exists (e.g., self-registration)
+        // This prevents an Admin's session from being overwritten when creating a new user.
+        if (!req.cookies?.token) {
+            res.cookie("token", token, {
+                httpOnly: true,
+                secure: true,
+                sameSite: "none",
+                partitioned: true,
+                maxAge: 15 * 60 * 1000
+            })
+        }
 
         res.status(201).json({
             message: "User registered successfully!",
