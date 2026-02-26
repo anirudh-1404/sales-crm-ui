@@ -115,10 +115,14 @@ const router = createBrowserRouter([
   },
 ]);
 
+import SessionTimeoutManager from "./components/SessionTimeoutManager";
+
 const App = () => {
   return (
     <AuthProvider>
-      <RouterProvider router={router} />
+      <SessionTimeoutManager>
+        <RouterProvider router={router} />
+      </SessionTimeoutManager>
     </AuthProvider>
   )
 }
