@@ -46,6 +46,7 @@ export default function CompaniesDashboard() {
 
     // Modal states
     const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
+    const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedCompany, setSelectedCompany] = useState(null);
     const [users, setUsers] = useState([]);
@@ -170,7 +171,10 @@ export default function CompaniesDashboard() {
                                     ) : (
                                         companies.map((c) => (
                                             <tr key={c._id} className="hover:bg-gray-50/50 transition-colors group">
-                                                <td className="px-4 py-3 font-medium text-gray-800 whitespace-nowrap">{c.name}</td>
+                                                <td className="px-4 py-3 font-medium text-gray-800 whitespace-nowrap cursor-pointer hover:text-red-600 transition-colors"
+                                                    onClick={() => { setSelectedCompany(c); setIsDetailsModalOpen(true); }}>
+                                                    {c.name}
+                                                </td>
                                                 <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{c.industry || "—"}</td>
                                                 <td className="px-4 py-3 text-red-700 font-bold whitespace-nowrap">{c.ownerId?.firstName || "System"}</td>
                                                 <td className="px-4 py-3 whitespace-nowrap">
@@ -178,6 +182,11 @@ export default function CompaniesDashboard() {
                                                 </td>
                                                 <td className="px-4 py-3 whitespace-nowrap">
                                                     <div className="flex items-center gap-2">
+                                                        <button onClick={() => { setSelectedCompany(c); setIsDetailsModalOpen(true); }}
+                                                            title="View details"
+                                                            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition">
+                                                            <Eye size={16} />
+                                                        </button>
                                                         <button onClick={() => { setSelectedCompany(c); setIsCompanyModalOpen(true); }}
                                                             className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition">
                                                             <Edit2 size={16} />
