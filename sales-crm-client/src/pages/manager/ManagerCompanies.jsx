@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Building2, CheckCircle2, Eye, XCircle, Plus, Edit2, Trash2, Search } from "lucide-react";
 import { getCompanies, createCompany, updateCompany, deleteCompany, changeCompanyOwnership } from "../../../API/services/companyService";
 import CompanyModal from "../../components/modals/CompanyModal";
+import CompanyDetailsModal from "../../components/modals/CompanyDetailsModal";
 import DeleteConfirmModal from "../../components/modals/DeleteConfirmModal";
 import { toast } from "react-hot-toast";
 
@@ -29,6 +30,7 @@ export default function ManagerCompanies() {
 
     // Modal states
     const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
+    const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedCompany, setSelectedCompany] = useState(null);
 
@@ -146,7 +148,10 @@ export default function ManagerCompanies() {
                             ) : (
                                 companies.map((c) => (
                                     <tr key={c._id} className="hover:bg-gray-50/50 transition-colors group">
-                                        <td className="px-4 py-3 font-medium text-gray-800">{c.name}</td>
+                                        <td className="px-4 py-3 font-medium text-gray-800 cursor-pointer hover:text-red-600 transition-colors"
+                                            onClick={() => { setSelectedCompany(c); setIsDetailsModalOpen(true); }}>
+                                            {c.name}
+                                        </td>
                                         <td className="px-4 py-3 text-gray-600">{c.industry || "—"}</td>
                                         <td className="px-4 py-3 text-gray-600">{c.size || "—"}</td>
                                         <td className="px-4 py-3">
@@ -156,6 +161,13 @@ export default function ManagerCompanies() {
                                         <td className="px-4 py-3 text-gray-600">{c.revenueRange || "—"}</td>
                                         <td className="px-4 py-3">
                                             <div className="flex items-center gap-2">
+                                                <button
+                                                    onClick={() => { setSelectedCompany(c); setIsDetailsModalOpen(true); }}
+                                                    title="View details"
+                                                    className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                                                >
+                                                    <Eye size={16} />
+                                                </button>
                                                 <button
                                                     onClick={() => { setSelectedCompany(c); setIsCompanyModalOpen(true); }}
                                                     className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
@@ -183,6 +195,12 @@ export default function ManagerCompanies() {
                 onClose={() => setIsCompanyModalOpen(false)}
                 company={selectedCompany}
                 onSave={handleSaveCompany}
+            />
+
+            <CompanyDetailsModal
+                isOpen={isDetailsModalOpen}
+                onClose={() => setIsDetailsModalOpen(false)}
+                company={selectedCompany}
             />
 
             <DeleteConfirmModal
