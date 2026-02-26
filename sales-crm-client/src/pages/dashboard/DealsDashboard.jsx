@@ -279,6 +279,7 @@ export default function DealsDashboard() {
                                     </tbody>
                                 </table>
                             </div>
+                        </div>
                     </Card>
 
                     <Card className="lg:col-span-2 h-full flex flex-col">
