@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }) => {
                 }
                 return currentLoading;
             });
-        }, 4000);
+        }, 10000);
 
         return () => clearTimeout(failsafe);
     }, []);
