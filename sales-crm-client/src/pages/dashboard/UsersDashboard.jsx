@@ -250,7 +250,7 @@ export default function UsersDashboard() {
                     <p className="text-xs sm:text-sm text-gray-400 mt-0.5">Manage all users and their roles</p>
                 </div>
                 <button
-                    onClick={() => { setSelectedUser(null); setIsModalOpen(true); }}
+                    onClick={() => { setSelectedUser(null); setIsUserModalOpen(true); }}
                     className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-700 transition shadow-md shadow-red-100"
                 >
                     <Plus size={18} />
