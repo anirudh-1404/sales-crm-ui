@@ -32,7 +32,7 @@ export default function ContactDetailsModal({ isOpen, onClose, contact }) {
                     </div>
                     <div className="min-w-0">
                         <h2 className="text-2xl font-bold text-gray-900 truncate">
-                            {contact.firstName} {contact.lastName}
+                            {`${contact.firstName || ""} ${contact.lastName || ""}`.trim()}
                         </h2>
                         <div className="flex flex-wrap items-center gap-2 mt-1.5">
                             <span className="px-2.5 py-0.5 rounded-full bg-red-50 text-red-600 text-[10px] font-bold border border-red-100 uppercase tracking-wider">
@@ -105,7 +105,7 @@ export default function ContactDetailsModal({ isOpen, onClose, contact }) {
                             <div className="flex flex-col p-4 bg-red-50/50 rounded-2xl border border-red-100/50">
                                 <span className="text-[10px] text-red-500 font-bold uppercase tracking-tighter mb-1">Assigned Manager</span>
                                 <span className="text-sm font-bold text-red-700">
-                                    {contact.ownerId?.firstName} {contact.ownerId?.lastName}
+                                    {`${contact.ownerId?.firstName || ""} ${contact.ownerId?.lastName || ""}`.trim() || "Unassigned"}
                                 </span>
                                 <span className="text-[10px] text-red-400/80 italic mt-0.5">{contact.ownerId?.email}</span>
                             </div>

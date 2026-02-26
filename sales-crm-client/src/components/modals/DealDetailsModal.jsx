@@ -122,7 +122,7 @@ export default function DealDetailsModal({ isOpen, onClose, deal }) {
                                         <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 flex-shrink-0">
                                             <User size={14} />
                                         </div>
-                                        <span className="text-sm font-bold text-gray-700 truncate">{deal.contactId ? `${deal.contactId.firstName} ${deal.contactId.lastName}` : deal.contactName}</span>
+                                        <span className="text-sm font-bold text-gray-700 truncate">{deal.contactId ? `${deal.contactId.firstName || ""} ${deal.contactId.lastName || ""}`.trim() : (deal.contactName || "No Contact")}</span>
                                     </div>
                                     <ArrowRight size={14} className="text-gray-300" />
                                 </div>
@@ -140,7 +140,7 @@ export default function DealDetailsModal({ isOpen, onClose, deal }) {
                             <div className="flex flex-col p-4 bg-gradient-to-br from-red-50 to-white rounded-2xl border border-red-100/50">
                                 <span className="text-[10px] text-red-400 font-black uppercase tracking-tighter mb-1">Assigned Executive</span>
                                 <span className="text-sm font-black text-red-700">
-                                    {deal.ownerId?.firstName} {deal.ownerId?.lastName}
+                                    {`${deal.ownerId?.firstName || ""} ${deal.ownerId?.lastName || ""}`.trim() || "Unassigned"}
                                 </span>
                                 <span className="text-[10px] text-red-300 font-bold uppercase tracking-tight mt-1">Core Sales Unit</span>
                             </div>

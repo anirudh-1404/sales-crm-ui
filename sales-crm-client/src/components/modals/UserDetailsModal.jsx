@@ -41,7 +41,7 @@ export default function UserDetailsModal({ isOpen, onClose, user }) {
                         {initials}
                     </div>
                     <div className="min-w-0">
-                        <h2 className="text-xl font-bold text-gray-900 truncate">{user.firstName} {user.lastName}</h2>
+                        <h2 className="text-xl font-bold text-gray-900 truncate">{`${user.firstName || ""} ${user.lastName || ""}`.trim()}</h2>
                         <div className={`inline-flex items-center mt-1 px-2.5 py-0.5 rounded-full text-xs font-bold border ${roleBadge[user.role] || "bg-gray-100 text-gray-600 border-gray-200"}`}>
                             {formatRole(user.role)}
                         </div>
