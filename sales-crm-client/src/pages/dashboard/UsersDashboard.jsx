@@ -358,6 +358,16 @@ export default function UsersDashboard() {
                                                         <RefreshCw size={15} />
                                                     </button>
                                                 )}
+                                                {/* Soft Delete (non-admins only) */}
+                                                {u.role !== "admin" && (
+                                                    <button
+                                                        onClick={() => handleSoftDelete(u)}
+                                                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                                                        title="Move to trash"
+                                                    >
+                                                        <Trash2 size={15} />
+                                                    </button>
+                                                )}
                                                 {/* Deactivate (active non-admins) */}
                                                 {u.role !== "admin" && u.isActive && (
                                                     <button
@@ -374,16 +384,6 @@ export default function UsersDashboard() {
                                                         className="text-[10px] sm:text-xs px-2 sm:px-2.5 py-1 rounded-lg font-semibold border border-green-300 text-green-700 hover:bg-green-50 transition"
                                                     >
                                                         Activate
-                                                    </button>
-                                                )}
-                                                {/* Soft Delete (non-admins only) */}
-                                                {u.role !== "admin" && (
-                                                    <button
-                                                        onClick={() => handleSoftDelete(u)}
-                                                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
-                                                        title="Move to trash"
-                                                    >
-                                                        <Trash2 size={15} />
                                                     </button>
                                                 )}
                                             </div>
