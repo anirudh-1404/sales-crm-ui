@@ -5,7 +5,7 @@ import { getContacts } from "../../API/services/contactService";
 import { getCompanies } from "../../API/services/companyService";
 
 const stageBadge = {
-    Lead: "bg-blue-100 text-blue-700", Qualified: "bg-purple-100 text-purple-700",
+    Lead: "bg-red-50 text-red-600 border border-red-100", Qualified: "bg-orange-100 text-orange-700",
     Proposal: "bg-yellow-100 text-yellow-700", Negotiation: "bg-orange-100 text-orange-700",
     "Closed Won": "bg-green-100 text-green-700", "Closed Lost": "bg-red-100 text-red-700",
 };
@@ -125,7 +125,7 @@ export default function GlobalSearch({ isOpen, onClose }) {
                                 <span className="ml-auto text-xs text-gray-400">{results.deals.length} result{results.deals.length > 1 ? "s" : ""}</span>
                             </div>
                             {results.deals.map(d => (
-                                <div key={d._id} className="px-4 py-3 hover:bg-blue-50 cursor-pointer border-b border-gray-50 transition-colors" onClick={onClose}>
+                                <div key={d._id} className="px-4 py-3 hover:bg-red-50 cursor-pointer border-b border-gray-50 transition-colors" onClick={onClose}>
                                     <div className="flex items-center justify-between gap-3">
                                         <div className="min-w-0">
                                             <p className="text-sm font-medium text-gray-800 truncate">{d.name}</p>
@@ -150,9 +150,9 @@ export default function GlobalSearch({ isOpen, onClose }) {
                                 <span className="ml-auto text-xs text-gray-400">{results.contacts.length} result{results.contacts.length > 1 ? "s" : ""}</span>
                             </div>
                             {results.contacts.map(c => (
-                                <div key={c._id} className="px-4 py-3 hover:bg-green-50 cursor-pointer border-b border-gray-50 transition-colors" onClick={onClose}>
+                                <div key={c._id} className="px-4 py-3 hover:bg-red-50 cursor-pointer border-b border-gray-50 transition-colors" onClick={onClose}>
                                     <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                                        <div className="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
                                             {`${c.firstName?.[0] || ""}${c.lastName?.[0] || ""}`.toUpperCase()}
                                         </div>
                                         <div className="min-w-0 flex-1">
@@ -174,13 +174,13 @@ export default function GlobalSearch({ isOpen, onClose }) {
                                 <span className="ml-auto text-xs text-gray-400">{results.companies.length} result{results.companies.length > 1 ? "s" : ""}</span>
                             </div>
                             {results.companies.map(co => (
-                                <div key={co._id} className="px-4 py-3 hover:bg-orange-50 cursor-pointer border-b border-gray-50 transition-colors" onClick={onClose}>
+                                <div key={co._id} className="px-4 py-3 hover:bg-red-50 cursor-pointer border-b border-gray-50 transition-colors" onClick={onClose}>
                                     <div className="flex items-center justify-between gap-3">
                                         <div className="min-w-0">
                                             <p className="text-sm font-medium text-gray-800 truncate">{co.name}</p>
                                             <p className="text-xs text-gray-400 mt-0.5">{co.industry || "—"} · {co.size || "—"}</p>
                                         </div>
-                                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold flex-shrink-0 ${co.status === "Active" ? "bg-green-100 text-green-700" : co.status === "Prospect" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-500"}`}>{co.status || "—"}</span>
+                                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold flex-shrink-0 ${co.status === "Active" ? "bg-green-100 text-green-700" : co.status === "Prospect" ? "bg-red-100 text-red-700" : "bg-gray-100 text-gray-500"}`}>{co.status || "—"}</span>
                                     </div>
                                 </div>
                             ))}

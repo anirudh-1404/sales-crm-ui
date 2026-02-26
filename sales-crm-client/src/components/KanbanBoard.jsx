@@ -2,8 +2,8 @@ import React from "react";
 import { Building2, User, CalendarDays, DollarSign, Edit2, Trash2 } from "lucide-react";
 
 const STAGE_CONFIG = {
-    Lead: { color: "bg-blue-500", light: "bg-blue-50 border-blue-200", text: "text-blue-700", badge: "bg-blue-100 text-blue-700" },
-    Qualified: { color: "bg-purple-500", light: "bg-purple-50 border-purple-200", text: "text-purple-700", badge: "bg-purple-100 text-purple-700" },
+    Lead: { color: "bg-red-500", light: "bg-red-50 border-red-200", text: "text-red-700", badge: "bg-red-100 text-red-700" },
+    Qualified: { color: "bg-orange-500", light: "bg-orange-50 border-orange-200", text: "text-orange-700", badge: "bg-orange-100 text-orange-700" },
     Proposal: { color: "bg-yellow-500", light: "bg-yellow-50 border-yellow-200", text: "text-yellow-700", badge: "bg-yellow-100 text-yellow-700" },
     Negotiation: { color: "bg-orange-500", light: "bg-orange-50 border-orange-200", text: "text-orange-700", badge: "bg-orange-100 text-orange-700" },
     "Closed Won": { color: "bg-green-500", light: "bg-green-50 border-green-200", text: "text-green-700", badge: "bg-green-100 text-green-700" },
@@ -33,7 +33,7 @@ function DealCard({ deal, onEdit, onDelete }) {
                 <div className="flex items-center gap-1 flex-shrink-0">
                     <button
                         onClick={() => onEdit(deal)}
-                        className="p-1 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition"
+                        className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition"
                     >
                         <Edit2 size={13} />
                     </button>

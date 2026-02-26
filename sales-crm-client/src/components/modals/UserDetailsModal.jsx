@@ -6,7 +6,7 @@ export default function UserDetailsModal({ isOpen, onClose, user }) {
     if (!user) return null;
 
     const initials = `${user.firstName?.[0] || ""}${user.lastName?.[0] || ""}`.toUpperCase();
-    const colors = ["bg-red-500", "bg-blue-500", "bg-green-500", "bg-orange-500", "bg-purple-500", "bg-pink-500", "bg-teal-500"];
+    const colors = ["bg-red-500", "bg-orange-500", "bg-red-600", "bg-rose-500", "bg-red-400", "bg-pink-500", "bg-red-300"];
     const avatarColor = colors[(user.firstName?.charCodeAt(0) || 0) % colors.length];
 
     const formatRole = (r) => ({
@@ -17,8 +17,8 @@ export default function UserDetailsModal({ isOpen, onClose, user }) {
 
     const roleBadge = {
         admin: "bg-red-100 text-red-700 border-red-200",
-        sales_manager: "bg-purple-100 text-purple-700 border-purple-200",
-        sales_rep: "bg-blue-100 text-blue-700 border-blue-200",
+        sales_manager: "bg-orange-100 text-orange-700 border-orange-200",
+        sales_rep: "bg-red-50 text-red-600 border-red-100",
     };
 
     const formatDate = (date) => {
@@ -116,7 +116,7 @@ export default function UserDetailsModal({ isOpen, onClose, user }) {
                 </div>
 
                 <div className="flex pt-2">
-                    <button onClick={onClose} className="w-full py-2.5 bg-gray-900 hover:bg-black text-white rounded-xl font-bold text-sm shadow-lg shadow-gray-200 transition-all active:scale-[0.98]">
+                    <button onClick={onClose} className="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold text-sm shadow-lg shadow-red-100 transition-all active:scale-[0.98]">
                         Close Profile
                     </button>
                 </div>

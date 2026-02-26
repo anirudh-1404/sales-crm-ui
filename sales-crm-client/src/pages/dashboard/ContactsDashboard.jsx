@@ -46,7 +46,7 @@ const StatCard = ({ label, value, sub, color, icon: IconComp }) => (
 const Avatar = ({ name }) => {
     if (!name) return null;
     const initials = name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
-    const colors = ["bg-red-500", "bg-blue-500", "bg-green-500", "bg-orange-500", "bg-purple-500", "bg-pink-500"];
+    const colors = ["bg-red-500", "bg-orange-500", "bg-red-400", "bg-rose-500", "bg-red-600", "bg-pink-500"];
     return (
         <div className={`w-9 h-9 rounded-full ${colors[name.charCodeAt(0) % colors.length]} flex items-center justify-center text-white text-xs font-bold flex-shrink-0`}>
             {initials}
@@ -155,10 +155,10 @@ export default function ContactsDashboard() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <StatCard label="Total Contacts" value={String(contacts.length)} sub="Organization wide" color="bg-blue-50 text-blue-600" icon={Users} />
+                <StatCard label="Total Contacts" value={String(contacts.length)} sub="Organization wide" color="bg-red-50 text-red-600" icon={Users} />
                 <StatCard label="With Company" value={String(withCompany)} sub={`${Math.round((withCompany / contacts.length) * 100 || 0)}% coverage`} color="bg-green-50 text-green-600" icon={Link2} />
-                <StatCard label="On LinkedIn" value={String(withLinkedIn)} sub={`${Math.round((withLinkedIn / contacts.length) * 100 || 0)}% verified`} color="bg-purple-50 text-purple-600" icon={Linkedin} />
-                <StatCard label="Records Loaded" value={String(contacts.length)} sub="Showing recent" color="bg-orange-50 text-orange-600" icon={CalendarPlus} />
+                <StatCard label="On LinkedIn" value={String(withLinkedIn)} sub={`${Math.round((withLinkedIn / contacts.length) * 100 || 0)}% verified`} color="bg-orange-50 text-orange-600" icon={Linkedin} />
+                <StatCard label="Records Loaded" value={String(contacts.length)} sub="Showing recent" color="bg-red-50 text-red-500" icon={CalendarPlus} />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 items-start">
@@ -232,7 +232,7 @@ export default function ContactsDashboard() {
                         {jobTitles.length > 0 ? jobTitles.map((j, i) => {
                             const total = contacts.length || 1;
                             const pct = Math.round((j.count / total) * 100);
-                            const colors = ["bg-red-500", "bg-blue-500", "bg-green-500", "bg-orange-400", "bg-purple-500"];
+                            const colors = ["bg-red-500", "bg-orange-500", "bg-red-400", "bg-rose-400", "bg-red-300"];
                             return (
                                 <div key={j.title}>
                                     <div className="flex justify-between text-sm mb-1">

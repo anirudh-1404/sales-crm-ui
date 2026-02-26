@@ -182,17 +182,17 @@ export default function DealsDashboard() {
             </div>
 
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <StatCard label="Total Value" value={`$${totalValue >= 1000000 ? `${(totalValue / 1000000).toFixed(2)}M` : `${(totalValue / 1000).toFixed(1)}K`}`} sub="+12.5% vs last month" color="bg-indigo-50 text-indigo-600" icon={DollarSign} />
-                <StatCard label="Active Deals" value={String(activeCount)} sub="15 pending" color="bg-blue-50 text-blue-600" icon={Zap} />
+                <StatCard label="Total Value" value={`$${totalValue >= 1000000 ? `${(totalValue / 1000000).toFixed(2)}M` : `${(totalValue / 1000).toFixed(1)}K`}`} sub="+12.5% vs last month" color="bg-red-50 text-red-600" icon={DollarSign} />
+                <StatCard label="Active Deals" value={String(activeCount)} sub="15 pending" color="bg-orange-50 text-red-500" icon={Zap} />
                 <StatCard label="Won Deals" value={String(wonCount)} sub="82% win rate" color="bg-green-50 text-green-600" icon={CheckCircle2} />
-                <StatCard label="New Deals" value={String(deals.length)} sub="This week" color="bg-purple-50 text-purple-600" icon={Briefcase} />
+                <StatCard label="New Deals" value={String(deals.length)} sub="This week" color="bg-red-100 text-red-700" icon={Briefcase} />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <StatCard icon={Briefcase} label="Total Deals" value={deals.length} color="bg-blue-50 text-blue-600" />
-                <StatCard icon={LayoutDashboard} label="Pipeline Value" value={`$${deals.reduce((sum, d) => sum + (d.value || 0), 0).toLocaleString()}`} color="bg-indigo-50 text-indigo-600" />
-                <StatCard icon={Users} label="Active Owners" value={new Set(deals.map(d => d.ownerId?._id)).size} color="bg-purple-50 text-purple-600" />
-                <StatCard icon={Building2} label="Companies" value={new Set(deals.map(d => d.companyId?._id)).size} color="bg-red-50 text-red-600" />
+                <StatCard icon={Briefcase} label="Total Deals" value={deals.length} color="bg-red-50 text-red-600" />
+                <StatCard icon={LayoutDashboard} label="Pipeline Value" value={`$${deals.reduce((sum, d) => sum + (d.value || 0), 0).toLocaleString()}`} color="bg-orange-50 text-red-500" />
+                <StatCard icon={Users} label="Active Owners" value={new Set(deals.map(d => d.ownerId?._id)).size} color="bg-red-100 text-red-700" />
+                <StatCard icon={Building2} label="Companies" value={new Set(deals.map(d => d.companyId?._id)).size} color="bg-rose-50 text-red-600" />
             </div>
 
             {/* Kanban Board View */}
@@ -243,7 +243,7 @@ export default function DealsDashboard() {
                                         deals.slice(0, 10).map((d) => (
                                             <tr key={d._id} className="hover:bg-gray-50/50 transition-colors group">
                                                 <td className="px-4 py-3 font-medium text-gray-800 whitespace-nowrap">{d.name}</td>
-                                                <td className="px-4 py-3 text-indigo-700 font-semibold whitespace-nowrap">{d.ownerId?.firstName || "System"}</td>
+                                                <td className="px-4 py-3 text-red-700 font-semibold whitespace-nowrap">{d.ownerId?.firstName || "System"}</td>
                                                 <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{d.companyId?.name || d.companyName || "—"}</td>
                                                 <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{d.contactId ? `${d.contactId.firstName} ${d.contactId.lastName}`.trim() : (d.contactName || "—")}</td>
                                                 <td className="px-4 py-3">
@@ -260,7 +260,7 @@ export default function DealsDashboard() {
                                                     <div className="flex items-center gap-2">
                                                         <button
                                                             onClick={() => { setSelectedDeal(d); setIsDealModalOpen(true); }}
-                                                            className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition"
+                                                            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
                                                         >
                                                             <Edit2 size={16} />
                                                         </button>

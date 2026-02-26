@@ -80,7 +80,7 @@ export default function DealModal({ isOpen, onClose, deal, onSave, companies, co
     const inputClass = (field) =>
         `w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 transition ${errors[field]
             ? "border-red-400 focus:ring-red-200 bg-red-50"
-            : "border-gray-200 focus:ring-green-400"
+            : "border-gray-200 focus:ring-red-400"
         }`;
 
     return (
@@ -122,7 +122,7 @@ export default function DealModal({ isOpen, onClose, deal, onSave, companies, co
                         <div className="relative">
                             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
                             <input type="number" min="1"
-                                className={`w-full pl-7 pr-3 py-2 text-sm border rounded-lg focus:ring-2 transition ${errors.value ? "border-red-400 focus:ring-red-200 bg-red-50" : "border-gray-200 focus:ring-green-400"}`}
+                                className={`w-full pl-7 pr-3 py-2 text-sm border rounded-lg focus:ring-2 transition ${errors.value ? "border-red-400 focus:ring-red-200 bg-red-50" : "border-gray-200 focus:ring-red-400"}`}
                                 value={formData.value}
                                 onChange={e => set("value", e.target.value)} placeholder="0" />
                         </div>
@@ -130,7 +130,7 @@ export default function DealModal({ isOpen, onClose, deal, onSave, companies, co
                     </div>
                     <div className="space-y-1">
                         <label className="text-xs font-semibold text-gray-500 uppercase">Currency *</label>
-                        <select className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-400 bg-white"
+                        <select className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-400 bg-white"
                             value={formData.currency} onChange={e => set("currency", e.target.value)}>
                             {CURRENCIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
                         </select>
@@ -141,7 +141,7 @@ export default function DealModal({ isOpen, onClose, deal, onSave, companies, co
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1">
                         <label className="text-xs font-semibold text-gray-500 uppercase">Pipeline Stage *</label>
-                        <select className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-400 bg-white"
+                        <select className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-400 bg-white"
                             value={formData.stage} onChange={e => set("stage", e.target.value)}>
                             {STAGES.map(s => <option key={s} value={s}>{s}</option>)}
                         </select>
@@ -167,7 +167,7 @@ export default function DealModal({ isOpen, onClose, deal, onSave, companies, co
                     </div>
                     <div className="space-y-1">
                         <label className="text-xs font-semibold text-gray-500 uppercase">Deal Source</label>
-                        <select className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-400 bg-white"
+                        <select className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-400 bg-white"
                             value={formData.source} onChange={e => set("source", e.target.value)}>
                             <option value="">— Select Source —</option>
                             {SOURCE_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
@@ -178,7 +178,7 @@ export default function DealModal({ isOpen, onClose, deal, onSave, companies, co
                 {/* Notes */}
                 <div className="space-y-1">
                     <label className="text-xs font-semibold text-gray-500 uppercase">Notes</label>
-                    <textarea className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-400 h-20"
+                    <textarea className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-400 h-20"
                         value={formData.notes} onChange={e => set("notes", e.target.value)}
                         placeholder="Next steps, requirements..." />
                 </div>
@@ -207,7 +207,7 @@ export default function DealModal({ isOpen, onClose, deal, onSave, companies, co
                         Cancel
                     </button>
                     <button type="submit" disabled={loading}
-                        className="flex-1 px-4 py-2 text-sm font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700 shadow-md shadow-green-200 transition disabled:opacity-50">
+                        className="flex-1 px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 shadow-md shadow-red-200 transition disabled:opacity-50">
                         {loading ? "Saving..." : deal ? "Update Deal" : "Create Deal"}
                     </button>
                 </div>

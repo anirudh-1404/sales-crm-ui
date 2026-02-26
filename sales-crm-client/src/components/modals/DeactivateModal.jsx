@@ -5,7 +5,7 @@ import { UserX, UserCheck, AlertTriangle } from "lucide-react";
 const baseInput = "w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 bg-white transition";
 const inputClass = (err) => err
     ? `${baseInput} border-red-400 focus:ring-red-200 bg-red-50`
-    : `${baseInput} border-gray-200 focus:ring-purple-400`;
+    : `${baseInput} border-gray-200 focus:ring-red-400`;
 
 export default function DeactivateModal({ isOpen, onClose, user, activeUsers, onConfirm, title = "Deactivate User", actionLabel = "Deactivate User", actionColor = "bg-red-600 hover:bg-red-700" }) {
     const [reassignMode, setReassignMode] = useState("reassign"); // "reassign" | "keep"
@@ -64,7 +64,7 @@ export default function DeactivateModal({ isOpen, onClose, user, activeUsers, on
                     {/* Option 1: Reassign */}
                     <label
                         className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${reassignMode === "reassign"
-                            ? "border-purple-400 bg-purple-50"
+                            ? "border-red-400 bg-red-50"
                             : "border-gray-200 bg-white hover:border-gray-300"
                             }`}
                     >
@@ -74,10 +74,10 @@ export default function DeactivateModal({ isOpen, onClose, user, activeUsers, on
                             value="reassign"
                             checked={reassignMode === "reassign"}
                             onChange={() => setReassignMode("reassign")}
-                            className="mt-0.5 accent-purple-600"
+                            className="mt-0.5 accent-red-600"
                         />
                         <div>
-                            <p className={`text-sm font-semibold ${reassignMode === "reassign" ? "text-purple-700" : "text-gray-700"}`}>
+                            <p className={`text-sm font-semibold ${reassignMode === "reassign" ? "text-red-700" : "text-gray-700"}`}>
                                 Reassign to another user
                             </p>
                             <p className="text-xs text-gray-400 mt-0.5">All companies, contacts and deals will be transferred to the selected person.</p>
@@ -87,7 +87,7 @@ export default function DeactivateModal({ isOpen, onClose, user, activeUsers, on
                     {/* Option 2: Keep */}
                     <label
                         className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${reassignMode === "keep"
-                            ? "border-blue-400 bg-blue-50"
+                            ? "border-orange-400 bg-orange-50"
                             : "border-gray-200 bg-white hover:border-gray-300"
                             }`}
                     >
@@ -97,10 +97,10 @@ export default function DeactivateModal({ isOpen, onClose, user, activeUsers, on
                             value="keep"
                             checked={reassignMode === "keep"}
                             onChange={() => { setReassignMode("keep"); setNewOwnerId(""); }}
-                            className="mt-0.5 accent-blue-600"
+                            className="mt-0.5 accent-orange-600"
                         />
                         <div>
-                            <p className={`text-sm font-semibold ${reassignMode === "keep" ? "text-blue-700" : "text-gray-700"}`}>
+                            <p className={`text-sm font-semibold ${reassignMode === "keep" ? "text-orange-700" : "text-gray-700"}`}>
                                 Don't reassign — keep data with this user
                             </p>
                             <p className="text-xs text-gray-400 mt-0.5">Records stay under their ownership. Data will be fully accessible again when the user is reactivated.</p>
@@ -130,8 +130,8 @@ export default function DeactivateModal({ isOpen, onClose, user, activeUsers, on
 
                 {/* "Keep" mode info note */}
                 {reassignMode === "keep" && (
-                    <div className="flex items-start gap-2.5 p-3 bg-blue-50 border border-blue-100 rounded-xl text-xs text-blue-800">
-                        <AlertTriangle size={14} className="mt-0.5 flex-shrink-0 text-blue-500" />
+                    <div className="flex items-start gap-2.5 p-3 bg-red-50 border border-red-100 rounded-xl text-xs text-red-800">
+                        <AlertTriangle size={14} className="mt-0.5 flex-shrink-0 text-red-500" />
                         <p>The user's companies, contacts, and deals will remain assigned to them. They won't be visible to others but will be fully restored when the user is reactivated.</p>
                     </div>
                 )}

@@ -138,9 +138,9 @@ export default function CompaniesDashboard() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <StatCard label="Total Companies" value={String(companies.length)} sub="Organization wide" color="bg-blue-50 text-blue-600" icon={Building2} />
+                <StatCard label="Total Companies" value={String(companies.length)} sub="Organization wide" color="bg-red-50 text-red-600" icon={Building2} />
                 <StatCard label="Active Customers" value={String(activeCount)} sub={`${Math.round((activeCount / companies.length) * 100 || 0)}% of total`} color="bg-green-50 text-green-600" icon={CheckCircle2} />
-                <StatCard label="Prospects" value={String(prospectCount)} sub={`${Math.round((prospectCount / companies.length) * 100 || 0)}% potential`} color="bg-purple-50 text-purple-600" icon={Eye} />
+                <StatCard label="Prospects" value={String(prospectCount)} sub={`${Math.round((prospectCount / companies.length) * 100 || 0)}% potential`} color="bg-orange-50 text-orange-600" icon={Eye} />
                 <StatCard label="Churned" value={String(churnedCount)} sub="Action required" color="bg-red-50 text-red-500" icon={XCircle} />
             </div>
 
@@ -151,7 +151,7 @@ export default function CompaniesDashboard() {
                         <div className="w-full sm:w-64 relative">
                             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                             <input type="text" placeholder="Search companies..." value={search} onChange={e => setSearch(e.target.value)}
-                                className="w-full text-sm border border-gray-200 rounded-lg pl-9 pr-3 py-1.5 focus:ring-2 focus:ring-indigo-400 focus:outline-none bg-gray-50/50" />
+                                className="w-full text-sm border border-gray-200 rounded-lg pl-9 pr-3 py-1.5 focus:ring-2 focus:ring-red-400 focus:outline-none bg-gray-50/50" />
                         </div>
                     </div>
                     <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-350px)] custom-scrollbar">
@@ -171,14 +171,14 @@ export default function CompaniesDashboard() {
                                         <tr key={c._id} className="hover:bg-gray-50/50 transition-colors group">
                                             <td className="px-4 py-3 font-medium text-gray-800 whitespace-nowrap">{c.name}</td>
                                             <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{c.industry || "—"}</td>
-                                            <td className="px-4 py-3 text-indigo-700 font-bold whitespace-nowrap">{c.ownerId?.firstName || "System"}</td>
+                                            <td className="px-4 py-3 text-red-700 font-bold whitespace-nowrap">{c.ownerId?.firstName || "System"}</td>
                                             <td className="px-4 py-3 whitespace-nowrap">
                                                 <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${statusBg[c.status] || "bg-gray-100 text-gray-600"}`}>{c.status}</span>
                                             </td>
                                             <td className="px-4 py-3 whitespace-nowrap">
                                                 <div className="flex items-center gap-2">
                                                     <button onClick={() => { setSelectedCompany(c); setIsCompanyModalOpen(true); }}
-                                                        className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition">
+                                                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition">
                                                         <Edit2 size={16} />
                                                     </button>
                                                     <button onClick={() => { setSelectedCompany(c); setIsDeleteModalOpen(true); }}
@@ -201,7 +201,7 @@ export default function CompaniesDashboard() {
                         {industries.length > 0 ? industries.map((ind, i) => {
                             const total = companies.length || 1;
                             const pct = Math.round((ind.count / total) * 100);
-                            const colors = ["bg-blue-500", "bg-indigo-500", "bg-purple-500", "bg-pink-500", "bg-teal-500"];
+                            const colors = ["bg-red-500", "bg-red-400", "bg-orange-500", "bg-rose-500", "bg-red-300"];
                             return (
                                 <div key={ind.name}>
                                     <div className="flex justify-between text-sm mb-1">
