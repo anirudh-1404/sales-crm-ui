@@ -144,7 +144,7 @@ export default function SalesManagerLayout() {
                             <span className="absolute bottom-0 right-0 w-2 h-2 sm:w-2.5 sm:h-2.5 bg-green-400 border-2 border-white rounded-full" />
                         </div>
                         <div className="hidden sm:block truncate max-w-[100px] lg:max-w-[150px]">
-                            <p className="text-sm font-bold text-gray-800 leading-none truncate">{user ? `${user.firstName} ${user.lastName}` : "MANAGER"}</p>
+                            <p className="text-sm font-bold text-gray-800 truncate">{user ? `${user.firstName} ${user.lastName}` : "MANAGER"}</p>
                             <p className="text-[10px] text-gray-400 mt-1 truncate uppercase tracking-wider">
                                 {user?.role === "sales_manager" ? "SALES MANAGER" :
                                     user?.role === "sales_rep" ? "SALES REPRESENTATIVE" :
