@@ -11,6 +11,7 @@ import { getContacts } from "../../../API/services/contactService";
 import { getTeamUsers } from "../../../API/services/userService";
 import { useAuth } from "../../context/AuthContext";
 import DealModal from "../../components/modals/DealModal";
+import DealDetailsModal from "../../components/modals/DealDetailsModal";
 import DeleteConfirmModal from "../../components/modals/DeleteConfirmModal";
 import { toast } from "react-hot-toast";
 
