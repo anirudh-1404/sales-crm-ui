@@ -481,7 +481,8 @@ export const getDeals = async (req, res, next) => {
         return res.status(200).json({
             message: "Deals fetched successfully!",
             data: deals,
-            total: Math.ceil(total / Number(limit)),
+            totalPages: Math.ceil(total / Number(limit)),
+            total: total,
             page: Number(page),
         })
 

@@ -160,13 +160,15 @@ export default function AdminDashboard() {
                         {stats.revenueChart.map((m, i) => {
                             const h = (m.value / maxChartValue) * 100;
                             return (
-                                <div key={i} className="flex-1 flex flex-col items-center gap-3 group">
-                                    <div
-                                        className="w-full bg-red-100 group-hover:bg-red-500 transition-colors duration-300 rounded-t-lg relative"
-                                        style={{ height: `${Math.max(h, 5)}%` }}
-                                    >
-                                        <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
-                                            ${m.value.toLocaleString()}
+                                <div key={i} className="flex-1 h-full flex flex-col items-center gap-3 group">
+                                    <div className="flex-1 w-full flex items-end">
+                                        <div
+                                            className="w-full bg-red-500/10 group-hover:bg-red-500 transition-all duration-300 rounded-t-lg relative"
+                                            style={{ height: `${Math.max(h, 5)}%` }}
+                                        >
+                                            <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                                                ${m.value.toLocaleString()}
+                                            </div>
                                         </div>
                                     </div>
                                     <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
@@ -213,5 +215,6 @@ export default function AdminDashboard() {
                     </div>
                 </div>
             </div>
-            );
+        </div>
+    );
 }
