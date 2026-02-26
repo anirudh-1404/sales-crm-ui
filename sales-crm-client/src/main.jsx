@@ -6,7 +6,17 @@ import { Toaster } from 'react-hot-toast'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <Toaster position="top-center" toastOptions={{ success: { duration: 2500 }, error: { duration: 3000 } }} />
+    <Toaster
+      position="top-center"
+      toastOptions={{
+        success: { duration: 2500 },
+        error: { duration: 3000 },
+        style: {
+          maxWidth: 'none',
+          whiteSpace: 'nowrap'
+        }
+      }}
+    />
     <App />
   </StrictMode>,
 )
