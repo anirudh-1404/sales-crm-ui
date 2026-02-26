@@ -5,6 +5,22 @@ import forgotBg from "../../assets/forgot-bg.jpg";
 import toast from "react-hot-toast";
 import { forgotPassword } from "../../../API/services/userService";
 
+const AlertIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+    </svg>
+);
+
+const ErrorTag = ({ message }) => {
+    if (!message) return null;
+    return (
+        <div className="flex items-center text-red-600 text-xs mt-1.5 font-semibold animate-fade-in">
+            <AlertIcon />
+            {message}
+        </div>
+    );
+};
+
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const ForgotPassword = () => {
@@ -75,7 +91,7 @@ const ForgotPassword = () => {
                                     />
                                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">✉</span>
                                 </div>
-                                {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
+                                <ErrorTag message={error} />
                             </div>
 
                             <button

@@ -47,7 +47,7 @@ const Emailverification = () => {
 
                         <Link to="/login" className="w-full">
                             <button className="w-full bg-red-600 hover:bg-orange-400 text-white py-3 rounded-lg font-semibold transition duration-300 cursor-pointer">
-                                Skip Now
+                                Skip
                             </button>
                         </Link>
 
