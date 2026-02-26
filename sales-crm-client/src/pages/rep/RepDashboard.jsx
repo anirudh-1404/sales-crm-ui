@@ -4,7 +4,10 @@ import {
 } from "lucide-react";
 import { getDeals } from "../../../API/services/dealService";
 import { getCompanies } from "../../../API/services/companyService";
+import CompanyDetailsModal from "../../components/modals/CompanyDetailsModal";
+import DealDetailsModal from "../../components/modals/DealDetailsModal";
 import { toast } from "react-hot-toast";
+import { Eye } from "lucide-react";
 
 const Select = ({ options, value, onChange }) => (
     <div className="relative">
@@ -48,6 +51,10 @@ export default function RepDashboard() {
     const [deals, setDeals] = useState([]);
     const [companies, setCompanies] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [selectedCompany, setSelectedCompany] = useState(null);
+    const [selectedDeal, setSelectedDeal] = useState(null);
+    const [isCompanyDetailsOpen, setIsCompanyDetailsOpen] = useState(false);
+    const [isDealDetailsOpen, setIsDealDetailsOpen] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -140,9 +147,18 @@ export default function RepDashboard() {
                                     <tr><td colSpan={5} className="text-center py-10 text-gray-400">No deals yet. Create your first deal!</td></tr>
                                 ) : (
                                     deals.slice(0, 10).map((d) => (
-                                        <tr key={d._id} className="hover:bg-gray-50/50 transition-colors">
-                                            <td className="px-4 py-3 font-medium text-gray-800 whitespace-nowrap">{d.name}</td>
-                                            <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{d.companyId?.name || d.companyName || "—"}</td>
+                                        <tr key={d._id} className="hover:bg-gray-50/50 transition-colors group">
+                                            <td className="px-4 py-3 font-medium text-gray-800 whitespace-nowrap cursor-pointer hover:text-red-600 transition-colors"
+                                                onClick={() => { setSelectedDeal(d); setIsDealDetailsOpen(true); }}>
+                                                {d.name}
+                                            </td>
+                                            <td className="px-4 py-3 text-gray-500 whitespace-nowrap cursor-pointer hover:text-red-600 transition-colors"
+                                                onClick={() => {
+                                                    const comp = companies.find(c => c._id === (d.companyId?._id || d.companyId));
+                                                    if (comp) { setSelectedCompany(comp); setIsCompanyDetailsOpen(true); }
+                                                }}>
+                                                {d.companyId?.name || d.companyName || "—"}
+                                            </td>
                                             <td className="px-4 py-3 whitespace-nowrap"><StageBadge stage={d.stage} /></td>
                                             <td className="px-4 py-3 font-semibold text-green-700 whitespace-nowrap">{formatCurrency(d.value || 0)}</td>
                                             <td className="px-4 py-3 text-gray-500 text-xs whitespace-nowrap">
@@ -216,6 +232,17 @@ export default function RepDashboard() {
                     )}
                 </div>
             </Card>
+
+            <CompanyDetailsModal
+                isOpen={isCompanyDetailsOpen}
+                onClose={() => setIsCompanyDetailsOpen(false)}
+                company={selectedCompany}
+            />
+            <DealDetailsModal
+                isOpen={isDealDetailsOpen}
+                onClose={() => setIsDealDetailsOpen(false)}
+                deal={selectedDeal}
+            />
         </div>
     );
 }

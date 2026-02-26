@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-    Users, Link2, Linkedin, CalendarPlus, ChevronDown, Plus, Edit2, Trash2, Search, ExternalLink
     Users, Link2, Linkedin, CalendarPlus, ChevronDown, Plus, Edit2, Trash2, Search, ExternalLink, Filter, MoreHorizontal, Download, Eye
 } from "lucide-react";
 import { getContacts, createContact, updateContact, deleteContact } from "../../../API/services/contactService";

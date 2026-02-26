@@ -3,8 +3,11 @@ import {
     Users2, Briefcase, CheckCircle2, DollarSign, ChevronDown
 } from "lucide-react";
 import { getDeals } from "../../../API/services/dealService";
+import { getCompanies } from "../../../API/services/companyService";
 import { getTeamUsers } from "../../../API/services/userService";
+import CompanyDetailsModal from "../../components/modals/CompanyDetailsModal";
 import { toast } from "react-hot-toast";
+import { Eye } from "lucide-react";
 
 const Select = ({ options, value, onChange }) => (
     <div className="relative">
@@ -59,19 +62,24 @@ const periodOptions = ["Last 7 Days", "Last 30 Days", "Last 90 Days", "This Year
 export default function ManagerDashboard() {
     const [period, setPeriod] = useState("Last 30 Days");
     const [deals, setDeals] = useState([]);
+    const [companies, setCompanies] = useState([]);
     const [teamMembers, setTeamMembers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [selectedCompany, setSelectedCompany] = useState(null);
+    const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
             try {
-                const [dealsRes, usersRes] = await Promise.all([
+                const [dealsRes, usersRes, companiesRes] = await Promise.all([
                     getDeals({ limit: 500 }),
-                    getTeamUsers()
+                    getTeamUsers(),
+                    getCompanies({ limit: 1000 })
                 ]);
                 setDeals(dealsRes.data.data);
                 setTeamMembers(usersRes.data.filter(u => u.role === "sales_rep"));
+                setCompanies(companiesRes.data.data);
             } catch (error) {
                 console.error(error);
                 toast.error("Failed to load team dashboard");
@@ -249,6 +257,12 @@ export default function ManagerDashboard() {
                     )}
                 </div>
             </Card>
+
+            <CompanyDetailsModal
+                isOpen={isDetailsModalOpen}
+                onClose={() => setIsDetailsModalOpen(false)}
+                company={selectedCompany}
+            />
         </div>
     );
 }
