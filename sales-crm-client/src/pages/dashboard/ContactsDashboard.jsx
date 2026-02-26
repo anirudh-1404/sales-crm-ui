@@ -171,7 +171,7 @@ export default function ContactsDashboard() {
                                 className="w-full sm:w-64 text-sm border border-gray-200 rounded-lg pl-9 pr-3 py-1.5 focus:ring-2 focus:ring-red-400 bg-gray-50/50 focus:outline-none transition-all" />
                         </div>
                     </div>
-                    <div className="flex-1 overflow-x-auto overflow-y-auto max-h-[calc(100vh-350px)] custom-scrollbar">
+                    <div className="flex-1 h-full overflow-x-auto overflow-y-auto custom-scrollbar">
                         <table className="w-full text-sm">
                             <thead>
                                 <tr className="border-b border-gray-100 bg-gray-50">
