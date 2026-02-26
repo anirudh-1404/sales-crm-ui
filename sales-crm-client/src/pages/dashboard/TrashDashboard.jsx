@@ -115,7 +115,7 @@ export default function TrashDashboard() {
                                             <div className="flex items-center gap-3">
                                                 <Avatar name={`${u.firstName} ${u.lastName}`} />
                                                 <div>
-                                                    <p className="font-medium text-gray-700 leading-none line-through decoration-gray-400">
+                                                    <p className="font-medium text-gray-700 leading-none">
                                                         {u.firstName} {u.lastName}
                                                     </p>
                                                     <p className="text-xs text-gray-400 mt-0.5">{u.email}</p>
