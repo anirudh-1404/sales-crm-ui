@@ -396,75 +396,76 @@ export default function UsersDashboard() {
                         </table>
                     </div>
                 </div>
-
-                {/* Role Breakdown */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-                    <h3 className="font-bold text-gray-800 mb-4">Users by Role</h3>
-                    <div className="space-y-3">
-                        {roleBreakdown.map(r => {
-                            const total = users.length || 1;
-                            const pct = Math.round((r.count / total) * 100);
-                            return (
-                                <div key={r.role}>
-                                    <div className="flex justify-between text-sm mb-1">
-                                        <span className="text-gray-600 font-medium">{r.role}</span>
-                                        <span className="text-gray-500">{r.count} ({pct}%)</span>
-                                    </div>
-                                    <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
-                                        <div className={`h-full ${r.color} rounded-full transition-all duration-500`} style={{ width: `${pct}%` }} />
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </div>
-
-                {/* Modals */}
-                <UserModal
-                    isOpen={isUserModalOpen}
-                    onClose={() => setIsUserModalOpen(false)}
-                    user={selectedUser}
-                    managers={potentialManagers}
-                    onSaved={fetchUsers}
-                />
-                <UserDetailsModal
-                    isOpen={isDetailsModalOpen}
-                    onClose={() => setIsDetailsModalOpen(false)}
-                    user={selectedUser}
-                />
-                <ReassignModal
-                    isOpen={isReassignModalOpen}
-                    onClose={() => setIsReassignModalOpen(false)}
-                    fromUser={selectedUser}
-                    activeUsers={users}
-                    onSaved={fetchUsers}
-                />
-                <DeactivateModal
-                    isOpen={isDeactivateModalOpen}
-                    onClose={() => setIsDeactivateModalOpen(false)}
-                    user={selectedUser}
-                    activeUsers={users}
-                    onConfirm={confirmDeactivate}
-                />
-                <DeactivateModal
-                    isOpen={isDeleteModalOpen}
-                    onClose={() => setIsDeleteModalOpen(false)}
-                    user={selectedUser}
-                    activeUsers={users}
-                    onConfirm={confirmSoftDelete}
-                    title="Move User to Trash"
-                    actionLabel="Move to Trash"
-                    actionColor="bg-gray-800 hover:bg-gray-900"
-                />
-                <ConfirmDialog
-                    isOpen={confirmState.isOpen}
-                    onClose={closeConfirm}
-                    onConfirm={confirmState.onConfirm}
-                    title={confirmState.title}
-                    message={confirmState.message}
-                    confirmLabel={confirmState.confirmLabel}
-                    confirmColor={confirmState.confirmColor}
-                />
             </div>
-            );
+
+            {/* Role Breakdown */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+                <h3 className="font-bold text-gray-800 mb-4">Users by Role</h3>
+                <div className="space-y-3">
+                    {roleBreakdown.map(r => {
+                        const total = users.length || 1;
+                        const pct = Math.round((r.count / total) * 100);
+                        return (
+                            <div key={r.role}>
+                                <div className="flex justify-between text-sm mb-1">
+                                    <span className="text-gray-600 font-medium">{r.role}</span>
+                                    <span className="text-gray-500">{r.count} ({pct}%)</span>
+                                </div>
+                                <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
+                                    <div className={`h-full ${r.color} rounded-full transition-all duration-500`} style={{ width: `${pct}%` }} />
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+
+            {/* Modals */}
+            <UserModal
+                isOpen={isUserModalOpen}
+                onClose={() => setIsUserModalOpen(false)}
+                user={selectedUser}
+                managers={potentialManagers}
+                onSaved={fetchUsers}
+            />
+            <UserDetailsModal
+                isOpen={isDetailsModalOpen}
+                onClose={() => setIsDetailsModalOpen(false)}
+                user={selectedUser}
+            />
+            <ReassignModal
+                isOpen={isReassignModalOpen}
+                onClose={() => setIsReassignModalOpen(false)}
+                fromUser={selectedUser}
+                activeUsers={users}
+                onSaved={fetchUsers}
+            />
+            <DeactivateModal
+                isOpen={isDeactivateModalOpen}
+                onClose={() => setIsDeactivateModalOpen(false)}
+                user={selectedUser}
+                activeUsers={users}
+                onConfirm={confirmDeactivate}
+            />
+            <DeactivateModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                user={selectedUser}
+                activeUsers={users}
+                onConfirm={confirmSoftDelete}
+                title="Move User to Trash"
+                actionLabel="Move to Trash"
+                actionColor="bg-gray-800 hover:bg-gray-900"
+            />
+            <ConfirmDialog
+                isOpen={confirmState.isOpen}
+                onClose={closeConfirm}
+                onConfirm={confirmState.onConfirm}
+                title={confirmState.title}
+                message={confirmState.message}
+                confirmLabel={confirmState.confirmLabel}
+                confirmColor={confirmState.confirmColor}
+            />
+        </div>
+    );
 }

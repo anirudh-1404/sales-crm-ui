@@ -226,40 +226,41 @@ export default function ContactsDashboard() {
                             </table>
                         </div>
                     </div>
-
-                    <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-5 h-full flex flex-col">
-                        <h3 className="font-bold text-gray-800 mb-4">Top Job Titles</h3>
-                        <div className="space-y-4">
-                            {jobTitles.length > 0 ? jobTitles.map((j, i) => {
-                                const total = contacts.length || 1;
-                                const pct = Math.round((j.count / total) * 100);
-                                const colors = ["bg-red-500", "bg-orange-500", "bg-red-400", "bg-rose-400", "bg-red-300"];
-                                return (
-                                    <div key={j.title}>
-                                        <div className="flex justify-between text-sm mb-1">
-                                            <span className="text-gray-600 font-medium">{j.title}</span>
-                                            <span className="text-gray-500">{pct}%</span>
-                                        </div>
-                                        <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                                            <div className={`h-full ${colors[i % colors.length]} rounded-full transition-all duration-500`} style={{ width: `${pct}%` }} />
-                                        </div>
-                                    </div>
-                                );
-                            }) : <p className="text-center py-10 text-gray-400 text-sm">No data available</p>}
-                        </div>
-                    </div>
                 </div>
 
-                <ContactModal
-                    isOpen={isContactModalOpen}
-                    onClose={() => setIsContactModalOpen(false)}
-                    contact={selectedContact}
-                    onSave={handleSaveContact}
-                    companies={companies}
-                    userRole={currentUser?.role}
-                    potentialOwners={users}
-                />
-                <DeleteConfirmModal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)} onConfirm={handleDeleteContact} itemName={`${selectedContact?.firstName} ${selectedContact?.lastName}`} />
+                <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-5 h-full flex flex-col">
+                    <h3 className="font-bold text-gray-800 mb-4">Top Job Titles</h3>
+                    <div className="space-y-4">
+                        {jobTitles.length > 0 ? jobTitles.map((j, i) => {
+                            const total = contacts.length || 1;
+                            const pct = Math.round((j.count / total) * 100);
+                            const colors = ["bg-red-500", "bg-orange-500", "bg-red-400", "bg-rose-400", "bg-red-300"];
+                            return (
+                                <div key={j.title}>
+                                    <div className="flex justify-between text-sm mb-1">
+                                        <span className="text-gray-600 font-medium">{j.title}</span>
+                                        <span className="text-gray-500">{pct}%</span>
+                                    </div>
+                                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                                        <div className={`h-full ${colors[i % colors.length]} rounded-full transition-all duration-500`} style={{ width: `${pct}%` }} />
+                                    </div>
+                                </div>
+                            );
+                        }) : <p className="text-center py-10 text-gray-400 text-sm">No data available</p>}
+                    </div>
+                </div>
             </div>
-            );
+
+            <ContactModal
+                isOpen={isContactModalOpen}
+                onClose={() => setIsContactModalOpen(false)}
+                contact={selectedContact}
+                onSave={handleSaveContact}
+                companies={companies}
+                userRole={currentUser?.role}
+                potentialOwners={users}
+            />
+            <DeleteConfirmModal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)} onConfirm={handleDeleteContact} itemName={`${selectedContact?.firstName} ${selectedContact?.lastName}`} />
+        </div>
+    );
 }

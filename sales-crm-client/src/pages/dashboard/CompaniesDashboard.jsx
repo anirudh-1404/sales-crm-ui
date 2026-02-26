@@ -195,39 +195,40 @@ export default function CompaniesDashboard() {
                             </table>
                         </div>
                     </div>
-
-                    <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-5 h-full flex flex-col">
-                        <h3 className="font-bold text-gray-800 mb-4">Industry Mix</h3>
-                        <div className="space-y-4">
-                            {industries.length > 0 ? industries.map((ind, i) => {
-                                const total = companies.length || 1;
-                                const pct = Math.round((ind.count / total) * 100);
-                                const colors = ["bg-red-500", "bg-red-400", "bg-orange-500", "bg-rose-500", "bg-red-300"];
-                                return (
-                                    <div key={ind.name}>
-                                        <div className="flex justify-between text-sm mb-1">
-                                            <span className="text-gray-600 font-medium">{ind.name}</span>
-                                            <span className="text-gray-500">{pct}%</span>
-                                        </div>
-                                        <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                                            <div className={`h-full ${colors[i % colors.length]} rounded-full transition-all duration-500`} style={{ width: `${pct}%` }} />
-                                        </div>
-                                    </div>
-                                );
-                            }) : <p className="text-center py-10 text-gray-400 text-sm">No industry data</p>}
-                        </div>
-                    </div>
                 </div>
 
-                <CompanyModal
-                    isOpen={isCompanyModalOpen}
-                    onClose={() => setIsCompanyModalOpen(false)}
-                    company={selectedCompany}
-                    onSave={handleSaveCompany}
-                    userRole={currentUser?.role}
-                    potentialOwners={users}
-                />
-                <DeleteConfirmModal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)} onConfirm={handleDeleteCompany} itemName={selectedCompany?.name} />
+                <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-5 h-full flex flex-col">
+                    <h3 className="font-bold text-gray-800 mb-4">Industry Mix</h3>
+                    <div className="space-y-4">
+                        {industries.length > 0 ? industries.map((ind, i) => {
+                            const total = companies.length || 1;
+                            const pct = Math.round((ind.count / total) * 100);
+                            const colors = ["bg-red-500", "bg-red-400", "bg-orange-500", "bg-rose-500", "bg-red-300"];
+                            return (
+                                <div key={ind.name}>
+                                    <div className="flex justify-between text-sm mb-1">
+                                        <span className="text-gray-600 font-medium">{ind.name}</span>
+                                        <span className="text-gray-500">{pct}%</span>
+                                    </div>
+                                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                                        <div className={`h-full ${colors[i % colors.length]} rounded-full transition-all duration-500`} style={{ width: `${pct}%` }} />
+                                    </div>
+                                </div>
+                            );
+                        }) : <p className="text-center py-10 text-gray-400 text-sm">No industry data</p>}
+                    </div>
+                </div>
             </div>
-            );
+
+            <CompanyModal
+                isOpen={isCompanyModalOpen}
+                onClose={() => setIsCompanyModalOpen(false)}
+                company={selectedCompany}
+                onSave={handleSaveCompany}
+                userRole={currentUser?.role}
+                potentialOwners={users}
+            />
+            <DeleteConfirmModal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)} onConfirm={handleDeleteCompany} itemName={selectedCompany?.name} />
+        </div>
+    );
 }
