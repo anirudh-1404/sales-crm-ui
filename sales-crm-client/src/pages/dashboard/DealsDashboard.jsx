@@ -118,7 +118,7 @@ export default function DealsDashboard() {
     const handleMoveStage = async (id, newStage) => {
         try {
             await updateDealStage(id, newStage);
-            toast.success(`Moved to ${newStage} `);
+            toast.success(`Moved to ${newStage}`);
             fetchData();
         } catch (error) {
             console.error(error);
@@ -152,10 +152,10 @@ export default function DealsDashboard() {
                         <button
                             onClick={() => setViewMode("list")}
                             title="List View"
-                            className={`p - 1.5 rounded - md transition text - sm flex items - center gap - 1.5 font - medium ${viewMode === "list"
-                                    ? "bg-white text-gray-800 shadow-sm"
-                                    : "text-gray-400 hover:text-gray-600"
-                                } `}
+                            className={`p-1.5 rounded-md transition text-sm flex items-center gap-1.5 font-medium ${viewMode === "list"
+                                ? "bg-white text-gray-800 shadow-sm"
+                                : "text-gray-400 hover:text-gray-600"
+                                }`}
                         >
                             <LayoutList size={16} />
                             <span className="hidden sm:inline text-xs">List</span>
@@ -163,10 +163,10 @@ export default function DealsDashboard() {
                         <button
                             onClick={() => setViewMode("kanban")}
                             title="Kanban View"
-                            className={`p - 1.5 rounded - md transition text - sm flex items - center gap - 1.5 font - medium ${viewMode === "kanban"
-                                    ? "bg-white text-gray-800 shadow-sm"
-                                    : "text-gray-400 hover:text-gray-600"
-                                } `}
+                            className={`p-1.5 rounded-md transition text-sm flex items-center gap-1.5 font-medium ${viewMode === "kanban"
+                                ? "bg-white text-gray-800 shadow-sm"
+                                : "text-gray-400 hover:text-gray-600"
+                                }`}
                         >
                             <Kanban size={16} />
                             <span className="hidden sm:inline text-xs">Kanban</span>
@@ -183,7 +183,7 @@ export default function DealsDashboard() {
             </div>
 
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <StatCard label="Total Value" value={`$${totalValue >= 1000000 ? `${(totalValue / 1000000).toFixed(2)}M` : `${(totalValue / 1000).toFixed(1)}K`} `} sub="+12.5% vs last month" color="bg-red-50 text-red-600" icon={DollarSign} />
+                <StatCard label="Total Value" value={`$${totalValue >= 1000000 ? `${(totalValue / 1000000).toFixed(2)}M` : `${(totalValue / 1000).toFixed(1)}K`}`} sub="+12.5% vs last month" color="bg-red-50 text-red-600" icon={DollarSign} />
                 <StatCard label="Active Deals" value={String(activeCount)} sub="15 pending" color="bg-orange-50 text-red-500" icon={Zap} />
                 <StatCard label="Won Deals" value={String(wonCount)} sub="82% win rate" color="bg-green-50 text-green-600" icon={CheckCircle2} />
                 <StatCard label="New Deals" value={String(deals.length)} sub="This week" color="bg-red-100 text-red-700" icon={Briefcase} />
@@ -191,7 +191,7 @@ export default function DealsDashboard() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 <StatCard icon={Briefcase} label="Total Deals" value={deals.length} color="bg-red-50 text-red-600" />
-                <StatCard icon={LayoutDashboard} label="Pipeline Value" value={`$${deals.reduce((sum, d) => sum + (d.value || 0), 0).toLocaleString()} `} color="bg-orange-50 text-red-500" />
+                <StatCard icon={LayoutDashboard} label="Pipeline Value" value={`$${deals.reduce((sum, d) => sum + (d.value || 0), 0).toLocaleString()}`} color="bg-orange-50 text-red-500" />
                 <StatCard icon={Users} label="Active Owners" value={new Set(deals.map(d => d.ownerId?._id)).size} color="bg-red-100 text-red-700" />
                 <StatCard icon={Building2} label="Companies" value={new Set(deals.map(d => d.companyId?._id)).size} color="bg-rose-50 text-red-600" />
             </div>
@@ -250,12 +250,12 @@ export default function DealsDashboard() {
                                                     </td>
                                                     <td className="px-4 py-3 text-red-700 font-semibold whitespace-nowrap">{d.ownerId?.firstName || "System"}</td>
                                                     <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{d.companyId?.name || d.companyName || "—"}</td>
-                                                    <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{d.contactId ? `${d.contactId.firstName} ${d.contactId.lastName} `.trim() : (d.contactName || "—")}</td>
+                                                    <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{d.contactId ? `${d.contactId.firstName} ${d.contactId.lastName}`.trim() : (d.contactName || "—")}</td>
                                                     <td className="px-4 py-3">
                                                         <select
                                                             value={d.stage}
                                                             onChange={e => handleMoveStage(d._id, e.target.value)}
-                                                            className={`text - [11px] px - 2 py - 1 rounded - full font - bold border - none cursor - pointer focus: ring - 0 whitespace - nowrap ${stageBadge[d.stage]} `}
+                                                            className={`text-[11px] px-2 py-1 rounded-full font-bold border-none cursor-pointer focus:ring-0 whitespace-nowrap ${stageBadge[d.stage]}`}
                                                         >
                                                             {STAGES.map(s => <option key={s} value={s}>{s}</option>)}
                                                         </select>
@@ -306,7 +306,7 @@ export default function DealsDashboard() {
                                             <span className="text-gray-500">{s.count} <span className="text-gray-400 text-xs">({pct}%)</span></span>
                                         </div>
                                         <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                                            <div className={`h - full ${s.color.replace(' text-', ' bg-')} rounded - full transition - all duration - 500`} style={{ width: `${pct}% ` }} />
+                                            <div className={`h-full ${s.color.replace(' text-', ' bg-')} rounded-full transition-all duration-500`} style={{ width: `${pct}%` }} />
                                         </div>
                                     </div>
                                 );
@@ -318,7 +318,7 @@ export default function DealsDashboard() {
                                 <span className="font-bold text-green-600">{winRate}%</span>
                             </div>
                             <div className="h-1.5 bg-gray-100 rounded-full">
-                                <div className="h-full bg-green-500 rounded-full transition-all duration-500" style={{ width: `${winRate}% ` }} />
+                                <div className="h-full bg-green-500 rounded-full transition-all duration-500" style={{ width: `${winRate}%` }} />
                             </div>
                         </div>
                     </Card>
