@@ -2,11 +2,15 @@ import axios from "axios";
 import toast from "react-hot-toast";
 
 const getBaseURL = () => {
+    // If we're in production (Vercel), use relative path to allow Vercel rewrite to work
+    // This makes cookies first-party and fixes incognito persistence.
+    if (import.meta.env.PROD) {
+        return "/api";
+    }
+
     let url = import.meta.env.VITE_BASE_URL || "http://localhost:8000/api";
     url = url.trim();
-    // Remove trailing slash if present
     if (url.endsWith("/")) url = url.slice(0, -1);
-    // Ensure it ends with /api
     if (!url.endsWith("/api")) url += "/api";
     return url;
 };

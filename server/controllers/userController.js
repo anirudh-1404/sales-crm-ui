@@ -36,16 +36,15 @@ export const registerUser = async (req, res, next) => {
             managerId: role === "sales_rep" ? managerId : null
         })
 
-        const existingToken = req.cookies?.token || (req.headers.authorization && req.headers.authorization.startsWith("Bearer") ? req.headers.authorization.split(" ")[1] : null);
+        const token = await generateToken(user._id, user.role);
 
-        if (!existingToken) {
-            res.cookie("token", token, {
-                httpOnly: true,
-                secure: true,
-                sameSite: "none",
-                maxAge: 15 * 60 * 1000
-            })
-        }
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
+            partitioned: true,
+            maxAge: 15 * 60 * 1000
+        })
 
         res.status(201).json({
             message: "User registered successfully!",
@@ -113,6 +112,7 @@ export const loginUser = async (req, res, next) => {
             httpOnly: true,
             secure: true,
             sameSite: "none",
+            partitioned: true,
             maxAge: 15 * 60 * 1000
         })
 
@@ -668,7 +668,8 @@ export const logoutUser = (req, res) => {
     res.clearCookie("token", {
         httpOnly: true,
         secure: true,
-        sameSite: "none"
+        sameSite: "none",
+        partitioned: true
     });
     return res.status(200).json({ message: "Logged out successfully!" });
 }
