@@ -94,14 +94,14 @@ export default function AdminDashboard() {
                 deals: dealsRes.data.total || 0,
                 companies: companiesRes.data.total || 0,
                 contacts: contactsRes.data.total || 0,
-                users: usersRes.data.data?.length || 0,
+                users: usersRes.data?.length || 0,
                 totalValue,
                 revenueChart: months,
-                pendingUsers: usersRes.data.data?.filter(u => !u.isSetupComplete)?.length || 0,
+                pendingUsers: usersRes.data?.filter(u => !u.isSetupComplete)?.length || 0,
                 stagnantDeals: dealsData.filter(d => d.stage === 'Negotiation' && new Date(d.updatedAt) < new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)).length || 0,
                 dealList: dealsData,
                 companyList: companiesRes.data.data || [],
-                userList: usersRes.data.data || []
+                userList: usersRes.data || []
             });
         } catch (error) {
             console.error(error);
@@ -202,21 +202,27 @@ export default function AdminDashboard() {
                     </h2>
                     <div className="flex-1 space-y-6">
                         <ul className="space-y-4">
-                            <li className="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100">
-                                <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-red-500">
+                            <li
+                                onClick={() => setModalConfig({ isOpen: true, category: 'users', data: stats.userList.filter(u => !u.isSetupComplete) })}
+                                className="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100 cursor-pointer group"
+                            >
+                                <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-red-500 group-hover:scale-110 transition-transform">
                                     <Users size={18} />
                                 </div>
                                 <div>
-                                    <p className="text-sm font-bold text-gray-800">{stats.pendingUsers} Pending Invites</p>
+                                    <p className="text-sm font-bold text-gray-800 group-hover:text-red-500 transition-colors">{stats.pendingUsers} Pending Invites</p>
                                     <p className="text-xs text-gray-500">Users who haven't set password</p>
                                 </div>
                             </li>
-                            <li className="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100">
-                                <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-500">
+                            <li
+                                onClick={() => setModalConfig({ isOpen: true, category: 'deals', data: stats.dealList.filter(d => d.stage === 'Negotiation' && new Date(d.updatedAt) < new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)) })}
+                                className="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100 cursor-pointer group"
+                            >
+                                <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-500 group-hover:scale-110 transition-transform">
                                     <Briefcase size={18} />
                                 </div>
                                 <div>
-                                    <p className="text-sm font-bold text-gray-800">{stats.stagnantDeals} Stagnant Deals</p>
+                                    <p className="text-sm font-bold text-gray-800 group-hover:text-orange-500 transition-colors">{stats.stagnantDeals} Stagnant Deals</p>
                                     <p className="text-xs text-gray-500">Inactive in Negotiation for 7+ days</p>
                                 </div>
                             </li>
