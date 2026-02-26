@@ -40,23 +40,21 @@ export default function DealDetailsModal({ isOpen, onClose, deal }) {
     return (
         <Modal isOpen={isOpen} onClose={onClose} title="Opportunity Intelligence">
             <div className="space-y-6">
-                {/* Visual Header */}
-                <div className="relative p-6 bg-gradient-to-r from-red-600 to-red-500 rounded-2xl shadow-xl overflow-hidden">
-                    <div className="relative z-10 flex items-center gap-5">
-                        <div className="w-16 h-16 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-white text-xl font-black border border-white/30 shadow-inner">
-                            {initials}
-                        </div>
-                        <div className="min-w-0">
-                            <h2 className="text-2xl font-black text-white truncate drop-shadow-sm">{deal.name}</h2>
-                            <div className="flex items-center gap-2 mt-1">
-                                <span className={`px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-widest bg-white ${deal.stage?.startsWith('Closed Won') ? 'text-green-600' : 'text-red-600 shadow-sm'}`}>
-                                    {deal.stage}
-                                </span>
-                                <span className="text-white/40 font-bold">•</span>
-                                <span className="text-xs text-white/90 font-bold drop-shadow-md">
-                                    {deal.currency} {deal.value?.toLocaleString()}
-                                </span>
-                            </div>
+                {/* Header Section */}
+                <div className="flex items-center gap-5 p-5 bg-gradient-to-br from-gray-50 to-white rounded-2xl border border-gray-100 shadow-sm">
+                    <div className={`w-16 h-16 rounded-2xl ${avatarColor} flex items-center justify-center text-white text-xl font-bold border-4 border-white shadow-md flex-shrink-0`}>
+                        {initials}
+                    </div>
+                    <div className="min-w-0">
+                        <h2 className="text-xl font-bold text-gray-900 truncate">{deal.name}</h2>
+                        <div className="flex items-center gap-2 mt-1">
+                            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wider ${stageBadge[deal.stage] || "bg-gray-100 text-gray-600 border-gray-200"}`}>
+                                {deal.stage}
+                            </span>
+                            <span className="text-gray-300">•</span>
+                            <span className="text-xs text-gray-500 font-medium">
+                                {deal.currency} {deal.value?.toLocaleString() || "0"}
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -65,47 +63,47 @@ export default function DealDetailsModal({ isOpen, onClose, deal }) {
                     {/* Financials & Timeline */}
                     <div className="space-y-6">
                         <section className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                            <h4 className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">
+                            <h4 className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">
                                 <DollarSign size={12} className="text-red-500" />
                                 Deal Economics
                             </h4>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-1">
-                                    <p className="text-xl font-black text-gray-900 leading-none">
+                                    <p className="text-lg font-bold text-gray-900 leading-none">
                                         {deal.currency} {deal.value?.toLocaleString() || "0"}
                                     </p>
-                                    <p className="text-[10px] text-gray-400 font-bold uppercase">Estimated Value</p>
+                                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tight">Value</p>
                                 </div>
                                 <div className="space-y-1 border-l border-gray-200 pl-4">
-                                    <p className={`text-xl font-black leading-none ${getProbabilityColor(deal.probability)}`}>
+                                    <p className={`text-lg font-bold leading-none ${getProbabilityColor(deal.probability)}`}>
                                         {deal.probability}%
                                     </p>
-                                    <p className="text-[10px] text-gray-400 font-bold uppercase">Win Probability</p>
+                                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tight">Probability</p>
                                 </div>
                             </div>
                         </section>
 
                         <section className="grid grid-cols-2 gap-4 px-1">
                             <div>
-                                <h4 className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">
-                                    <Calendar size={12} className="text-orange-400" />
+                                <h4 className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
+                                    <Calendar size={12} className="text-red-400" />
                                     Expected Close
                                 </h4>
-                                <p className="text-sm font-bold text-gray-800">{formatDate(deal.expectedCloseDate)}</p>
+                                <p className="text-sm font-semibold text-gray-700">{formatDate(deal.expectedCloseDate)}</p>
                             </div>
                             <div>
-                                <h4 className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">
+                                <h4 className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
                                     <Target size={12} className="text-red-400" />
                                     Source
                                 </h4>
-                                <p className="text-sm font-bold text-gray-800">{deal.source || "Organic Link"}</p>
+                                <p className="text-sm font-semibold text-gray-700">{deal.source || "Direct"}</p>
                             </div>
                         </section>
 
                         <section className="px-1">
-                            <h4 className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">
+                            <h4 className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">
                                 <Building2 size={12} className="text-red-400" />
-                                Accounts Linked
+                                Linked Records
                             </h4>
                             <div className="space-y-2">
                                 <div className="flex items-center justify-between p-2.5 bg-white border border-gray-100 rounded-xl shadow-sm">
@@ -133,23 +131,23 @@ export default function DealDetailsModal({ isOpen, onClose, deal }) {
                     {/* Ownership & Logic */}
                     <div className="space-y-6">
                         <section>
-                            <h4 className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">
-                                <Tag size={12} className="text-red-500" />
-                                Deal Ownership
+                            <h4 className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">
+                                <Tag size={12} className="text-red-400" />
+                                Ownership info
                             </h4>
-                            <div className="flex flex-col p-4 bg-gradient-to-br from-red-50 to-white rounded-2xl border border-red-100/50">
-                                <span className="text-[10px] text-red-400 font-black uppercase tracking-tighter mb-1">Assigned Executive</span>
-                                <span className="text-sm font-black text-red-700">
+                            <div className="flex flex-col p-4 bg-red-50/50 rounded-2xl border border-red-100/50">
+                                <span className="text-[10px] text-red-500 font-bold uppercase tracking-tighter mb-1">Assigned Executive</span>
+                                <span className="text-sm font-bold text-red-700">
                                     {`${deal.ownerId?.firstName || ""} ${deal.ownerId?.lastName || ""}`.trim() || "Unassigned"}
                                 </span>
-                                <span className="text-[10px] text-red-300 font-bold uppercase tracking-tight mt-1">Core Sales Unit</span>
+                                <span className="text-[10px] text-red-400/80 italic mt-0.5">Strategic Account Unit</span>
                             </div>
                         </section>
 
                         <section>
-                            <h4 className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">
+                            <h4 className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">
                                 <Info size={12} className="text-red-400" />
-                                Strategic Context
+                                Strategic Overview
                             </h4>
                             <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 text-xs text-gray-600 leading-relaxed italic h-32 overflow-y-auto custom-scrollbar shadow-inner">
                                 {deal.notes || "No strategic overview provided for this mandate."}
@@ -174,9 +172,9 @@ export default function DealDetailsModal({ isOpen, onClose, deal }) {
                 <div className="pt-6">
                     <button
                         onClick={onClose}
-                        className="w-full py-4 bg-red-600 hover:bg-red-700 text-white rounded-2xl font-black text-sm shadow-xl shadow-red-200 transition-all hover:scale-[1.01] active:scale-[0.98]"
+                        className="w-full py-3.5 bg-red-600 hover:bg-red-700 text-white rounded-2xl font-bold text-sm shadow-xl shadow-red-100 transition-all active:scale-[0.98]"
                     >
-                        CLOSE INTELLIGENCE
+                        Close Intelligence
                     </button>
                 </div>
             </div>
