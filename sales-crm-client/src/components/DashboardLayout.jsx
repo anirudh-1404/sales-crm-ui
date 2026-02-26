@@ -166,9 +166,9 @@ const DashboardLayout = () => {
                             <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br from-red-500 to-orange-400 flex items-center justify-center text-white font-bold text-xs sm:text-sm shadow-sm">{initials}</div>
                             <span className="absolute bottom-0 right-0 w-2 h-2 sm:w-2.5 sm:h-2.5 bg-green-500 border-2 border-white rounded-full" />
                         </div>
-                        <div className="hidden sm:block truncate max-w-[100px] lg:max-w-[150px]">
-                            <p className="text-sm font-bold text-gray-800 truncate">{user ? `${user.firstName} ${user.lastName}` : "ADMIN"}</p>
-                            <p className="text-[10px] text-gray-400 mt-1 truncate uppercase tracking-wider">
+                        <div className="hidden sm:block min-w-0">
+                            <p className="text-sm font-bold text-gray-800">{user ? `${user.firstName} ${user.lastName}` : "ADMIN"}</p>
+                            <p className="text-[10px] text-gray-400 mt-1 uppercase tracking-wider">
                                 {user?.role === "admin" ? "ADMIN" :
                                     user?.role === "sales_manager" ? "SALES MANAGER" :
                                         user?.role === "sales_rep" ? "SALES REPRESENTATIVE" :
