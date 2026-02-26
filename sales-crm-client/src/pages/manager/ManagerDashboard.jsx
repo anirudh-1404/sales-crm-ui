@@ -9,7 +9,7 @@ import { toast } from "react-hot-toast";
 const Select = ({ options, value, onChange }) => (
     <div className="relative">
         <select value={value} onChange={e => onChange(e.target.value)}
-            className="appearance-none text-sm font-medium text-gray-700 border border-gray-200 rounded-lg px-3 py-1.5 pr-8 bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-400 hover:border-gray-300 transition">
+            className="appearance-none text-sm font-medium text-gray-700 border border-gray-200 rounded-lg px-3 py-1.5 pr-8 bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-400 hover:border-gray-300 transition">
             {options.map(o => <option key={o}>{o}</option>)}
         </select>
         <ChevronDown size={14} className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -34,12 +34,12 @@ const StatCard = ({ label, value, sub, color, icon: IconComp }) => (
         <div>
             <p className="text-2xl font-bold text-gray-800">{value}</p>
             <p className="text-sm text-gray-500">{label}</p>
-            {sub && <p className="text-xs text-purple-500 font-medium mt-0.5">{sub}</p>}
+            {sub && <p className="text-xs text-red-500 font-medium mt-0.5">{sub}</p>}
         </div>
     </div>
 );
 
-const Avatar = ({ name, color = "bg-purple-500" }) => {
+const Avatar = ({ name, color = "bg-red-500" }) => {
     if (!name) return null;
     const initials = name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
     return (
@@ -53,7 +53,7 @@ const STAGE_COLORS = {
     Lead: "bg-blue-500", Qualified: "bg-purple-500", Proposal: "bg-yellow-500",
     Negotiation: "bg-orange-500", "Closed Won": "bg-green-500", "Closed Lost": "bg-red-500",
 };
-const repColors = ["bg-purple-500", "bg-blue-500", "bg-green-500", "bg-orange-500", "bg-pink-500", "bg-teal-500"];
+const repColors = ["bg-red-500", "bg-orange-500", "bg-red-600", "bg-orange-600", "bg-red-400", "bg-amber-500"];
 const periodOptions = ["Last 7 Days", "Last 30 Days", "Last 90 Days", "This Year"];
 
 export default function ManagerDashboard() {
@@ -131,10 +131,10 @@ export default function ManagerDashboard() {
             </div>
 
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <StatCard label="Team Members" value={loading ? "..." : String(teamMembers.length)} sub="+ you as manager" color="bg-purple-50 text-purple-600" icon={Users2} />
-                <StatCard label="Team Deals" value={loading ? "..." : String(deals.length)} sub="All stages" color="bg-blue-50 text-blue-600" icon={Briefcase} />
-                <StatCard label="Team Won" value={loading ? "..." : String(wonDeals.length)} sub={`${formatCurrency(wonRevenue)} revenue`} color="bg-green-50 text-green-600" icon={CheckCircle2} />
-                <StatCard label="Team Pipeline" value={loading ? "..." : formatCurrency(totalPipeline)} sub={`${activeDeals.length} active deals`} color="bg-orange-50 text-orange-600" icon={DollarSign} />
+                <StatCard label="Team Members" value={loading ? "..." : String(teamMembers.length)} sub="+ you as manager" color="bg-red-50 text-red-600" icon={Users2} />
+                <StatCard label="Team Deals" value={loading ? "..." : String(deals.length)} sub="All stages" color="bg-orange-50 text-orange-600" icon={Briefcase} />
+                <StatCard label="Team Won" value={loading ? "..." : String(wonDeals.length)} sub={`${formatCurrency(wonRevenue)} revenue`} color="bg-red-600 text-white shadow-sm shadow-red-100" icon={CheckCircle2} />
+                <StatCard label="Team Pipeline" value={loading ? "..." : formatCurrency(totalPipeline)} sub={`${activeDeals.length} active deals`} color="bg-red-50 text-red-600 border border-red-100" icon={DollarSign} />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
@@ -171,7 +171,7 @@ export default function ManagerDashboard() {
                                             <td className="px-4 py-3 font-semibold text-gray-800">{rep.deals}</td>
                                             <td className="px-4 py-3 text-green-600 font-semibold">{rep.won}</td>
                                             <td className="px-4 py-3 text-red-500 font-semibold">{rep.lost}</td>
-                                            <td className="px-4 py-3 text-purple-700 font-semibold">{rep.pipeline}</td>
+                                            <td className="px-4 py-3 text-red-600 font-bold">{rep.pipeline}</td>
                                             <td className="px-4 py-3">
                                                 <span className={`text-xs px-2.5 py-1 rounded-full font-semibold flex items-center gap-1.5 w-fit ${rep.status === "Active" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
                                                     <span className={`w-1.5 h-1.5 rounded-full ${rep.status === "Active" ? "bg-green-500" : "bg-gray-400"}`} />
@@ -243,7 +243,7 @@ export default function ManagerDashboard() {
                                         </div>
                                     </div>
                                 </div>
-                                <p className="text-xs text-purple-600 font-semibold">{rep.pipeline}</p>
+                                <p className="text-xs text-red-600 font-bold">{rep.pipeline}</p>
                             </div>
                         ))
                     )}

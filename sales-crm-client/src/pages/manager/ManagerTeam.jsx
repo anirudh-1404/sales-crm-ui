@@ -21,7 +21,7 @@ const CardHeader = ({ title, children }) => (
 const Avatar = ({ name }) => {
     if (!name) return null;
     const initials = name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
-    const colors = ["bg-purple-500", "bg-blue-500", "bg-green-500", "bg-orange-500", "bg-pink-500"];
+    const colors = ["bg-red-500", "bg-orange-500", "bg-red-600", "bg-orange-600", "bg-red-400"];
     return (
         <div className={`w-9 h-9 rounded-full ${colors[name.charCodeAt(0) % colors.length]} flex items-center justify-center text-white text-xs font-bold flex-shrink-0`}>
             {initials}
@@ -79,7 +79,7 @@ export default function ManagerTeam() {
             title: "Activate Member?",
             message: `Are you sure you want to reactivate ${member.firstName} ${member.lastName}? They will be able to log in again.`,
             confirmLabel: "Activate",
-            confirmColor: "bg-green-600 hover:bg-green-700",
+            confirmColor: "bg-red-600 hover:bg-red-700",
             onConfirm: async () => {
                 try {
                     await activateUser(member._id);
@@ -137,9 +137,9 @@ export default function ManagerTeam() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 {[
                     { label: "Total Members", value: loading ? "..." : String(members.length), color: "bg-red-50 text-red-600", icon: Users2 },
-                    { label: "Active", value: loading ? "..." : String(activeCount), color: "bg-green-50 text-green-600", icon: CheckCircle2 },
-                    { label: "Inactive", value: loading ? "..." : String(inactiveCount), color: "bg-red-50 text-red-500", icon: XCircle },
-                    { label: "SALES REPRESENTATIVES", value: loading ? "..." : String(repsOnly.length), color: "bg-blue-50 text-blue-600", icon: UserCheck },
+                    { label: "Active", value: loading ? "..." : String(activeCount), color: "bg-red-600 text-white shadow-sm shadow-red-100", icon: CheckCircle2 },
+                    { label: "Inactive", value: loading ? "..." : String(inactiveCount), color: "bg-red-100 text-red-800", icon: XCircle },
+                    { label: "SALES REPRESENTATIVES", value: loading ? "..." : String(repsOnly.length), color: "bg-red-50 text-red-600 border border-red-100", icon: UserCheck },
                 ].map(s => (
                     <div key={s.label} className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 sm:p-5 flex items-start gap-4">
                         <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${s.color}`}>
@@ -188,7 +188,7 @@ export default function ManagerTeam() {
                                             <div className="flex items-center gap-3">
                                                 <Avatar name={`${m.firstName} ${m.lastName}`} />
                                                 <div>
-                                                    <p className="font-bold text-gray-800 leading-none group-hover:text-purple-600 transition-colors uppercase">{m.firstName} {m.lastName}</p>
+                                                    <p className="font-bold text-gray-800 leading-none group-hover:text-red-600 transition-colors uppercase">{m.firstName} {m.lastName}</p>
                                                     <p className="text-xs text-gray-400 mt-0.5">{m.email}</p>
                                                 </div>
                                             </div>
@@ -217,7 +217,7 @@ export default function ManagerTeam() {
                                             <div className="flex items-center gap-1.5">
                                                 <button
                                                     onClick={() => { setSelectedMember(m); setIsDetailsModalOpen(true); }}
-                                                    className="p-1.5 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition"
+                                                    className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
                                                     title="View profile details"
                                                 >
                                                     <Eye size={15} />

@@ -218,7 +218,7 @@ export default function UserModal({ isOpen, onClose, user, managers = [], onSave
                                 type="button"
                                 onClick={handleAdminResetPassword}
                                 disabled={saving}
-                                className="px-3 py-1.5 bg-gray-800 text-white text-xs font-bold rounded-lg hover:bg-black transition disabled:opacity-50"
+                                className="px-3 py-1.5 bg-red-600 text-white text-xs font-bold rounded-lg hover:bg-red-700 transition disabled:opacity-50 shadow-sm shadow-red-100"
                             >
                                 Reset
                             </button>

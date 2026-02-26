@@ -10,7 +10,7 @@ import { toast } from "react-hot-toast";
 const Select = ({ options, value, onChange }) => (
     <div className="relative">
         <select value={value} onChange={e => onChange(e.target.value)}
-            className="appearance-none text-sm font-medium text-gray-700 border border-gray-200 rounded-lg px-3 py-1.5 pr-8 bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-400 hover:border-gray-300 transition">
+            className="appearance-none text-sm font-medium text-gray-700 border border-gray-200 rounded-lg px-3 py-1.5 pr-8 bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-400 hover:border-gray-300 transition">
             {options.map(o => <option key={o}>{o}</option>)}
         </select>
         <ChevronDown size={14} className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -28,7 +28,7 @@ const CardHeader = ({ title, children }) => (
 );
 
 const stageBadge = {
-    Lead: "bg-blue-100 text-blue-700", Qualified: "bg-purple-100 text-purple-700",
+    Lead: "bg-red-50 text-red-600 border border-red-100", Qualified: "bg-orange-100 text-orange-700",
     Proposal: "bg-yellow-100 text-yellow-700", Negotiation: "bg-orange-100 text-orange-700",
     "Closed Won": "bg-green-100 text-green-700", "Closed Lost": "bg-red-100 text-red-700",
 };
@@ -116,10 +116,10 @@ export default function RepDeals() {
     const wonDealsCount = deals.filter(d => d.stage === "Closed Won").length;
     const pipelineValue = deals.reduce((acc, curr) => acc + (curr.value || 0), 0);
     const stats = [
-        { label: "Pipeline Value", value: `$${pipelineValue.toLocaleString()}`, color: "bg-green-50 text-green-600", icon: DollarSign },
-        { label: "Active Deals", value: String(activeDealsCount), color: "bg-blue-50 text-blue-600", icon: Briefcase },
-        { label: "Deals Won", value: String(wonDealsCount), color: "bg-purple-50 text-purple-600", icon: CheckCircle2 },
-        { label: "Success Rate", value: "85%", color: "bg-orange-50 text-orange-600", icon: Zap },
+        { label: "Pipeline Value", value: `$${pipelineValue.toLocaleString()}`, color: "bg-red-50 text-red-600", icon: DollarSign },
+        { label: "Active Deals", value: String(activeDealsCount), color: "bg-orange-50 text-orange-600", icon: Briefcase },
+        { label: "Deals Won", value: String(wonDealsCount), color: "bg-red-600 text-white shadow-sm shadow-red-100", icon: CheckCircle2 },
+        { label: "Success Rate", value: "85%", color: "bg-red-50 text-red-600 border border-red-100", icon: Zap },
     ];
 
     return (
@@ -131,7 +131,7 @@ export default function RepDeals() {
                 </div>
                 <button
                     onClick={() => { setSelectedDeal(null); setIsDealModalOpen(true); }}
-                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-green-700 transition shadow-md shadow-green-100"
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-700 transition shadow-md shadow-red-100"
                 >
                     <Plus size={18} />
                     <span>New Deal</span>
@@ -194,7 +194,7 @@ export default function RepDeals() {
                                             <div className="flex items-center gap-2">
                                                 <button
                                                     onClick={() => { setSelectedDeal(d); setIsDealModalOpen(true); }}
-                                                    className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition"
+                                                    className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
                                                 >
                                                     <Edit2 size={16} />
                                                 </button>

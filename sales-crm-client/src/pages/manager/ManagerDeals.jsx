@@ -10,7 +10,7 @@ import { toast } from "react-hot-toast";
 const Select = ({ options, value, onChange }) => (
     <div className="relative">
         <select value={value} onChange={e => onChange(e.target.value)}
-            className="appearance-none text-sm font-medium text-gray-700 border border-gray-200 rounded-lg px-3 py-1.5 pr-8 bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-400 hover:border-gray-300 transition">
+            className="appearance-none text-sm font-medium text-gray-700 border border-gray-200 rounded-lg px-3 py-1.5 pr-8 bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-400 hover:border-gray-300 transition">
             {options.map(o => <option key={o}>{o}</option>)}
         </select>
         <ChevronDown size={14} className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -34,7 +34,7 @@ const StatCard = ({ label, value, color, icon: IconComp }) => (
 );
 
 const stageBadge = {
-    Lead: "bg-blue-100 text-blue-700", Qualified: "bg-purple-100 text-purple-700",
+    Lead: "bg-red-50 text-red-600 border border-red-100", Qualified: "bg-orange-100 text-orange-700",
     Proposal: "bg-yellow-100 text-yellow-700", Negotiation: "bg-orange-100 text-orange-700",
     "Closed Won": "bg-green-100 text-green-700", "Closed Lost": "bg-red-100 text-red-700",
 };
@@ -133,7 +133,7 @@ export default function ManagerDeals() {
                 </div>
                 <button
                     onClick={() => { setSelectedDeal(null); setIsDealModalOpen(true); }}
-                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-purple-700 transition shadow-md shadow-purple-100"
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-700 transition shadow-md shadow-red-100"
                 >
                     <Plus size={18} />
                     <span>Create Deal</span>
@@ -141,10 +141,10 @@ export default function ManagerDeals() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <StatCard icon={Briefcase} label="Team Deals" value={deals.length} color="bg-purple-50 text-purple-600" />
-                <StatCard icon={Zap} label="Active Deals" value={deals.filter(d => !d.stage.startsWith("Closed")).length} color="bg-blue-50 text-blue-600" />
-                <StatCard icon={CheckCircle2} label="Closed Won" value={deals.filter(d => d.stage === "Closed Won").length} color="bg-green-50 text-green-600" />
-                <StatCard icon={Building2} label="Total Value" value={`$${deals.reduce((sum, d) => sum + (d.value || 0), 0).toLocaleString()}`} color="bg-orange-50 text-orange-600" />
+                <StatCard icon={Briefcase} label="Team Deals" value={deals.length} color="bg-red-50 text-red-600" />
+                <StatCard icon={Zap} label="Active Deals" value={deals.filter(d => !d.stage.startsWith("Closed")).length} color="bg-orange-50 text-orange-600" />
+                <StatCard label="Closed Won" value={deals.filter(d => d.stage === "Closed Won").length} color="bg-red-600 text-white shadow-sm shadow-red-100" icon={CheckCircle2} />
+                <StatCard icon={Building2} label="Total Value" value={`$${deals.reduce((sum, d) => sum + (d.value || 0), 0).toLocaleString()}`} color="bg-red-50 text-red-600 border border-red-100" />
             </div>
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -177,7 +177,7 @@ export default function ManagerDeals() {
                                 deals.map((d) => (
                                     <tr key={d._id} className="hover:bg-gray-50/50 transition-colors group">
                                         <td className="px-4 py-3 font-medium text-gray-800 whitespace-nowrap">{d.name}</td>
-                                        <td className="px-4 py-3 text-purple-700 font-medium whitespace-nowrap">{d.ownerId?.firstName || "Unknown"}</td>
+                                        <td className="px-4 py-3 text-red-600 font-bold whitespace-nowrap">{d.ownerId?.firstName || "Unknown"}</td>
                                         <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{d.companyId?.name || d.companyName || "—"}</td>
                                         <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{d.contactId ? `${d.contactId.firstName} ${d.contactId.lastName}`.trim() : (d.contactName || "—")}</td>
                                         <td className="px-4 py-3">
@@ -197,7 +197,7 @@ export default function ManagerDeals() {
                                             <div className="flex items-center gap-2">
                                                 <button
                                                     onClick={() => { setSelectedDeal(d); setIsDealModalOpen(true); }}
-                                                    className="p-1.5 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition"
+                                                    className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
                                                 >
                                                     <Edit2 size={16} />
                                                 </button>

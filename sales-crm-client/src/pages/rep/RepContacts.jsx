@@ -19,7 +19,7 @@ const CardHeader = ({ title, children }) => (
 const Avatar = ({ name }) => {
     if (!name) return null;
     const initials = name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
-    const colors = ["bg-green-500", "bg-blue-500", "bg-purple-500", "bg-orange-500", "bg-pink-500"];
+    const colors = ["bg-red-500", "bg-orange-500", "bg-red-600", "bg-orange-600", "bg-red-400"];
     return (
         <div className={`w-8 h-8 rounded-full ${colors[name.charCodeAt(0) % colors.length]} flex items-center justify-center text-white text-xs font-bold flex-shrink-0`}>
             {initials}
@@ -93,10 +93,10 @@ export default function RepContacts() {
     };
 
     const stats = [
-        { label: "Total Contacts", value: String(contacts.length), color: "bg-green-50 text-green-600", icon: Users },
-        { label: "With Email", value: String(contacts.filter(c => c.email).length), color: "bg-blue-50 text-blue-600", icon: Building2 },
-        { label: "With LinkedIn", value: String(contacts.filter(c => c.linkedin).length), color: "bg-purple-50 text-purple-600", icon: Linkedin },
-        { label: "With Mobile", value: String(contacts.filter(c => c.mobile).length), color: "bg-orange-50 text-orange-600", icon: Phone },
+        { label: "Total Contacts", value: String(contacts.length), color: "bg-red-50 text-red-600", icon: Users },
+        { label: "With Email", value: String(contacts.filter(c => c.email).length), color: "bg-orange-50 text-orange-600", icon: Building2 },
+        { label: "With LinkedIn", value: String(contacts.filter(c => c.linkedin).length), color: "bg-red-600 text-white shadow-sm shadow-red-100", icon: Linkedin },
+        { label: "With Mobile", value: String(contacts.filter(c => c.mobile).length), color: "bg-red-50 text-red-600 border border-red-100", icon: Phone },
     ];
 
     return (
@@ -108,7 +108,7 @@ export default function RepContacts() {
                 </div>
                 <button
                     onClick={() => { setSelectedContact(null); setIsContactModalOpen(true); }}
-                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-green-700 transition shadow-md shadow-green-100"
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-700 transition shadow-md shadow-red-100"
                 >
                     <Plus size={18} />
                     <span>New Contact</span>
@@ -136,7 +136,7 @@ export default function RepContacts() {
                         <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                         <input type="text" placeholder="Search contact, company..."
                             value={search} onChange={e => setSearch(e.target.value)}
-                            className="w-full sm:w-64 text-sm border border-gray-200 rounded-lg pl-9 pr-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-green-400 bg-gray-50/50" />
+                            className="w-full sm:w-64 text-sm border border-gray-200 rounded-lg pl-9 pr-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-red-400 bg-gray-50/50" />
                     </div>
                 </div>
                 <div className="overflow-x-auto min-h-[300px]">
@@ -167,7 +167,7 @@ export default function RepContacts() {
                                         </td>
                                         <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{c.jobTitle || "—"}</td>
                                         <td className="px-4 py-3 whitespace-nowrap">
-                                            <span className="text-xs px-2.5 py-1 rounded-full bg-green-50 text-green-700 font-medium">{c.companyId?.name || "—"}</span>
+                                            <span className="text-xs px-2.5 py-1 rounded-full bg-red-50 text-red-700 font-medium border border-red-100">{c.companyId?.name || "—"}</span>
                                         </td>
                                         <td className="px-4 py-3 text-gray-500 text-xs whitespace-nowrap">{c.phone || c.mobile || "—"}</td>
                                         <td className="px-4 py-3 whitespace-nowrap">
@@ -182,7 +182,7 @@ export default function RepContacts() {
                                             <div className="flex items-center gap-2">
                                                 <button
                                                     onClick={() => { setSelectedContact(c); setIsContactModalOpen(true); }}
-                                                    className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition"
+                                                    className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
                                                 >
                                                     <Edit2 size={16} />
                                                 </button>

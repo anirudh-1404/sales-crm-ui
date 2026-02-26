@@ -16,8 +16,8 @@ const CardHeader = ({ title, children }) => (
 );
 
 const statusBg = {
-    Lead: "bg-blue-100 text-blue-600",
-    Prospect: "bg-purple-100 text-purple-600",
+    Lead: "bg-red-50 text-red-600 border border-red-100",
+    Prospect: "bg-orange-100 text-orange-600",
     Customer: "bg-green-100 text-green-700",
     Churned: "bg-red-100 text-red-600",
 };
@@ -83,9 +83,9 @@ export default function RepCompanies() {
     };
 
     const stats = [
-        { label: "My Companies", value: String(companies.length), color: "bg-green-50 text-green-600", icon: Building2 },
-        { label: "Active", value: String(companies.filter(c => c.status === "Customer").length), color: "bg-blue-50 text-blue-600", icon: CheckCircle2 },
-        { label: "Prospects", value: String(companies.filter(c => c.status === "Prospect").length), color: "bg-purple-50 text-purple-600", icon: Eye },
+        { label: "My Companies", value: String(companies.length), color: "bg-red-50 text-red-600", icon: Building2 },
+        { label: "Active", value: String(companies.filter(c => c.status === "Customer").length), color: "bg-red-600 text-white shadow-sm shadow-red-100", icon: CheckCircle2 },
+        { label: "Prospects", value: String(companies.filter(c => c.status === "Prospect").length), color: "bg-orange-50 text-orange-600", icon: Eye },
     ];
 
     return (
@@ -97,7 +97,7 @@ export default function RepCompanies() {
                 </div>
                 <button
                     onClick={() => { setSelectedCompany(null); setIsCompanyModalOpen(true); }}
-                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-green-700 transition shadow-md shadow-green-100"
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-700 transition shadow-md shadow-red-100"
                 >
                     <Plus size={18} />
                     <span>New Company</span>
@@ -125,7 +125,7 @@ export default function RepCompanies() {
                         <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                         <input type="text" placeholder="Search company..."
                             value={search} onChange={e => setSearch(e.target.value)}
-                            className="w-full sm:w-64 text-sm border border-gray-200 rounded-lg pl-9 pr-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-green-400 bg-gray-50/50" />
+                            className="w-full sm:w-64 text-sm border border-gray-200 rounded-lg pl-9 pr-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-red-400 bg-gray-50/50" />
                     </div>
                 </div>
                 <div className="overflow-x-auto">
@@ -156,7 +156,7 @@ export default function RepCompanies() {
                                             <div className="flex items-center gap-2">
                                                 <button
                                                     onClick={() => { setSelectedCompany(c); setIsCompanyModalOpen(true); }}
-                                                    className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition"
+                                                    className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
                                                 >
                                                     <Edit2 size={16} />
                                                 </button>

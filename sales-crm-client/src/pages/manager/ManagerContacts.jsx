@@ -19,7 +19,7 @@ const CardHeader = ({ title, children }) => (
 const Select = ({ options, value, onChange }) => (
     <div className="relative">
         <select value={value} onChange={e => onChange(e.target.value)}
-            className="appearance-none text-sm font-medium text-gray-700 border border-gray-200 rounded-lg px-3 py-1.5 pr-8 bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-400 hover:border-gray-300 transition">
+            className="appearance-none text-sm font-medium text-gray-700 border border-gray-200 rounded-lg px-3 py-1.5 pr-8 bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-400 hover:border-gray-300 transition">
             {options.map(o => <option key={o}>{o}</option>)}
         </select>
         <ChevronDown size={14} className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -29,7 +29,7 @@ const Select = ({ options, value, onChange }) => (
 const Avatar = ({ name }) => {
     if (!name) return null;
     const initials = name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
-    const colors = ["bg-purple-500", "bg-blue-500", "bg-green-500", "bg-orange-500", "bg-pink-500"];
+    const colors = ["bg-red-500", "bg-orange-500", "bg-red-600", "bg-orange-600", "bg-red-400"];
     return (
         <div className={`w-8 h-8 rounded-full ${colors[name.charCodeAt(0) % colors.length]} flex items-center justify-center text-white text-xs font-bold flex-shrink-0`}>
             {initials}
@@ -103,9 +103,9 @@ export default function ManagerContacts() {
     };
 
     const stats = [
-        { label: "Team Contacts", value: String(contacts.length), color: "bg-purple-50 text-purple-600", icon: Users },
-        { label: "Linked to Company", value: String(contacts.filter(c => c.companyId).length), color: "bg-green-50 text-green-600", icon: Building2 },
-        { label: "Total Active", value: String(contacts.length), color: "bg-blue-50 text-blue-600", icon: Users2 },
+        { label: "Team Contacts", value: String(contacts.length), color: "bg-red-50 text-red-600", icon: Users },
+        { label: "Linked to Company", value: String(contacts.filter(c => c.companyId).length), color: "bg-red-600 text-white shadow-sm shadow-red-100", icon: Building2 },
+        { label: "Total Active", value: String(contacts.length), color: "bg-orange-50 text-orange-600", icon: Users2 },
     ];
 
     return (
@@ -117,7 +117,7 @@ export default function ManagerContacts() {
                 </div>
                 <button
                     onClick={() => { setSelectedContact(null); setIsContactModalOpen(true); }}
-                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-purple-700 transition shadow-md shadow-purple-100"
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-700 transition shadow-md shadow-red-100"
                 >
                     <Plus size={18} />
                     <span>Create Contact</span>
@@ -145,7 +145,7 @@ export default function ManagerContacts() {
                         <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                         <input type="text" placeholder="Search contact..."
                             value={search} onChange={e => setSearch(e.target.value)}
-                            className="w-full sm:w-64 text-sm border border-gray-200 rounded-lg pl-9 pr-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-400 bg-gray-50/50 transition-all font-medium" />
+                            className="w-full sm:w-64 text-sm border border-gray-200 rounded-lg pl-9 pr-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-red-400 bg-gray-50/50 transition-all font-medium" />
                     </div>
                 </div>
                 <div className="overflow-x-auto">
@@ -178,7 +178,7 @@ export default function ManagerContacts() {
                                         <td className="px-4 py-3">
                                             <span className="text-xs px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 font-medium">{c.companyId?.name || c.companyName || "—"}</span>
                                         </td>
-                                        <td className="px-4 py-3 text-purple-700 font-medium">{c.ownerId?.firstName || "Unknown"}</td>
+                                        <td className="px-4 py-3 text-red-600 font-bold">{c.ownerId?.firstName || "Unknown"}</td>
                                         <td className="px-4 py-3 whitespace-nowrap">
                                             {c.linkedin ? (
                                                 <a href={c.linkedin.startsWith("http") ? c.linkedin : `https://${c.linkedin}`}
@@ -192,7 +192,7 @@ export default function ManagerContacts() {
                                             <div className="flex items-center gap-2">
                                                 <button
                                                     onClick={() => { setSelectedContact(c); setIsContactModalOpen(true); }}
-                                                    className="p-1.5 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition"
+                                                    className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
                                                 >
                                                     <Edit2 size={16} />
                                                 </button>

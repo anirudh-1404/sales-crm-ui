@@ -9,7 +9,7 @@ import { toast } from "react-hot-toast";
 const Select = ({ options, value, onChange }) => (
     <div className="relative">
         <select value={value} onChange={e => onChange(e.target.value)}
-            className="appearance-none text-sm font-medium text-gray-700 border border-gray-200 rounded-lg px-3 py-1.5 pr-8 bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-400 hover:border-gray-300 transition">
+            className="appearance-none text-sm font-medium text-gray-700 border border-gray-200 rounded-lg px-3 py-1.5 pr-8 bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-400 hover:border-gray-300 transition">
             {options.map(o => <option key={o}>{o}</option>)}
         </select>
         <ChevronDown size={14} className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -28,7 +28,7 @@ const CardHeader = ({ title, children }) => (
 
 const StageBadge = ({ stage }) => {
     const map = {
-        Lead: "bg-blue-100 text-blue-700", Qualified: "bg-purple-100 text-purple-700",
+        Lead: "bg-red-50 text-red-600 border border-red-100", Qualified: "bg-orange-100 text-orange-700",
         Proposal: "bg-yellow-100 text-yellow-700", Negotiation: "bg-orange-100 text-orange-700",
         "Closed Won": "bg-green-100 text-green-700", "Closed Lost": "bg-red-100 text-red-700",
     };
@@ -37,8 +37,8 @@ const StageBadge = ({ stage }) => {
 
 const STAGES = ["Lead", "Qualified", "Proposal", "Negotiation", "Closed Won", "Closed Lost"];
 const STAGE_COLORS = {
-    Lead: "bg-blue-500", Qualified: "bg-purple-500", Proposal: "bg-yellow-500",
-    Negotiation: "bg-orange-500", "Closed Won": "bg-green-500", "Closed Lost": "bg-red-500",
+    Lead: "bg-red-500", Qualified: "bg-orange-500", Proposal: "bg-yellow-500",
+    Negotiation: "bg-orange-400", "Closed Won": "bg-green-500", "Closed Lost": "bg-red-600",
 };
 
 const periodOptions = ["Last 7 Days", "Last 30 Days", "Last 90 Days", "This Year"];
@@ -100,9 +100,9 @@ export default function RepDashboard() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 {[
-                    { label: "My Deals", value: loading ? "..." : String(deals.length), sub: "Across all stages", color: "bg-green-50 text-green-600", icon: Briefcase },
-                    { label: "Deals Won", value: loading ? "..." : String(wonDeals.length), sub: `${formatCurrency(totalWon)} won`, color: "bg-blue-50 text-blue-600", icon: CheckCircle2 },
-                    { label: "My Pipeline", value: loading ? "..." : formatCurrency(totalPipeline), sub: `${activeDeals.length} in progress`, color: "bg-purple-50 text-purple-600", icon: DollarSign },
+                    { label: "My Deals", value: loading ? "..." : String(deals.length), sub: "Across all stages", color: "bg-red-50 text-red-600", icon: Briefcase },
+                    { label: "Deals Won", value: loading ? "..." : String(wonDeals.length), sub: `${formatCurrency(totalWon)} won`, color: "bg-red-600 text-white shadow-sm shadow-red-100", icon: CheckCircle2 },
+                    { label: "My Pipeline", value: loading ? "..." : formatCurrency(totalPipeline), sub: `${activeDeals.length} in progress`, color: "bg-red-50 text-red-600 border border-red-100", icon: DollarSign },
                     { label: "My Companies", value: loading ? "..." : String(companies.length), sub: "Active accounts", color: "bg-orange-50 text-orange-600", icon: Building2 },
                 ].map(s => (
                     <div key={s.label} className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex items-start gap-4">
