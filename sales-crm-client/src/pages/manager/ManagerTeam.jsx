@@ -3,6 +3,7 @@ import { Plus, Users2, CheckCircle2, XCircle, UserCheck, Search, Eye } from "luc
 import { getTeamUsers, deactivateUser, activateUser } from "../../../API/services/userService";
 import UserModal from "../../components/modals/UserModal";
 import UserDetailsModal from "../../components/modals/UserDetailsModal";
+import DeactivateModal from "../../components/modals/DeactivateModal";
 import { useAuth } from "../../context/AuthContext";
 import ConfirmDialog from "../../components/modals/ConfirmDialog";
 import { toast } from "react-hot-toast";
