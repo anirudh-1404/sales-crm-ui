@@ -294,7 +294,7 @@ const Login = () => {
                                     <button
                                         type="submit"
                                         disabled={submitting}
-                                        className={`w-full bg-red-600 hover:bg-orange-400 text-white py-3 rounded-lg font-semibold transition duration-300 cursor-pointer shadow-lg shadow-red-100 ${submitting ? "opacity-50 cursor-not-allowed" : ""}`}
+                                        className={`w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-semibold transition duration-300 cursor-pointer shadow-lg shadow-red-100 ${submitting ? "opacity-50 cursor-not-allowed" : ""}`}
                                     >
                                         {submitting ? "Signing In..." : "Sign In"}
                                     </button>

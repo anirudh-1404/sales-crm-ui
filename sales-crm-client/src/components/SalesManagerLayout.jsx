@@ -15,7 +15,7 @@ const SidebarLink = ({ to, icon: IconComp, label, onClick }) => (
         onClick={onClick}
         className={({ isActive }) =>
             `flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 group
-      ${isActive ? "bg-purple-600 text-white shadow-md shadow-purple-200" : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"}`
+      ${isActive ? "bg-red-600 text-white shadow-md shadow-red-200" : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"}`
         }>
         {({ isActive }) => (
             <>
@@ -83,9 +83,9 @@ export default function SalesManagerLayout() {
                 </div>
 
                 <div className="px-4 py-3 border-b border-gray-50 bg-gray-50/30">
-                    <div className="flex items-center gap-2 bg-purple-50 border border-purple-200 rounded-lg px-3 py-1.5 transition-all">
-                        <span className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse" />
-                        <span className="text-[10px] font-bold text-purple-700 uppercase tracking-wider">Manager</span>
+                    <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-lg px-3 py-1.5 transition-all">
+                        <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                        <span className="text-[10px] font-bold text-red-700 uppercase tracking-wider">Manager</span>
                     </div>
                 </div>
 
@@ -125,7 +125,7 @@ export default function SalesManagerLayout() {
                     </button>
                     <button
                         onClick={() => setSearchOpen(true)}
-                        className="flex items-center gap-2 flex-1 max-w-[140px] sm:max-w-xs pl-3 pr-4 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg text-gray-400 hover:border-purple-300 hover:bg-purple-50/30 transition text-left"
+                        className="flex items-center gap-2 flex-1 max-w-[140px] sm:max-w-xs pl-3 pr-4 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg text-gray-400 hover:border-red-300 hover:bg-red-50/30 transition text-left"
                     >
                         <Search size={15} />
                         <span className="flex-1 truncate">Search...</span>
@@ -135,12 +135,12 @@ export default function SalesManagerLayout() {
                     <div className="flex items-center gap-1">
                         <button className="relative p-2 rounded-lg hover:bg-gray-100 text-gray-500 transition">
                             <Bell size={18} />
-                            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-purple-500 rounded-full" />
+                            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
                         </button>
                     </div>
                     <div className="flex items-center gap-2 sm:gap-3 sm:pl-3 sm:border-l border-gray-100">
                         <div className="relative flex-shrink-0">
-                            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br from-purple-500 to-purple-300 flex items-center justify-center text-white font-bold text-xs sm:text-sm shadow-sm">{initials}</div>
+                            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br from-red-500 to-red-300 flex items-center justify-center text-white font-bold text-xs sm:text-sm shadow-sm">{initials}</div>
                             <span className="absolute bottom-0 right-0 w-2 h-2 sm:w-2.5 sm:h-2.5 bg-green-400 border-2 border-white rounded-full" />
                         </div>
                         <div className="hidden sm:block truncate max-w-[100px] lg:max-w-[150px]">
@@ -157,7 +157,7 @@ export default function SalesManagerLayout() {
                 <main className="flex-1 overflow-y-auto"><Outlet /></main>
 
                 <footer className="h-auto py-4 sm:h-10 sm:py-0 bg-white border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between px-6 text-[10px] sm:text-xs text-gray-400 flex-shrink-0 gap-2 sm:gap-0">
-                    <span>Copyright &copy; <span className="text-purple-500 font-medium">mbdConsulting</span></span>
+                    <span>Copyright &copy; <span className="text-red-500 font-medium">mbdConsulting</span></span>
                     <div className="flex gap-4">
                         <span className="hover:text-gray-600 cursor-pointer">About</span>
                         <span className="hover:text-gray-600 cursor-pointer">Terms</span>

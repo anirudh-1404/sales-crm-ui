@@ -38,7 +38,7 @@ const StatCard = ({ label, value, sub, color, icon: IconComp }) => (
 );
 
 const stageBadge = {
-    Lead: "bg-blue-100 text-blue-700", Qualified: "bg-purple-100 text-purple-700",
+    Lead: "bg-red-50 text-red-600 border border-red-100", Qualified: "bg-orange-100 text-orange-700",
     Proposal: "bg-yellow-100 text-yellow-700", Negotiation: "bg-orange-100 text-orange-700",
     "Closed Won": "bg-green-100 text-green-700", "Closed Lost": "bg-red-100 text-red-700",
 };
@@ -173,10 +173,10 @@ export default function DealsDashboard() {
                     </div>
                     <button
                         onClick={() => { setSelectedDeal(null); setIsDealModalOpen(true); }}
-                        className="w-full sm:w-auto flex items-center justify-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-700 transition shadow-md shadow-red-100"
+                        className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-700 transition shadow-md shadow-red-100"
                     >
                         <Plus size={18} />
-                        <span>Create Deal</span>
+                        <span>Add Deal</span>
                     </button>
                 </div>
             </div>

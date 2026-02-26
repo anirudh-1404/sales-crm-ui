@@ -97,7 +97,7 @@ const ForgotPassword = () => {
                             <button
                                 type="submit"
                                 disabled={submitting}
-                                className={`w-full bg-red-600 hover:bg-orange-400 text-white py-3 rounded-lg font-semibold transition duration-300 cursor-pointer ${submitting ? "opacity-50 cursor-not-allowed" : ""}`}
+                                className={`w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-semibold transition duration-300 cursor-pointer ${submitting ? "opacity-50 cursor-not-allowed" : ""}`}
                             >
                                 {submitting ? "Sending..." : "Submit"}
                             </button>
@@ -105,7 +105,7 @@ const ForgotPassword = () => {
 
                         <p className="text-center mt-6 text-gray-600 text-sm">
                             Return to{" "}
-                            <Link to="/login" className="text-blue-600 font-bold cursor-pointer hover:text-red-600 hover:underline">
+                            <Link to="/login" className="text-red-600 font-bold cursor-pointer hover:text-red-700 hover:underline">
                                 Login
                             </Link>
                         </p>

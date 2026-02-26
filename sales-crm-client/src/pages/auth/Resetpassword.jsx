@@ -161,7 +161,7 @@ const Resetpassword = () => {
                             <button
                                 type="submit"
                                 disabled={submitting}
-                                className={`w-full bg-red-600 hover:bg-orange-400 text-white py-3 rounded-lg font-semibold transition duration-300 cursor-pointer mt-2 ${submitting ? "opacity-50 cursor-not-allowed" : ""}`}
+                                className={`w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-semibold transition duration-300 cursor-pointer mt-2 ${submitting ? "opacity-50 cursor-not-allowed" : ""}`}
                             >
                                 {submitting ? "Resetting..." : "Change Password"}
                             </button>
@@ -169,7 +169,7 @@ const Resetpassword = () => {
 
                         <p className="text-center text-gray-500 text-sm mt-4">
                             Return to{" "}
-                            <Link to="/login" className="text-blue-600 font-bold hover:underline hover:text-red-600">
+                            <Link to="/login" className="text-red-600 font-bold hover:underline hover:text-red-700">
                                 Login
                             </Link>
                         </p>

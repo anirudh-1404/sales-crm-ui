@@ -29,8 +29,8 @@ const Avatar = ({ name }) => {
 };
 const roleBadge = {
     admin: "bg-red-100 text-red-700",
-    sales_manager: "bg-purple-100 text-purple-700",
-    sales_rep: "bg-blue-100 text-blue-700",
+    sales_manager: "bg-red-50 text-red-600 border border-red-100",
+    sales_rep: "bg-red-50 text-red-600 border border-red-100",
 };
 const formatRole = (r) => ({ admin: "ADMIN", sales_manager: "SALES MANAGER", sales_rep: "SALES REPRESENTATIVE" }[r] || r?.toUpperCase());
 const ModalOverlay = ({ children, onClose }) => (
@@ -241,8 +241,8 @@ export default function UsersDashboard() {
                     <p className="text-xs sm:text-sm text-gray-400 mt-0.5">Manage all users and their roles</p>
                 </div>
                 <button
-                    onClick={() => { setSelectedUser(null); setIsUserModalOpen(true); }}
-                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-700 transition shadow-md shadow-red-100"
+                    onClick={() => { setSelectedUser(null); setIsModalOpen(true); }}
+                    className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-700 transition shadow-md shadow-red-100"
                 >
                     <Plus size={18} />
                     <span>Add User</span>

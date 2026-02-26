@@ -30,8 +30,8 @@ const Avatar = ({ name }) => {
 };
 
 const roleBadge = {
-    sales_manager: "bg-purple-100 text-purple-700",
-    sales_rep: "bg-blue-100 text-blue-700",
+    sales_manager: "bg-red-100 text-red-700",
+    sales_rep: "bg-red-50 text-red-600 border border-red-50",
 };
 const formatRole = (r) => ({ admin: "ADMIN", sales_manager: "SALES MANAGER", sales_rep: "SALES REPRESENTATIVE" }[r] || r?.toUpperCase());
 
@@ -127,7 +127,7 @@ export default function ManagerTeam() {
                 </div>
                 <button
                     onClick={() => setIsModalOpen(true)}
-                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-purple-700 transition shadow-md shadow-purple-100"
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-700 transition shadow-md shadow-red-100"
                 >
                     <Plus size={18} />
                     <span>Add Member</span>
@@ -136,7 +136,7 @@ export default function ManagerTeam() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 {[
-                    { label: "Total Members", value: loading ? "..." : String(members.length), color: "bg-purple-50 text-purple-600", icon: Users2 },
+                    { label: "Total Members", value: loading ? "..." : String(members.length), color: "bg-red-50 text-red-600", icon: Users2 },
                     { label: "Active", value: loading ? "..." : String(activeCount), color: "bg-green-50 text-green-600", icon: CheckCircle2 },
                     { label: "Inactive", value: loading ? "..." : String(inactiveCount), color: "bg-red-50 text-red-500", icon: XCircle },
                     { label: "SALES REPRESENTATIVES", value: loading ? "..." : String(repsOnly.length), color: "bg-blue-50 text-blue-600", icon: UserCheck },
@@ -160,7 +160,7 @@ export default function ManagerTeam() {
                         <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                         <input type="text" placeholder="Search member..."
                             value={search} onChange={e => setSearch(e.target.value)}
-                            className="w-full sm:w-64 text-sm border border-gray-200 rounded-lg pl-9 pr-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-400 bg-gray-50/50" />
+                            className="w-full sm:w-64 text-sm border border-gray-200 rounded-lg pl-9 pr-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-red-400 bg-gray-50/50" />
                     </div>
                 </div>
                 <div className="overflow-x-auto min-h-[300px]">
