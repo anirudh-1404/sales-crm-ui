@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import {
     Users, Link2, Linkedin, CalendarPlus, ChevronDown, Plus, Edit2, Trash2, Search, ExternalLink
+    Users, Link2, Linkedin, CalendarPlus, ChevronDown, Plus, Edit2, Trash2, Search, ExternalLink, Filter, MoreHorizontal, Download, Eye
 } from "lucide-react";
 import { getContacts, createContact, updateContact, deleteContact } from "../../../API/services/contactService";
 import { getCompanies } from "../../../API/services/companyService";
 import { getTeamUsers } from "../../../API/services/userService";
 import { useAuth } from "../../context/AuthContext";
 import ContactModal from "../../components/modals/ContactModal";
+import ContactDetailsModal from "../../components/modals/ContactDetailsModal";
 import DeleteConfirmModal from "../../components/modals/DeleteConfirmModal";
 import { toast } from "react-hot-toast";
 
@@ -64,6 +66,7 @@ export default function ContactsDashboard() {
 
     // Modal states
     const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+    const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedContact, setSelectedContact] = useState(null);
 
@@ -161,7 +164,7 @@ export default function ContactsDashboard() {
                 <StatCard label="Records Loaded" value={String(contacts.length)} sub="Showing recent" color="bg-red-50 text-red-500" icon={CalendarPlus} />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 lg:col-span-5 gap-4">
                 <div className="lg:col-span-3 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden h-full flex flex-col">
                     <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
                         <h2 className="font-bold text-gray-800">All Contacts</h2>
@@ -188,11 +191,12 @@ export default function ContactsDashboard() {
                                         contacts.map((c) => (
                                             <tr key={c._id} className="hover:bg-gray-50/50 transition-colors group">
                                                 <td className="px-4 py-3 whitespace-nowrap">
-                                                    <div className="flex items-center gap-3">
+                                                    <div className="flex items-center gap-3 cursor-pointer group/item"
+                                                        onClick={() => { setSelectedContact(c); setIsDetailsModalOpen(true); }}>
                                                         <Avatar name={`${c.firstName} ${c.lastName}`} />
                                                         <div>
-                                                            <p className="font-medium text-gray-800 leading-none">{c.firstName} {c.lastName}</p>
-                                                            <p className="text-xs text-gray-400 mt-0.5">{c.jobTitle}</p>
+                                                            <p className="font-medium text-gray-800 leading-none group-hover/item:text-red-600 transition-colors uppercase text-[11px] font-bold">{c.firstName} {c.lastName}</p>
+                                                            <p className="text-xs text-gray-400 mt-1">{c.jobTitle}</p>
                                                         </div>
                                                     </div>
                                                 </td>
@@ -209,6 +213,11 @@ export default function ContactsDashboard() {
                                                 </td>
                                                 <td className="px-4 py-3 whitespace-nowrap">
                                                     <div className="flex items-center gap-2">
+                                                        <button onClick={() => { setSelectedContact(c); setIsDetailsModalOpen(true); }}
+                                                            title="View details"
+                                                            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition">
+                                                            <Eye size={16} />
+                                                        </button>
                                                         <button onClick={() => { setSelectedContact(c); setIsContactModalOpen(true); }}
                                                             className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition">
                                                             <Edit2 size={16} />
@@ -259,6 +268,11 @@ export default function ContactsDashboard() {
                 companies={companies}
                 userRole={currentUser?.role}
                 potentialOwners={users}
+            />
+            <ContactDetailsModal
+                isOpen={isDetailsModalOpen}
+                onClose={() => setIsDetailsModalOpen(false)}
+                contact={selectedContact}
             />
             <DeleteConfirmModal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)} onConfirm={handleDeleteContact} itemName={`${selectedContact?.firstName} ${selectedContact?.lastName}`} />
         </div>

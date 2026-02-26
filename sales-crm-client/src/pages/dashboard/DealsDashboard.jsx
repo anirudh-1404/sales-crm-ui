@@ -1,8 +1,9 @@
+```
 import React, { useState, useEffect } from "react";
 import {
     Briefcase, Zap, CheckCircle2, DollarSign,
     MoreHorizontal, Plus, Edit2, Trash2,
-    LayoutDashboard, Users, Building2, LayoutList, Kanban
+    LayoutDashboard, Users, Building2, LayoutList, Kanban, Eye
 } from "lucide-react";
 import KanbanBoard from "../../components/KanbanBoard";
 import { getDeals, createDeal, updateDeal, deleteDeal, updateDealStage } from "../../../API/services/dealService";
@@ -15,7 +16,7 @@ import DeleteConfirmModal from "../../components/modals/DeleteConfirmModal";
 import { toast } from "react-hot-toast";
 
 const Card = ({ children, className = "" }) => (
-    <div className={`bg-white rounded-xl border border-gray-100 shadow-sm ${className}`}>{children}</div>
+    <div className={`bg - white rounded - xl border border - gray - 100 shadow - sm ${ className } `}>{children}</div>
 );
 const CardHeader = ({ title, children }) => (
     <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
@@ -26,7 +27,7 @@ const CardHeader = ({ title, children }) => (
 
 const StatCard = ({ label, value, sub, color, icon: IconComp }) => (
     <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex items-start gap-4">
-        <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${color}`}>
+        <div className={`w - 11 h - 11 rounded - xl flex items - center justify - center flex - shrink - 0 ${ color } `}>
             <IconComp size={20} />
         </div>
         <div>
@@ -55,6 +56,7 @@ export default function DealsDashboard() {
 
     // Modal states
     const [isDealModalOpen, setIsDealModalOpen] = useState(false);
+    const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedDeal, setSelectedDeal] = useState(null);
     const [viewMode, setViewMode] = useState("list"); // "list" | "kanban"
@@ -117,7 +119,7 @@ export default function DealsDashboard() {
     const handleMoveStage = async (id, newStage) => {
         try {
             await updateDealStage(id, newStage);
-            toast.success(`Moved to ${newStage}`);
+            toast.success(`Moved to ${ newStage } `);
             fetchData();
         } catch (error) {
             console.error(error);
@@ -151,10 +153,11 @@ export default function DealsDashboard() {
                         <button
                             onClick={() => setViewMode("list")}
                             title="List View"
-                            className={`p-1.5 rounded-md transition text-sm flex items-center gap-1.5 font-medium ${viewMode === "list"
-                                ? "bg-white text-gray-800 shadow-sm"
-                                : "text-gray-400 hover:text-gray-600"
-                                }`}
+                            className={`p - 1.5 rounded - md transition text - sm flex items - center gap - 1.5 font - medium ${
+    viewMode === "list"
+    ? "bg-white text-gray-800 shadow-sm"
+    : "text-gray-400 hover:text-gray-600"
+} `}
                         >
                             <LayoutList size={16} />
                             <span className="hidden sm:inline text-xs">List</span>
@@ -162,10 +165,11 @@ export default function DealsDashboard() {
                         <button
                             onClick={() => setViewMode("kanban")}
                             title="Kanban View"
-                            className={`p-1.5 rounded-md transition text-sm flex items-center gap-1.5 font-medium ${viewMode === "kanban"
-                                ? "bg-white text-gray-800 shadow-sm"
-                                : "text-gray-400 hover:text-gray-600"
-                                }`}
+                            className={`p - 1.5 rounded - md transition text - sm flex items - center gap - 1.5 font - medium ${
+    viewMode === "kanban"
+    ? "bg-white text-gray-800 shadow-sm"
+    : "text-gray-400 hover:text-gray-600"
+} `}
                         >
                             <Kanban size={16} />
                             <span className="hidden sm:inline text-xs">Kanban</span>
@@ -182,7 +186,7 @@ export default function DealsDashboard() {
             </div>
 
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <StatCard label="Total Value" value={`$${totalValue >= 1000000 ? `${(totalValue / 1000000).toFixed(2)}M` : `${(totalValue / 1000).toFixed(1)}K`}`} sub="+12.5% vs last month" color="bg-red-50 text-red-600" icon={DollarSign} />
+                <StatCard label="Total Value" value={`$${ totalValue >= 1000000 ? `${(totalValue / 1000000).toFixed(2)}M` : `${(totalValue / 1000).toFixed(1)}K` } `} sub="+12.5% vs last month" color="bg-red-50 text-red-600" icon={DollarSign} />
                 <StatCard label="Active Deals" value={String(activeCount)} sub="15 pending" color="bg-orange-50 text-red-500" icon={Zap} />
                 <StatCard label="Won Deals" value={String(wonCount)} sub="82% win rate" color="bg-green-50 text-green-600" icon={CheckCircle2} />
                 <StatCard label="New Deals" value={String(deals.length)} sub="This week" color="bg-red-100 text-red-700" icon={Briefcase} />
@@ -190,7 +194,7 @@ export default function DealsDashboard() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 <StatCard icon={Briefcase} label="Total Deals" value={deals.length} color="bg-red-50 text-red-600" />
-                <StatCard icon={LayoutDashboard} label="Pipeline Value" value={`$${deals.reduce((sum, d) => sum + (d.value || 0), 0).toLocaleString()}`} color="bg-orange-50 text-red-500" />
+                <StatCard icon={LayoutDashboard} label="Pipeline Value" value={`$${ deals.reduce((sum, d) => sum + (d.value || 0), 0).toLocaleString() } `} color="bg-orange-50 text-red-500" />
                 <StatCard icon={Users} label="Active Owners" value={new Set(deals.map(d => d.ownerId?._id)).size} color="bg-red-100 text-red-700" />
                 <StatCard icon={Building2} label="Companies" value={new Set(deals.map(d => d.companyId?._id)).size} color="bg-rose-50 text-red-600" />
             </div>
@@ -243,15 +247,18 @@ export default function DealsDashboard() {
                                         ) : (
                                             deals.slice(0, 10).map((d) => (
                                                 <tr key={d._id} className="hover:bg-gray-50/50 transition-colors group">
-                                                    <td className="px-4 py-3 font-medium text-gray-800 whitespace-nowrap">{d.name}</td>
+                                                    <td className="px-4 py-3 font-medium text-gray-800 whitespace-nowrap cursor-pointer hover:text-red-600 transition-colors"
+                                                        onClick={() => { setSelectedDeal(d); setIsDetailsModalOpen(true); }}>
+                                                        {d.name}
+                                                    </td>
                                                     <td className="px-4 py-3 text-red-700 font-semibold whitespace-nowrap">{d.ownerId?.firstName || "System"}</td>
                                                     <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{d.companyId?.name || d.companyName || "—"}</td>
-                                                    <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{d.contactId ? `${d.contactId.firstName} ${d.contactId.lastName}`.trim() : (d.contactName || "—")}</td>
+                                                    <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{d.contactId ? `${ d.contactId.firstName } ${ d.contactId.lastName } `.trim() : (d.contactName || "—")}</td>
                                                     <td className="px-4 py-3">
                                                         <select
                                                             value={d.stage}
                                                             onChange={e => handleMoveStage(d._id, e.target.value)}
-                                                            className={`text-[11px] px-2 py-1 rounded-full font-bold border-none cursor-pointer focus:ring-0 whitespace-nowrap ${stageBadge[d.stage]}`}
+                                                            className={`text - [11px] px - 2 py - 1 rounded - full font - bold border - none cursor - pointer focus: ring - 0 whitespace - nowrap ${ stageBadge[d.stage] } `}
                                                         >
                                                             {STAGES.map(s => <option key={s} value={s}>{s}</option>)}
                                                         </select>
@@ -259,6 +266,13 @@ export default function DealsDashboard() {
                                                     <td className="px-4 py-3 font-semibold text-gray-800 whitespace-nowrap">${d.value?.toLocaleString()}</td>
                                                     <td className="px-4 py-3 whitespace-nowrap">
                                                         <div className="flex items-center gap-2">
+                                                            <button
+                                                                onClick={() => { setSelectedDeal(d); setIsDetailsModalOpen(true); }}
+                                                                title="View details"
+                                                                className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                                                            >
+                                                                <Eye size={16} />
+                                                            </button>
                                                             <button
                                                                 onClick={() => { setSelectedDeal(d); setIsDealModalOpen(true); }}
                                                                 className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
@@ -295,7 +309,7 @@ export default function DealsDashboard() {
                                             <span className="text-gray-500">{s.count} <span className="text-gray-400 text-xs">({pct}%)</span></span>
                                         </div>
                                         <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                                            <div className={`h-full ${s.color.replace(' text-', ' bg-')} rounded-full transition-all duration-500`} style={{ width: `${pct}%` }} />
+                                            <div className={`h - full ${ s.color.replace(' text-', ' bg-') } rounded - full transition - all duration - 500`} style={{ width: `${ pct }% ` }} />
                                         </div>
                                     </div>
                                 );
@@ -307,7 +321,7 @@ export default function DealsDashboard() {
                                 <span className="font-bold text-green-600">{winRate}%</span>
                             </div>
                             <div className="h-1.5 bg-gray-100 rounded-full">
-                                <div className="h-full bg-green-500 rounded-full transition-all duration-500" style={{ width: `${winRate}%` }} />
+                                <div className="h-full bg-green-500 rounded-full transition-all duration-500" style={{ width: `${ winRate }% ` }} />
                             </div>
                         </div>
                     </Card>
@@ -324,6 +338,12 @@ export default function DealsDashboard() {
                 contacts={contacts}
                 userRole={currentUser?.role}
                 potentialOwners={users}
+            />
+
+            <DealDetailsModal
+                isOpen={isDetailsModalOpen}
+                onClose={() => setIsDetailsModalOpen(false)}
+                deal={selectedDeal}
             />
 
             <DeleteConfirmModal
