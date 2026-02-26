@@ -16,7 +16,7 @@ const Successpage = () => {
                     <div className="flex-1 flex flex-col items-center justify-center text-center">
 
                         {/* Green Checkmark Circle */}
-                        <div className="w-16 h-16 rounded-full bg-green-500 flex items-center justify-center mb-5">
+                        <div className="w-16 h-16 rounded-full bg-red-500 flex items-center justify-center mb-5">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 className="w-8 h-8 text-white"
@@ -37,7 +37,7 @@ const Successpage = () => {
                         </p>
 
                         <Link to="/login" className="w-full">
-                            <button className="w-full bg-red-600 hover:bg-orange-400 text-white py-3 rounded-lg font-semibold transition duration-300 cursor-pointer">
+                            <button className="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-semibold transition duration-300 cursor-pointer">
                                 Back to Login
                             </button>
                         </Link>

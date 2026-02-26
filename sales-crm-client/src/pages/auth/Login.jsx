@@ -145,12 +145,12 @@ const Login = () => {
                         All your data remains intact and will be accessible once your account is reactivated.
                         Please contact your administrator to regain access.
                     </p>
-                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-800 mb-6">
+                    <div className="bg-red-50 border border-red-100 rounded-xl p-3 text-xs text-red-800 mb-6">
                         📧 Reach out to your CRM administrator to request reactivation.
                     </div>
                     <button
                         onClick={() => setDeactivatedScreen(false)}
-                        className="w-full py-2.5 text-sm font-semibold text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition"
+                        className="w-full py-2.5 text-sm font-bold text-white bg-red-600 rounded-lg hover:bg-red-700 shadow-md shadow-red-100 transition"
                     >
                         ← Back to Login
                     </button>
