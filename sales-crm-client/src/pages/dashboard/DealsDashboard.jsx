@@ -225,59 +225,60 @@ export default function DealsDashboard() {
                                 <MoreHorizontal size={18} />
                             </button>
                         </CardHeader>
-                        <div className="flex-1 h-full overflow-x-auto overflow-y-auto custom-scrollbar">
-                            <table className="w-full text-sm">
-                                <thead>
-                                    <tr className="border-b border-gray-100 bg-gray-50">
-                                        {["Deal Name", "Owner", "Company", "Contact", "Stage", "Value", "Actions"].map(h => (
-                                            <th key={h} className="text-left px-4 py-3 text-gray-500 font-semibold text-xs uppercase tracking-wide whitespace-nowrap">{h}</th>
-                                        ))}
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-50">
-                                    {loading && deals.length === 0 ? (
-                                        <tr><td colSpan={7} className="text-center py-10 text-gray-400">Loading deals...</td></tr>
-                                    ) : deals.length === 0 ? (
-                                        <tr><td colSpan={7} className="text-center py-10 text-gray-400">No deals found in the system.</td></tr>
-                                    ) : (
-                                        deals.slice(0, 10).map((d) => (
-                                            <tr key={d._id} className="hover:bg-gray-50/50 transition-colors group">
-                                                <td className="px-4 py-3 font-medium text-gray-800 whitespace-nowrap">{d.name}</td>
-                                                <td className="px-4 py-3 text-red-700 font-semibold whitespace-nowrap">{d.ownerId?.firstName || "System"}</td>
-                                                <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{d.companyId?.name || d.companyName || "—"}</td>
-                                                <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{d.contactId ? `${d.contactId.firstName} ${d.contactId.lastName}`.trim() : (d.contactName || "—")}</td>
-                                                <td className="px-4 py-3">
-                                                    <select
-                                                        value={d.stage}
-                                                        onChange={e => handleMoveStage(d._id, e.target.value)}
-                                                        className={`text-[11px] px-2 py-1 rounded-full font-bold border-none cursor-pointer focus:ring-0 whitespace-nowrap ${stageBadge[d.stage]}`}
-                                                    >
-                                                        {STAGES.map(s => <option key={s} value={s}>{s}</option>)}
-                                                    </select>
-                                                </td>
-                                                <td className="px-4 py-3 font-semibold text-gray-800 whitespace-nowrap">${d.value?.toLocaleString()}</td>
-                                                <td className="px-4 py-3 whitespace-nowrap">
-                                                    <div className="flex items-center gap-2">
-                                                        <button
-                                                            onClick={() => { setSelectedDeal(d); setIsDealModalOpen(true); }}
-                                                            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                        <div className="flex-1 flex flex-col min-h-0">
+                            <div className="flex-1 overflow-x-auto overflow-y-auto custom-scrollbar">
+                                <table className="w-full text-sm">
+                                    <thead>
+                                        <tr className="border-b border-gray-100 bg-gray-50">
+                                            {["Deal Name", "Owner", "Company", "Contact", "Stage", "Value", "Actions"].map(h => (
+                                                <th key={h} className="text-left px-4 py-3 text-gray-500 font-semibold text-xs uppercase tracking-wide whitespace-nowrap">{h}</th>
+                                            ))}
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-gray-50">
+                                        {loading && deals.length === 0 ? (
+                                            <tr><td colSpan={7} className="text-center py-10 text-gray-400">Loading deals...</td></tr>
+                                        ) : deals.length === 0 ? (
+                                            <tr><td colSpan={7} className="text-center py-10 text-gray-400">No deals found in the system.</td></tr>
+                                        ) : (
+                                            deals.slice(0, 10).map((d) => (
+                                                <tr key={d._id} className="hover:bg-gray-50/50 transition-colors group">
+                                                    <td className="px-4 py-3 font-medium text-gray-800 whitespace-nowrap">{d.name}</td>
+                                                    <td className="px-4 py-3 text-red-700 font-semibold whitespace-nowrap">{d.ownerId?.firstName || "System"}</td>
+                                                    <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{d.companyId?.name || d.companyName || "—"}</td>
+                                                    <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{d.contactId ? `${d.contactId.firstName} ${d.contactId.lastName}`.trim() : (d.contactName || "—")}</td>
+                                                    <td className="px-4 py-3">
+                                                        <select
+                                                            value={d.stage}
+                                                            onChange={e => handleMoveStage(d._id, e.target.value)}
+                                                            className={`text-[11px] px-2 py-1 rounded-full font-bold border-none cursor-pointer focus:ring-0 whitespace-nowrap ${stageBadge[d.stage]}`}
                                                         >
-                                                            <Edit2 size={16} />
-                                                        </button>
-                                                        <button
-                                                            onClick={() => { setSelectedDeal(d); setIsDeleteModalOpen(true); }}
-                                                            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
-                                                        >
-                                                            <Trash2 size={16} />
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
+                                                            {STAGES.map(s => <option key={s} value={s}>{s}</option>)}
+                                                        </select>
+                                                    </td>
+                                                    <td className="px-4 py-3 font-semibold text-gray-800 whitespace-nowrap">${d.value?.toLocaleString()}</td>
+                                                    <td className="px-4 py-3 whitespace-nowrap">
+                                                        <div className="flex items-center gap-2">
+                                                            <button
+                                                                onClick={() => { setSelectedDeal(d); setIsDealModalOpen(true); }}
+                                                                className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                                                            >
+                                                                <Edit2 size={16} />
+                                                            </button>
+                                                            <button
+                                                                onClick={() => { setSelectedDeal(d); setIsDeleteModalOpen(true); }}
+                                                                className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                                                            >
+                                                                <Trash2 size={16} />
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
                     </Card>
 
                     <Card className="lg:col-span-2 h-full flex flex-col">

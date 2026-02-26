@@ -278,192 +278,193 @@ export default function UsersDashboard() {
                             className="w-full sm:w-64 text-sm border border-gray-200 rounded-lg pl-9 pr-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-red-400 bg-gray-50/50 transition-all" />
                     </div>
                 </div>
-                <div className="flex-1 h-full overflow-x-auto overflow-y-auto max-h-[calc(100vh-350px)] custom-scrollbar">
-                    <table className="w-full text-sm">
-                        <thead>
-                            <tr className="border-b border-gray-100 bg-gray-50">
-                                {["User", "Role", "Reports To", "Status", "Last Login", "Actions"].map(h => (
-                                    <th key={h} className="text-left px-4 py-3 text-gray-500 font-semibold text-xs uppercase tracking-wide whitespace-nowrap">{h}</th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-50">
-                            {loading && users.length === 0 ? (
-                                <tr><td colSpan={6} className="text-center py-10 text-gray-400">Loading users...</td></tr>
-                            ) : filtered.length === 0 ? (
-                                <tr><td colSpan={6} className="text-center py-10 text-gray-400">No users found.</td></tr>
-                            ) : (
-                                filtered.map((u) => (
-                                    <tr
-                                        key={u._id}
-                                        className="hover:bg-gray-50/50 transition-colors group cursor-pointer"
-                                        onClick={() => { setSelectedUser(u); setIsDetailsModalOpen(true); }}
-                                    >
-                                        <td className="px-4 py-3 whitespace-nowrap">
-                                            <div className="flex items-center gap-3">
-                                                <Avatar name={`${u.firstName} ${u.lastName}`} />
-                                                <div>
-                                                    <p className="font-bold text-gray-800 leading-none hover:text-red-600 transition-colors">{u.firstName} {u.lastName}</p>
-                                                    <p className="text-xs text-gray-400 mt-0.5">{u.email}</p>
+                <div className="flex-1 flex flex-col min-h-0">
+                    <div className="flex-1 overflow-x-auto overflow-y-auto custom-scrollbar">
+                        <table className="w-full text-sm">
+                            <thead>
+                                <tr className="border-b border-gray-100 bg-gray-50">
+                                    {["User", "Role", "Reports To", "Status", "Last Login", "Actions"].map(h => (
+                                        <th key={h} className="text-left px-4 py-3 text-gray-500 font-semibold text-xs uppercase tracking-wide whitespace-nowrap">{h}</th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-50">
+                                {loading && users.length === 0 ? (
+                                    <tr><td colSpan={6} className="text-center py-10 text-gray-400">Loading users...</td></tr>
+                                ) : filtered.length === 0 ? (
+                                    <tr><td colSpan={6} className="text-center py-10 text-gray-400">No users found.</td></tr>
+                                ) : (
+                                    filtered.map((u) => (
+                                        <tr
+                                            key={u._id}
+                                            className="hover:bg-gray-50/50 transition-colors group cursor-pointer"
+                                            onClick={() => { setSelectedUser(u); setIsDetailsModalOpen(true); }}
+                                        >
+                                            <td className="px-4 py-3 whitespace-nowrap">
+                                                <div className="flex items-center gap-3">
+                                                    <Avatar name={`${u.firstName} ${u.lastName}`} />
+                                                    <div>
+                                                        <p className="font-bold text-gray-800 leading-none hover:text-red-600 transition-colors">{u.firstName} {u.lastName}</p>
+                                                        <p className="text-xs text-gray-400 mt-0.5">{u.email}</p>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-4 py-3 whitespace-nowrap">
-                                            <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${roleBadge[u.role] || "bg-gray-100 text-gray-600"}`}>
-                                                {formatRole(u.role)}
-                                            </span>
-                                        </td>
-                                        <td className="px-4 py-3 text-gray-500 text-sm whitespace-nowrap">
-                                            {u.managerId
-                                                ? `${u.managerId.firstName || ""} ${u.managerId.lastName || ""}`.trim() || "Manager"
-                                                : "—"}
-                                        </td>
-                                        <td className="px-4 py-3 whitespace-nowrap">
-                                            <span className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full ${u.isActive
-                                                ? "bg-green-100 text-green-700"
-                                                : "bg-red-100 text-red-700 border border-red-200"
-                                                }`}>
-                                                <span className={`w-1.5 h-1.5 rounded-full ${u.isActive ? "bg-green-500" : "bg-red-500 animate-pulse"}`} />
-                                                {u.isActive ? "Active" : "Deactivated"}
-                                            </span>
-                                        </td>
-                                        <td className="px-4 py-3 text-gray-500 text-xs whitespace-nowrap">
-                                            {u.lastLogin ? new Date(u.lastLogin).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "Never"}
-                                        </td>
-                                        <td className="px-4 py-3 whitespace-nowrap" onClick={e => e.stopPropagation()}>
-                                            <div className="flex items-center gap-1.5">
-                                                {/* View Details */}
-                                                <button
-                                                    onClick={() => { setSelectedUser(u); setIsDetailsModalOpen(true); }}
-                                                    className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
-                                                    title="View profile details"
-                                                >
-                                                    <Eye size={15} />
-                                                </button>
-                                                {/* Edit */}
-                                                <button
-                                                    onClick={() => { setSelectedUser(u); setIsUserModalOpen(true); }}
-                                                    className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
-                                                    title="Edit user"
-                                                >
-                                                    <Edit2 size={15} />
-                                                </button>
-                                                {/* Reassign (only for non-admins) */}
-                                                {u.role !== "admin" && (
+                                            </td>
+                                            <td className="px-4 py-3 whitespace-nowrap">
+                                                <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${roleBadge[u.role] || "bg-gray-100 text-gray-600"}`}>
+                                                    {formatRole(u.role)}
+                                                </span>
+                                            </td>
+                                            <td className="px-4 py-3 text-gray-500 text-sm whitespace-nowrap">
+                                                {u.managerId
+                                                    ? `${u.managerId.firstName || ""} ${u.managerId.lastName || ""}`.trim() || "Manager"
+                                                    : "—"}
+                                            </td>
+                                            <td className="px-4 py-3 whitespace-nowrap">
+                                                <span className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full ${u.isActive
+                                                    ? "bg-green-100 text-green-700"
+                                                    : "bg-red-100 text-red-700 border border-red-200"
+                                                    }`}>
+                                                    <span className={`w-1.5 h-1.5 rounded-full ${u.isActive ? "bg-green-500" : "bg-red-500 animate-pulse"}`} />
+                                                    {u.isActive ? "Active" : "Deactivated"}
+                                                </span>
+                                            </td>
+                                            <td className="px-4 py-3 text-gray-500 text-xs whitespace-nowrap">
+                                                {u.lastLogin ? new Date(u.lastLogin).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "Never"}
+                                            </td>
+                                            <td className="px-4 py-3 whitespace-nowrap" onClick={e => e.stopPropagation()}>
+                                                <div className="flex items-center gap-1.5">
+                                                    {/* View Details */}
                                                     <button
-                                                        onClick={() => { setSelectedUser(u); setIsReassignModalOpen(true); }}
-                                                        className="p-1.5 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition"
-                                                        title="Reassign all records"
-                                                    >
-                                                        <RefreshCw size={15} />
-                                                    </button>
-                                                )}
-                                                {/* Soft Delete (non-admins only) */}
-                                                {u.role !== "admin" && (
-                                                    <button
-                                                        onClick={() => handleSoftDelete(u)}
+                                                        onClick={() => { setSelectedUser(u); setIsDetailsModalOpen(true); }}
                                                         className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
-                                                        title="Move to trash"
+                                                        title="View profile details"
                                                     >
-                                                        <Trash2 size={15} />
+                                                        <Eye size={15} />
                                                     </button>
-                                                )}
-                                                {/* Deactivate (active non-admins) */}
-                                                {u.role !== "admin" && u.isActive && (
+                                                    {/* Edit */}
                                                     <button
-                                                        onClick={() => handleDeactivate(u)}
-                                                        className="text-[10px] sm:text-xs px-2 sm:px-2.5 py-1 rounded-lg font-semibold border border-red-200 text-red-600 hover:bg-red-50 transition"
+                                                        onClick={() => { setSelectedUser(u); setIsUserModalOpen(true); }}
+                                                        className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                                                        title="Edit user"
                                                     >
-                                                        Deactivate
+                                                        <Edit2 size={15} />
                                                     </button>
-                                                )}
-                                                {/* Activate (inactive non-admins) */}
-                                                {u.role !== "admin" && !u.isActive && (
-                                                    <button
-                                                        onClick={() => handleActivate(u)}
-                                                        className="text-[10px] sm:text-xs px-2 sm:px-2.5 py-1 rounded-lg font-semibold border border-green-300 text-green-700 hover:bg-green-50 transition"
-                                                    >
-                                                        Activate
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
+                                                    {/* Reassign (only for non-admins) */}
+                                                    {u.role !== "admin" && (
+                                                        <button
+                                                            onClick={() => { setSelectedUser(u); setIsReassignModalOpen(true); }}
+                                                            className="p-1.5 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition"
+                                                            title="Reassign all records"
+                                                        >
+                                                            <RefreshCw size={15} />
+                                                        </button>
+                                                    )}
+                                                    {/* Soft Delete (non-admins only) */}
+                                                    {u.role !== "admin" && (
+                                                        <button
+                                                            onClick={() => handleSoftDelete(u)}
+                                                            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                                                            title="Move to trash"
+                                                        >
+                                                            <Trash2 size={15} />
+                                                        </button>
+                                                    )}
+                                                    {/* Deactivate (active non-admins) */}
+                                                    {u.role !== "admin" && u.isActive && (
+                                                        <button
+                                                            onClick={() => handleDeactivate(u)}
+                                                            className="text-[10px] sm:text-xs px-2 sm:px-2.5 py-1 rounded-lg font-semibold border border-red-200 text-red-600 hover:bg-red-50 transition"
+                                                        >
+                                                            Deactivate
+                                                        </button>
+                                                    )}
+                                                    {/* Activate (inactive non-admins) */}
+                                                    {u.role !== "admin" && !u.isActive && (
+                                                        <button
+                                                            onClick={() => handleActivate(u)}
+                                                            className="text-[10px] sm:text-xs px-2 sm:px-2.5 py-1 rounded-lg font-semibold border border-green-300 text-green-700 hover:bg-green-50 transition"
+                                                        >
+                                                            Activate
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
 
-            {/* Role Breakdown */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-                <h3 className="font-bold text-gray-800 mb-4">Users by Role</h3>
-                <div className="space-y-3">
-                    {roleBreakdown.map(r => {
-                        const total = users.length || 1;
-                        const pct = Math.round((r.count / total) * 100);
-                        return (
-                            <div key={r.role}>
-                                <div className="flex justify-between text-sm mb-1">
-                                    <span className="text-gray-600 font-medium">{r.role}</span>
-                                    <span className="text-gray-500">{r.count} ({pct}%)</span>
+                {/* Role Breakdown */}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+                    <h3 className="font-bold text-gray-800 mb-4">Users by Role</h3>
+                    <div className="space-y-3">
+                        {roleBreakdown.map(r => {
+                            const total = users.length || 1;
+                            const pct = Math.round((r.count / total) * 100);
+                            return (
+                                <div key={r.role}>
+                                    <div className="flex justify-between text-sm mb-1">
+                                        <span className="text-gray-600 font-medium">{r.role}</span>
+                                        <span className="text-gray-500">{r.count} ({pct}%)</span>
+                                    </div>
+                                    <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
+                                        <div className={`h-full ${r.color} rounded-full transition-all duration-500`} style={{ width: `${pct}%` }} />
+                                    </div>
                                 </div>
-                                <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
-                                    <div className={`h-full ${r.color} rounded-full transition-all duration-500`} style={{ width: `${pct}%` }} />
-                                </div>
-                            </div>
-                        );
-                    })}
+                            );
+                        })}
+                    </div>
                 </div>
-            </div>
 
-            {/* Modals */}
-            <UserModal
-                isOpen={isUserModalOpen}
-                onClose={() => setIsUserModalOpen(false)}
-                user={selectedUser}
-                managers={potentialManagers}
-                onSaved={fetchUsers}
-            />
-            <UserDetailsModal
-                isOpen={isDetailsModalOpen}
-                onClose={() => setIsDetailsModalOpen(false)}
-                user={selectedUser}
-            />
-            <ReassignModal
-                isOpen={isReassignModalOpen}
-                onClose={() => setIsReassignModalOpen(false)}
-                fromUser={selectedUser}
-                activeUsers={users}
-                onSaved={fetchUsers}
-            />
-            <DeactivateModal
-                isOpen={isDeactivateModalOpen}
-                onClose={() => setIsDeactivateModalOpen(false)}
-                user={selectedUser}
-                activeUsers={users}
-                onConfirm={confirmDeactivate}
-            />
-            <DeactivateModal
-                isOpen={isDeleteModalOpen}
-                onClose={() => setIsDeleteModalOpen(false)}
-                user={selectedUser}
-                activeUsers={users}
-                onConfirm={confirmSoftDelete}
-                title="Move User to Trash"
-                actionLabel="Move to Trash"
-                actionColor="bg-gray-800 hover:bg-gray-900"
-            />
-            <ConfirmDialog
-                isOpen={confirmState.isOpen}
-                onClose={closeConfirm}
-                onConfirm={confirmState.onConfirm}
-                title={confirmState.title}
-                message={confirmState.message}
-                confirmLabel={confirmState.confirmLabel}
-                confirmColor={confirmState.confirmColor}
-            />
-        </div>
-    );
+                {/* Modals */}
+                <UserModal
+                    isOpen={isUserModalOpen}
+                    onClose={() => setIsUserModalOpen(false)}
+                    user={selectedUser}
+                    managers={potentialManagers}
+                    onSaved={fetchUsers}
+                />
+                <UserDetailsModal
+                    isOpen={isDetailsModalOpen}
+                    onClose={() => setIsDetailsModalOpen(false)}
+                    user={selectedUser}
+                />
+                <ReassignModal
+                    isOpen={isReassignModalOpen}
+                    onClose={() => setIsReassignModalOpen(false)}
+                    fromUser={selectedUser}
+                    activeUsers={users}
+                    onSaved={fetchUsers}
+                />
+                <DeactivateModal
+                    isOpen={isDeactivateModalOpen}
+                    onClose={() => setIsDeactivateModalOpen(false)}
+                    user={selectedUser}
+                    activeUsers={users}
+                    onConfirm={confirmDeactivate}
+                />
+                <DeactivateModal
+                    isOpen={isDeleteModalOpen}
+                    onClose={() => setIsDeleteModalOpen(false)}
+                    user={selectedUser}
+                    activeUsers={users}
+                    onConfirm={confirmSoftDelete}
+                    title="Move User to Trash"
+                    actionLabel="Move to Trash"
+                    actionColor="bg-gray-800 hover:bg-gray-900"
+                />
+                <ConfirmDialog
+                    isOpen={confirmState.isOpen}
+                    onClose={closeConfirm}
+                    onConfirm={confirmState.onConfirm}
+                    title={confirmState.title}
+                    message={confirmState.message}
+                    confirmLabel={confirmState.confirmLabel}
+                    confirmColor={confirmState.confirmColor}
+                />
+            </div>
+            );
 }

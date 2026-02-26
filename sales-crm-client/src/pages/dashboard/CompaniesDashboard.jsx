@@ -154,79 +154,80 @@ export default function CompaniesDashboard() {
                                 className="w-full text-sm border border-gray-200 rounded-lg pl-9 pr-3 py-1.5 focus:ring-2 focus:ring-red-400 focus:outline-none bg-gray-50/50" />
                         </div>
                     </div>
-                    <div className="flex-1 h-full overflow-x-auto overflow-y-auto custom-scrollbar">
-                        <table className="w-full text-sm">
-                            <thead>
-                                <tr className="border-b border-gray-100 bg-gray-50">
-                                    {["Company", "Industry", "Owner", "Status", "Actions"].map(h => (
-                                        <th key={h} className="text-left px-4 py-3 text-gray-500 font-semibold text-xs uppercase tracking-wide whitespace-nowrap">{h}</th>
-                                    ))}
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-50">
-                                {loading && companies.length === 0 ? (
-                                    <tr><td colSpan={5} className="text-center py-10 text-gray-400">Loading companies...</td></tr>
-                                ) : (
-                                    companies.map((c) => (
-                                        <tr key={c._id} className="hover:bg-gray-50/50 transition-colors group">
-                                            <td className="px-4 py-3 font-medium text-gray-800 whitespace-nowrap">{c.name}</td>
-                                            <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{c.industry || "—"}</td>
-                                            <td className="px-4 py-3 text-red-700 font-bold whitespace-nowrap">{c.ownerId?.firstName || "System"}</td>
-                                            <td className="px-4 py-3 whitespace-nowrap">
-                                                <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${statusBg[c.status] || "bg-gray-100 text-gray-600"}`}>{c.status}</span>
-                                            </td>
-                                            <td className="px-4 py-3 whitespace-nowrap">
-                                                <div className="flex items-center gap-2">
-                                                    <button onClick={() => { setSelectedCompany(c); setIsCompanyModalOpen(true); }}
-                                                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition">
-                                                        <Edit2 size={16} />
-                                                    </button>
-                                                    <button onClick={() => { setSelectedCompany(c); setIsDeleteModalOpen(true); }}
-                                                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition">
-                                                        <Trash2 size={16} />
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))
-                                )}
-                            </tbody>
-                        </table>
+                    <div className="flex-1 flex flex-col min-h-0">
+                        <div className="flex-1 overflow-x-auto overflow-y-auto custom-scrollbar">
+                            <table className="w-full text-sm">
+                                <thead>
+                                    <tr className="border-b border-gray-100 bg-gray-50">
+                                        {["Company", "Industry", "Owner", "Status", "Actions"].map(h => (
+                                            <th key={h} className="text-left px-4 py-3 text-gray-500 font-semibold text-xs uppercase tracking-wide whitespace-nowrap">{h}</th>
+                                        ))}
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-50">
+                                    {loading && companies.length === 0 ? (
+                                        <tr><td colSpan={5} className="text-center py-10 text-gray-400">Loading companies...</td></tr>
+                                    ) : (
+                                        companies.map((c) => (
+                                            <tr key={c._id} className="hover:bg-gray-50/50 transition-colors group">
+                                                <td className="px-4 py-3 font-medium text-gray-800 whitespace-nowrap">{c.name}</td>
+                                                <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{c.industry || "—"}</td>
+                                                <td className="px-4 py-3 text-red-700 font-bold whitespace-nowrap">{c.ownerId?.firstName || "System"}</td>
+                                                <td className="px-4 py-3 whitespace-nowrap">
+                                                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${statusBg[c.status] || "bg-gray-100 text-gray-600"}`}>{c.status}</span>
+                                                </td>
+                                                <td className="px-4 py-3 whitespace-nowrap">
+                                                    <div className="flex items-center gap-2">
+                                                        <button onClick={() => { setSelectedCompany(c); setIsCompanyModalOpen(true); }}
+                                                            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition">
+                                                            <Edit2 size={16} />
+                                                        </button>
+                                                        <button onClick={() => { setSelectedCompany(c); setIsDeleteModalOpen(true); }}
+                                                            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition">
+                                                            <Trash2 size={16} />
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-5 h-full flex flex-col">
+                        <h3 className="font-bold text-gray-800 mb-4">Industry Mix</h3>
+                        <div className="space-y-4">
+                            {industries.length > 0 ? industries.map((ind, i) => {
+                                const total = companies.length || 1;
+                                const pct = Math.round((ind.count / total) * 100);
+                                const colors = ["bg-red-500", "bg-red-400", "bg-orange-500", "bg-rose-500", "bg-red-300"];
+                                return (
+                                    <div key={ind.name}>
+                                        <div className="flex justify-between text-sm mb-1">
+                                            <span className="text-gray-600 font-medium">{ind.name}</span>
+                                            <span className="text-gray-500">{pct}%</span>
+                                        </div>
+                                        <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                                            <div className={`h-full ${colors[i % colors.length]} rounded-full transition-all duration-500`} style={{ width: `${pct}%` }} />
+                                        </div>
+                                    </div>
+                                );
+                            }) : <p className="text-center py-10 text-gray-400 text-sm">No industry data</p>}
+                        </div>
                     </div>
                 </div>
 
-                <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-5 h-full flex flex-col">
-                    <h3 className="font-bold text-gray-800 mb-4">Industry Mix</h3>
-                    <div className="space-y-4">
-                        {industries.length > 0 ? industries.map((ind, i) => {
-                            const total = companies.length || 1;
-                            const pct = Math.round((ind.count / total) * 100);
-                            const colors = ["bg-red-500", "bg-red-400", "bg-orange-500", "bg-rose-500", "bg-red-300"];
-                            return (
-                                <div key={ind.name}>
-                                    <div className="flex justify-between text-sm mb-1">
-                                        <span className="text-gray-600 font-medium">{ind.name}</span>
-                                        <span className="text-gray-500">{pct}%</span>
-                                    </div>
-                                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                                        <div className={`h-full ${colors[i % colors.length]} rounded-full transition-all duration-500`} style={{ width: `${pct}%` }} />
-                                    </div>
-                                </div>
-                            );
-                        }) : <p className="text-center py-10 text-gray-400 text-sm">No industry data</p>}
-                    </div>
-                </div>
+                <CompanyModal
+                    isOpen={isCompanyModalOpen}
+                    onClose={() => setIsCompanyModalOpen(false)}
+                    company={selectedCompany}
+                    onSave={handleSaveCompany}
+                    userRole={currentUser?.role}
+                    potentialOwners={users}
+                />
+                <DeleteConfirmModal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)} onConfirm={handleDeleteCompany} itemName={selectedCompany?.name} />
             </div>
-
-            <CompanyModal
-                isOpen={isCompanyModalOpen}
-                onClose={() => setIsCompanyModalOpen(false)}
-                company={selectedCompany}
-                onSave={handleSaveCompany}
-                userRole={currentUser?.role}
-                potentialOwners={users}
-            />
-            <DeleteConfirmModal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)} onConfirm={handleDeleteCompany} itemName={selectedCompany?.name} />
-        </div>
-    );
+            );
 }

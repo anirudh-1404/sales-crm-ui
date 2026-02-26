@@ -171,94 +171,95 @@ export default function ContactsDashboard() {
                                 className="w-full sm:w-64 text-sm border border-gray-200 rounded-lg pl-9 pr-3 py-1.5 focus:ring-2 focus:ring-red-400 bg-gray-50/50 focus:outline-none transition-all" />
                         </div>
                     </div>
-                    <div className="flex-1 h-full overflow-x-auto overflow-y-auto custom-scrollbar">
-                        <table className="w-full text-sm">
-                            <thead>
-                                <tr className="border-b border-gray-100 bg-gray-50">
-                                    {["Contact", "Company", "Owner", "LinkedIn", "Actions"].map(h => (
-                                        <th key={h} className="text-left px-4 py-3 text-gray-500 font-semibold text-xs uppercase tracking-wide whitespace-nowrap">{h}</th>
-                                    ))}
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-50">
-                                {loading && contacts.length === 0 ? (
-                                    <tr><td colSpan={4} className="text-center py-10 text-gray-400">Loading contacts...</td></tr>
-                                ) : (
-                                    contacts.map((c) => (
-                                        <tr key={c._id} className="hover:bg-gray-50/50 transition-colors group">
-                                            <td className="px-4 py-3 whitespace-nowrap">
-                                                <div className="flex items-center gap-3">
-                                                    <Avatar name={`${c.firstName} ${c.lastName}`} />
-                                                    <div>
-                                                        <p className="font-medium text-gray-800 leading-none">{c.firstName} {c.lastName}</p>
-                                                        <p className="text-xs text-gray-400 mt-0.5">{c.jobTitle}</p>
+                    <div className="flex-1 flex flex-col min-h-0">
+                        <div className="flex-1 overflow-x-auto overflow-y-auto custom-scrollbar">
+                            <table className="w-full text-sm">
+                                <thead>
+                                    <tr className="border-b border-gray-100 bg-gray-50">
+                                        {["Contact", "Company", "Owner", "LinkedIn", "Actions"].map(h => (
+                                            <th key={h} className="text-left px-4 py-3 text-gray-500 font-semibold text-xs uppercase tracking-wide whitespace-nowrap">{h}</th>
+                                        ))}
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-50">
+                                    {loading && contacts.length === 0 ? (
+                                        <tr><td colSpan={4} className="text-center py-10 text-gray-400">Loading contacts...</td></tr>
+                                    ) : (
+                                        contacts.map((c) => (
+                                            <tr key={c._id} className="hover:bg-gray-50/50 transition-colors group">
+                                                <td className="px-4 py-3 whitespace-nowrap">
+                                                    <div className="flex items-center gap-3">
+                                                        <Avatar name={`${c.firstName} ${c.lastName}`} />
+                                                        <div>
+                                                            <p className="font-medium text-gray-800 leading-none">{c.firstName} {c.lastName}</p>
+                                                            <p className="text-xs text-gray-400 mt-0.5">{c.jobTitle}</p>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </td>
-                                            <td className="px-4 py-3 text-gray-500 font-medium whitespace-nowrap">{c.companyId?.name || c.companyName || "—"}</td>
-                                            <td className="px-4 py-3 text-red-600 font-semibold whitespace-nowrap">{c.ownerId?.firstName || "System"}</td>
-                                            <td className="px-4 py-3 whitespace-nowrap">
-                                                {c.linkedin ? (
-                                                    <a href={c.linkedin.startsWith("http") ? c.linkedin : `https://${c.linkedin}`}
-                                                        target="_blank" rel="noopener noreferrer"
-                                                        className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 hover:underline text-xs font-medium">
-                                                        <Linkedin size={13} /><ExternalLink size={11} />
-                                                    </a>
-                                                ) : <span className="text-gray-300 text-xs">—</span>}
-                                            </td>
-                                            <td className="px-4 py-3 whitespace-nowrap">
-                                                <div className="flex items-center gap-2">
-                                                    <button onClick={() => { setSelectedContact(c); setIsContactModalOpen(true); }}
-                                                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition">
-                                                        <Edit2 size={16} />
-                                                    </button>
-                                                    <button onClick={() => { setSelectedContact(c); setIsDeleteModalOpen(true); }}
-                                                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition">
-                                                        <Trash2 size={16} />
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))
-                                )}
-                            </tbody>
-                        </table>
+                                                </td>
+                                                <td className="px-4 py-3 text-gray-500 font-medium whitespace-nowrap">{c.companyId?.name || c.companyName || "—"}</td>
+                                                <td className="px-4 py-3 text-red-600 font-semibold whitespace-nowrap">{c.ownerId?.firstName || "System"}</td>
+                                                <td className="px-4 py-3 whitespace-nowrap">
+                                                    {c.linkedin ? (
+                                                        <a href={c.linkedin.startsWith("http") ? c.linkedin : `https://${c.linkedin}`}
+                                                            target="_blank" rel="noopener noreferrer"
+                                                            className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 hover:underline text-xs font-medium">
+                                                            <Linkedin size={13} /><ExternalLink size={11} />
+                                                        </a>
+                                                    ) : <span className="text-gray-300 text-xs">—</span>}
+                                                </td>
+                                                <td className="px-4 py-3 whitespace-nowrap">
+                                                    <div className="flex items-center gap-2">
+                                                        <button onClick={() => { setSelectedContact(c); setIsContactModalOpen(true); }}
+                                                            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition">
+                                                            <Edit2 size={16} />
+                                                        </button>
+                                                        <button onClick={() => { setSelectedContact(c); setIsDeleteModalOpen(true); }}
+                                                            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition">
+                                                            <Trash2 size={16} />
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-5 h-full flex flex-col">
+                        <h3 className="font-bold text-gray-800 mb-4">Top Job Titles</h3>
+                        <div className="space-y-4">
+                            {jobTitles.length > 0 ? jobTitles.map((j, i) => {
+                                const total = contacts.length || 1;
+                                const pct = Math.round((j.count / total) * 100);
+                                const colors = ["bg-red-500", "bg-orange-500", "bg-red-400", "bg-rose-400", "bg-red-300"];
+                                return (
+                                    <div key={j.title}>
+                                        <div className="flex justify-between text-sm mb-1">
+                                            <span className="text-gray-600 font-medium">{j.title}</span>
+                                            <span className="text-gray-500">{pct}%</span>
+                                        </div>
+                                        <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                                            <div className={`h-full ${colors[i % colors.length]} rounded-full transition-all duration-500`} style={{ width: `${pct}%` }} />
+                                        </div>
+                                    </div>
+                                );
+                            }) : <p className="text-center py-10 text-gray-400 text-sm">No data available</p>}
+                        </div>
                     </div>
                 </div>
 
-                <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-5 h-full flex flex-col">
-                    <h3 className="font-bold text-gray-800 mb-4">Top Job Titles</h3>
-                    <div className="space-y-4">
-                        {jobTitles.length > 0 ? jobTitles.map((j, i) => {
-                            const total = contacts.length || 1;
-                            const pct = Math.round((j.count / total) * 100);
-                            const colors = ["bg-red-500", "bg-orange-500", "bg-red-400", "bg-rose-400", "bg-red-300"];
-                            return (
-                                <div key={j.title}>
-                                    <div className="flex justify-between text-sm mb-1">
-                                        <span className="text-gray-600 font-medium">{j.title}</span>
-                                        <span className="text-gray-500">{pct}%</span>
-                                    </div>
-                                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                                        <div className={`h-full ${colors[i % colors.length]} rounded-full transition-all duration-500`} style={{ width: `${pct}%` }} />
-                                    </div>
-                                </div>
-                            );
-                        }) : <p className="text-center py-10 text-gray-400 text-sm">No data available</p>}
-                    </div>
-                </div>
+                <ContactModal
+                    isOpen={isContactModalOpen}
+                    onClose={() => setIsContactModalOpen(false)}
+                    contact={selectedContact}
+                    onSave={handleSaveContact}
+                    companies={companies}
+                    userRole={currentUser?.role}
+                    potentialOwners={users}
+                />
+                <DeleteConfirmModal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)} onConfirm={handleDeleteContact} itemName={`${selectedContact?.firstName} ${selectedContact?.lastName}`} />
             </div>
-
-            <ContactModal
-                isOpen={isContactModalOpen}
-                onClose={() => setIsContactModalOpen(false)}
-                contact={selectedContact}
-                onSave={handleSaveContact}
-                companies={companies}
-                userRole={currentUser?.role}
-                potentialOwners={users}
-            />
-            <DeleteConfirmModal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)} onConfirm={handleDeleteContact} itemName={`${selectedContact?.firstName} ${selectedContact?.lastName}`} />
-        </div>
-    );
+            );
 }
