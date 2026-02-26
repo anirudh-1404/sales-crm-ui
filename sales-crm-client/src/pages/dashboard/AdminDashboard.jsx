@@ -9,11 +9,15 @@ import { getCompanies } from "../../../API/services/companyService";
 import { getContacts } from "../../../API/services/contactService";
 import { getTeamUsers } from "../../../API/services/userService";
 import { toast } from "react-hot-toast";
+import DashboardDetailModal from "../../components/modals/DashboardDetailModal";
 
-const OverviewStat = ({ label, value, trend, icon: IconComp, color }) => (
-    <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300">
+const OverviewStat = ({ label, value, trend, icon: IconComp, color, onClick }) => (
+    <div
+        onClick={onClick}
+        className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer active:scale-95 group"
+    >
         <div className="flex items-start justify-between">
-            <div className={`p-3 rounded-xl ${color}`}>
+            <div className={`p-3 rounded-xl ${color} group-hover:scale-110 transition-transform duration-300`}>
                 <IconComp size={20} />
             </div>
             {trend && (
@@ -24,7 +28,7 @@ const OverviewStat = ({ label, value, trend, icon: IconComp, color }) => (
             )}
         </div>
         <div className="mt-4">
-            <h3 className="text-2xl font-bold text-gray-900">{value}</h3>
+            <h3 className="text-2xl font-bold text-gray-900 group-hover:text-red-500 transition-colors">{value}</h3>
             <p className="text-sm font-medium text-gray-500 mt-1">{label}</p>
         </div>
     </div>
@@ -46,15 +50,19 @@ export default function AdminDashboard() {
             { name: 'Jun', value: 0 }
         ],
         pendingUsers: 0,
-        stagnantDeals: 0
+        stagnantDeals: 0,
+        dealList: [],
+        companyList: [],
+        userList: []
     });
     const [loading, setLoading] = useState(true);
+    const [modalConfig, setModalConfig] = useState({ isOpen: false, category: null, data: [] });
 
     const fetchStats = async () => {
         try {
             const [dealsRes, companiesRes, contactsRes, usersRes] = await Promise.all([
                 getDeals({ limit: 1000 }),
-                getCompanies({ limit: 1 }),
+                getCompanies({ limit: 1000 }),
                 getContacts({ limit: 1 }),
                 getTeamUsers()
             ]);
@@ -90,7 +98,10 @@ export default function AdminDashboard() {
                 totalValue,
                 revenueChart: months,
                 pendingUsers: usersRes.data.data?.filter(u => !u.isSetupComplete)?.length || 0,
-                stagnantDeals: dealsData.filter(d => d.stage === 'Negotiation' && new Date(d.updatedAt) < new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)).length || 0
+                stagnantDeals: dealsData.filter(d => d.stage === 'Negotiation' && new Date(d.updatedAt) < new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)).length || 0,
+                dealList: dealsData,
+                companyList: companiesRes.data.data || [],
+                userList: usersRes.data.data || []
             });
         } catch (error) {
             console.error(error);
@@ -126,6 +137,7 @@ export default function AdminDashboard() {
                     trend={12}
                     icon={DollarSign}
                     color="bg-red-50 text-red-600"
+                    onClick={() => setModalConfig({ isOpen: true, category: 'revenue', data: stats.dealList })}
                 />
                 <OverviewStat
                     label="Active Deals"
@@ -133,6 +145,7 @@ export default function AdminDashboard() {
                     trend={8}
                     icon={Briefcase}
                     color="bg-orange-50 text-orange-600"
+                    onClick={() => setModalConfig({ isOpen: true, category: 'deals', data: stats.dealList.filter(d => !d.stage.startsWith('Closed')) })}
                 />
                 <OverviewStat
                     label="Total Companies"
@@ -140,6 +153,7 @@ export default function AdminDashboard() {
                     trend={-2}
                     icon={Building2}
                     color="bg-rose-50 text-rose-600"
+                    onClick={() => setModalConfig({ isOpen: true, category: 'companies', data: stats.companyList })}
                 />
                 <OverviewStat
                     label="System Users"
@@ -147,6 +161,7 @@ export default function AdminDashboard() {
                     trend={5}
                     icon={Users}
                     color="bg-gray-100 text-gray-700"
+                    onClick={() => setModalConfig({ isOpen: true, category: 'users', data: stats.userList })}
                 />
             </div>
 
@@ -215,6 +230,13 @@ export default function AdminDashboard() {
                     </div>
                 </div>
             </div>
+
+            <DashboardDetailModal
+                isOpen={modalConfig.isOpen}
+                onClose={() => setModalConfig({ ...modalConfig, isOpen: false })}
+                category={modalConfig.category}
+                data={modalConfig.data}
+            />
         </div>
     );
 }
