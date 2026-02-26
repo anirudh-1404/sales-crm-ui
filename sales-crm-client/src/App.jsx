@@ -14,6 +14,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 // Admin dashboard
 import DashboardLayout from "./components/DashboardLayout";
+import AdminDashboard from "./pages/dashboard/AdminDashboard";
 import DealsDashboard from "./pages/dashboard/DealsDashboard";
 import CompaniesDashboard from "./pages/dashboard/CompaniesDashboard";
 import ContactsDashboard from "./pages/dashboard/ContactsDashboard";
@@ -73,7 +74,7 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [
-      { index: true, element: <Navigate to="/dashboard/deals" replace /> },
+      { index: true, element: <AdminDashboard /> },
       { path: "deals", element: <DealsDashboard /> },
       { path: "companies", element: <CompaniesDashboard /> },
       { path: "contacts", element: <ContactsDashboard /> },

@@ -10,8 +10,9 @@ import GlobalSearch from "./GlobalSearch";
 import LogoutConfirmModal from "./LogoutConfirmModal";
 
 
-const SidebarLink = ({ to, icon: IconComp, label, badge, onClick }) => (
+const SidebarLink = ({ to, icon: IconComp, label, badge, onClick, end }) => (
     <NavLink to={to}
+        end={end}
         onClick={onClick}
         className={({ isActive }) =>
             `flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 group
@@ -103,7 +104,7 @@ const DashboardLayout = () => {
                     <div>
                         <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest px-2 mb-2">Main Menu</p>
                         <div className="space-y-1">
-                            <SidebarLink to="/dashboard/deals" icon={LayoutDashboard} label="Dashboard" onClick={closeSidebarOnMobile} />
+                            <SidebarLink to="/dashboard" icon={LayoutDashboard} label="Dashboard" onClick={closeSidebarOnMobile} end={true} />
                         </div>
                     </div>
                     <div>
