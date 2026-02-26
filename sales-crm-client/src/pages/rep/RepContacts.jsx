@@ -176,10 +176,9 @@ export default function RepContacts() {
                                         <td className="px-4 py-3 text-gray-500 text-xs whitespace-nowrap">{c.phone || c.mobile || "—"}</td>
                                         <td className="px-4 py-3 whitespace-nowrap">
                                             {c.linkedin ? (
-                                                <a href={c.linkedin.startsWith('http') ? c.linkedin : `https://${c.linkedin}`} target="_blank" rel="noreferrer"
                                                 <span className="text-xs text-blue-600 hover:underline flex items-center gap-1 cursor-pointer"
                                                     onClick={() => { setSelectedContact(c); setIsDetailsModalOpen(true); }}>
-                                                    <Eye size={12} /> View Profile
+                                                    <Eye size={12} /> View Details
                                                 </span>
                                             ) : (
                                                 <span className="text-xs text-gray-400">—</span>
