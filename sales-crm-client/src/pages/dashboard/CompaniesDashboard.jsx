@@ -6,6 +6,7 @@ import { getCompanies, createCompany, updateCompany, deleteCompany } from "../..
 import { getTeamUsers } from "../../../API/services/userService";
 import { useAuth } from "../../context/AuthContext";
 import CompanyModal from "../../components/modals/CompanyModal";
+import CompanyDetailsModal from "../../components/modals/CompanyDetailsModal";
 import DeleteConfirmModal from "../../components/modals/DeleteConfirmModal";
 import { toast } from "react-hot-toast";
 
@@ -236,6 +237,11 @@ export default function CompaniesDashboard() {
                 onSave={handleSaveCompany}
                 userRole={currentUser?.role}
                 potentialOwners={users}
+            />
+            <CompanyDetailsModal
+                isOpen={isDetailsModalOpen}
+                onClose={() => setIsDetailsModalOpen(false)}
+                company={selectedCompany}
             />
             <DeleteConfirmModal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)} onConfirm={handleDeleteCompany} itemName={selectedCompany?.name} />
         </div>
