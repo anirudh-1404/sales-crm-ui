@@ -66,10 +66,14 @@ export const registerUser = async (req, res, next) => {
 
             // Construct invitation link
             const frontendUrl = process.env.FRONTEND_URL || req.get("origin") || "http://localhost:5173";
+            const logoUrl = `${frontendUrl}/Logo.png`;
             const setupUrl = `${frontendUrl}/setup-password?token=${invitationToken}`;
 
             const message = `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <img src="${logoUrl}" alt="mbdConsulting Logo" style="height: 50px; width: auto;" />
+                    </div>
                     <h2 style="color: #e11d48; text-align: center;">Welcome to mbdConsulting</h2>
                     <p>Hello ${firstName},</p>
                     <p>An account has been created for you. Please click the button below to set up your password and access your dashboard.</p>
@@ -758,11 +762,15 @@ export const forgotPassword = async (req, res, next) => {
         await user.save();
 
         const frontendUrl = process.env.FRONTEND_URL || req.get("origin") || "http://localhost:5173";
+        const logoUrl = `${frontendUrl}/Logo.png`;
         console.log("Using FRONTEND_URL for reset link:", frontendUrl);
         const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}`;
 
         const message = `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; rounded: 8px;">
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <img src="${logoUrl}" alt="mbdConsulting Logo" style="height: 50px; width: auto;" />
+                </div>
                 <h2 style="color: #e11d48; text-align: center;">Password Reset Request</h2>
                 <p>Hello ${user.firstName},</p>
                 <p>We received a request to reset your password. If you didn't make this request, you can safely ignore this email.</p>
@@ -871,10 +879,14 @@ export const resendInvitation = async (req, res) => {
         await user.save();
 
         const frontendUrl = process.env.FRONTEND_URL || req.get("origin") || "http://localhost:5173";
+        const logoUrl = `${frontendUrl}/Logo.png`;
         const setupUrl = `${frontendUrl}/setup-password?token=${invitationToken}`;
 
         const message = `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <img src="${logoUrl}" alt="mbdConsulting Logo" style="height: 50px; width: auto;" />
+                </div>
                 <h2 style="color: #e11d48; text-align: center;">Account Setup Invitation</h2>
                 <p>Hello ${user.firstName},</p>
                 <p>An account invitation link has been generated for you. Please click below to set your password.</p>
