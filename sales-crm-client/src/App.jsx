@@ -6,6 +6,7 @@ import Login from "./pages/auth/Login";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import Emailverification from "./pages/auth/Emailverification";
 import Resetpassword from "./pages/auth/Resetpassword";
+import SetPassword from "./pages/auth/SetPassword";
 import Successpage from "./pages/auth/Successpage";
 
 import { AuthProvider, useAuth } from "./context/AuthContext";
@@ -59,6 +60,7 @@ const router = createBrowserRouter([
       { path: "forgot-password", element: <ForgotPassword /> },
       { path: "email-verification", element: <Emailverification /> },
       { path: "reset-password", element: <Resetpassword /> },
+      { path: "setup-password", element: <SetPassword /> },
       { path: "success", element: <Successpage /> },
     ]
   },

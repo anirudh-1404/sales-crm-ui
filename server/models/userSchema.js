@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
+        required: false, // Changed for invitation flow
         minLength: 6,
         select: false
     },
@@ -37,6 +37,18 @@ const userSchema = new mongoose.Schema({
     isActive: {
         type: Boolean,
         default: true
+    },
+    isSetupComplete: {
+        type: Boolean,
+        default: false
+    },
+    invitationToken: {
+        type: String,
+        default: null
+    },
+    invitationExpiry: {
+        type: Date,
+        default: null
     },
     isDeleted: {
         type: Boolean,

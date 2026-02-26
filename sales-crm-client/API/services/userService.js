@@ -64,3 +64,13 @@ export const forgotPassword = async (email) => {
 export const resetPassword = async (data) => {
     return API.post("/auth/reset-password", data);
 };
+
+// Setup Account Password (Invitation Flow)
+export const setupPassword = async (data) => {
+    return API.post("/auth/setup-password", data);
+};
+
+// Resend Setup Invitation
+export const resendInvitation = async (id) => {
+    return API.post(`/auth/${id}/resend-invitation`);
+};

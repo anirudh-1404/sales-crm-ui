@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Users2, ShieldCheck, Briefcase, UserCheck, Edit2, RefreshCw, Plus, X, Search, Trash2, Eye } from "lucide-react";
-import { getTeamUsers, deactivateUser, activateUser, bulkReassignRecords, softDeleteUser } from "../../../API/services/userService";
+import { getTeamUsers, deactivateUser, activateUser, bulkReassignRecords, softDeleteUser, resendInvitation as apiResendInvitation } from "../../../API/services/userService";
 import UserModal from "../../components/modals/UserModal";
 import UserDetailsModal from "../../components/modals/UserDetailsModal";
 import DeactivateModal from "../../components/modals/DeactivateModal";
@@ -215,6 +215,15 @@ export default function UsersDashboard() {
         }
     };
 
+    const handleResendInvite = async (user) => {
+        try {
+            await apiResendInvitation(user._id);
+            toast.success(`Invitation link resent to ${user.email}`);
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to resend invitation");
+        }
+    };
+
     const potentialManagers = users.filter(u => u.isActive);
     const adminCount = users.filter(u => u.role === "admin").length;
     const managerCount = users.filter(u => u.role === "sales_manager").length;
@@ -320,13 +329,26 @@ export default function UsersDashboard() {
                                                     : "—"}
                                             </td>
                                             <td className="px-4 py-3 whitespace-nowrap">
-                                                <span className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full ${u.isActive
-                                                    ? "bg-green-100 text-green-700"
-                                                    : "bg-red-100 text-red-700 border border-red-200"
-                                                    }`}>
-                                                    <span className={`w-1.5 h-1.5 rounded-full ${u.isActive ? "bg-green-500" : "bg-red-500 animate-pulse"}`} />
-                                                    {u.isActive ? "Active" : "Deactivated"}
-                                                </span>
+                                                <div className="flex items-center gap-2">
+                                                    <span className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full ${!u.isActive
+                                                        ? "bg-red-100 text-red-700 border border-red-200"
+                                                        : !u.isSetupComplete
+                                                            ? "bg-amber-100 text-amber-700 border border-amber-200"
+                                                            : "bg-green-100 text-green-700"
+                                                        }`}>
+                                                        <span className={`w-1.5 h-1.5 rounded-full ${!u.isActive ? "bg-red-500 animate-pulse" : !u.isSetupComplete ? "bg-amber-500 animate-pulse" : "bg-green-500"}`} />
+                                                        {!u.isActive ? "Deactivated" : !u.isSetupComplete ? "Pending Invite" : "Active"}
+                                                    </span>
+                                                    {u.isActive && !u.isSetupComplete && (
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); handleResendInvite(u); }}
+                                                            className="p-1 px-2 text-[10px] font-bold text-amber-600 hover:bg-amber-50 rounded-lg border border-amber-200 transition"
+                                                            title="Resend invitation link"
+                                                        >
+                                                            RESEND
+                                                        </button>
+                                                    )}
+                                                </div>
                                             </td>
                                             <td className="px-4 py-3 text-gray-500 text-xs whitespace-nowrap">
                                                 {u.lastLogin ? new Date(u.lastLogin).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "Never"}

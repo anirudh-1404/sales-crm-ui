@@ -13,9 +13,18 @@ export const registerUser = async (req, res, next) => {
     try {
         const { firstName, lastName, email, password, role, managerId } = req.body;
 
-        if (!firstName.trim() || !lastName.trim() || !email.trim() || !password || !role) {
+        // Validation: password is NOT required if being created by another user (invitation flow)
+        const isInvitation = !!req.user;
+
+        if (!firstName.trim() || !lastName.trim() || !email.trim() || !role) {
             return res.status(400).json({
-                message: "All required fields must be filled!"
+                message: "Basic details (Name, Email, Role) are required!"
+            })
+        }
+
+        if (!isInvitation && !password) {
+            return res.status(400).json({
+                message: "Password is required for self-registration!"
             })
         }
 
@@ -26,21 +35,59 @@ export const registerUser = async (req, res, next) => {
             })
         }
 
-        const hashedPass = await generateHash(password)
-        const user = await User.create({
-            firstName,
-            lastName,
-            email,
-            password: hashedPass,
-            role,
-            managerId: role === "sales_rep" ? managerId : null
-        })
+        let user;
+        if (isInvitation) {
+            // Invitation Flow: No password yet
+            const invitationToken = crypto.randomBytes(32).toString("hex");
+            const invitationExpiry = Date.now() + 3600000; // 1 hour
 
-        const token = await generateToken(user._id, user.role);
+            user = await User.create({
+                firstName,
+                lastName,
+                email,
+                role,
+                managerId: role === "sales_rep" ? managerId : null,
+                isSetupComplete: false,
+                invitationToken,
+                invitationExpiry
+            });
 
-        // Only set the auth cookie if no valid token already exists (e.g., self-registration)
-        // This prevents an Admin's session from being overwritten when creating a new user.
-        if (!req.cookies?.token) {
+            // Construct invitation link
+            const frontendUrl = process.env.FRONTEND_URL || req.get("origin") || "http://localhost:5173";
+            const setupUrl = `${frontendUrl}/setup-password?token=${invitationToken}`;
+
+            const message = `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
+                    <h2 style="color: #e11d48; text-align: center;">Welcome to mbdConsulting</h2>
+                    <p>Hello ${firstName},</p>
+                    <p>An account has been created for you. Please click the button below to set up your password and access your dashboard.</p>
+                    <div style="text-align: center; margin: 30px 0;">
+                        <a href="${setupUrl}" style="background-color: #e11d48; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">Set Up Account</a>
+                    </div>
+                    <p>This link is valid for 1 hour. If it expires, contact your administrator to resend the invite.</p>
+                    <p>Or copy and paste this link:</p>
+                    <p style="word-break: break-all; color: #64748b; font-size: 14px;">${setupUrl}</p>
+                    <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
+                    <p style="font-size: 12px; color: #94a3b8; text-align: center;">&copy; ${new Date().getFullYear()} mbdConsulting. All rights reserved.</p>
+                </div>
+            `;
+
+            await sendEmail(email, "Account Setup Invitation", message);
+
+        } else {
+            // Self-Registration Flow (Standard)
+            const hashedPass = await generateHash(password)
+            user = await User.create({
+                firstName,
+                lastName,
+                email,
+                password: hashedPass,
+                role,
+                managerId: null, // Self-registered usually don't have manager assigned immediately
+                isSetupComplete: true
+            })
+
+            const token = await generateToken(user._id, user.role);
             res.cookie("token", token, {
                 httpOnly: true,
                 secure: true,
@@ -51,11 +98,12 @@ export const registerUser = async (req, res, next) => {
         }
 
         res.status(201).json({
-            message: "User registered successfully!",
+            message: isInvitation ? "Invitation sent successfully!" : "User registered successfully!",
             data: {
                 id: user._id,
                 email: user.email,
-                role: user.role
+                role: user.role,
+                pendingSetup: !user.isSetupComplete
             }
         })
 
@@ -64,8 +112,8 @@ export const registerUser = async (req, res, next) => {
             entityType: "User",
             entityId: user._id,
             action: "CREATE",
-            performedBy: req.user?.id || user._id, // If self-registering, performer is self
-            details: { message: `New user registered: ${user.email}`, email: user.email },
+            performedBy: req.user?.id || user._id,
+            details: { message: isInvitation ? `User invited: ${user.email}` : `New user registered: ${user.email}`, email: user.email },
             req
         });
         return;

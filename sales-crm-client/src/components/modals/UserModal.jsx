@@ -82,8 +82,9 @@ export default function UserModal({ isOpen, onClose, user, managers = [], onSave
         if (!form.email.trim()) errs.email = "Email is required";
         else if (!emailRegex.test(form.email.trim())) errs.email = "Enter a valid email address";
         if (!isEdit) {
-            if (!form.password) errs.password = "Password is required";
-            else if (form.password.length < 6) errs.password = "Password must be at least 6 characters";
+            if (form.password && form.password.length < 6) {
+                errs.password = "Password must be at least 6 characters";
+            }
         }
         return errs;
     };
@@ -169,10 +170,13 @@ export default function UserModal({ isOpen, onClose, user, managers = [], onSave
                 </div>
                 {!isEdit && (
                     <div>
-                        <label className="block text-xs font-semibold text-gray-600 mb-1">Password *</label>
+                        <label className="block text-xs font-semibold text-gray-600 mb-1">Password (Optional)</label>
                         <input type="password" name="password" value={form.password} onChange={handleChange}
-                            className={inputClass(errors.password)} placeholder="Min. 6 characters" />
+                            className={inputClass(errors.password)} placeholder="Leave blank to send invitation email" />
                         {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
+                        <p className="text-[10px] text-gray-400 mt-1 italic">
+                            If omitted, the user will receive a link via email to set their own password.
+                        </p>
                     </div>
                 )}
                 <div>
