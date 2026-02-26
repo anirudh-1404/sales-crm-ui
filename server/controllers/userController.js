@@ -13,12 +13,24 @@ export const registerUser = async (req, res, next) => {
     try {
         const { firstName, lastName, email, password, role, managerId } = req.body;
 
-        // Validation: password is NOT required if being created by another user (invitation flow)
-        const isInvitation = !!req.user;
+        // Validation: password is NOT required if being created by an authorized user (invitation flow)
+        let isInvitation = !!req.user;
 
-        if (!firstName.trim() || !lastName.trim() || !email.trim() || !role) {
+        // If not authenticated via middleware, check cookie manually for invitation flow fallback
+        if (!isInvitation && req.cookies?.token) {
+            try {
+                const decoded = (await import("jsonwebtoken")).default.verify(req.cookies.token, process.env.JWT_SECRET_KEY);
+                const requester = await User.findById(decoded.id);
+                if (requester && (requester.role === "admin" || requester.role === "sales_manager")) {
+                    isInvitation = true;
+                    req.user = requester; // Populate for audit logger
+                }
+            } catch (e) { /* ignore */ }
+        }
+
+        if (!firstName?.trim() || !lastName?.trim() || !email?.trim() || !role) {
             return res.status(400).json({
-                message: "Basic details (Name, Email, Role) are required!"
+                message: "All required fields (First Name, Last Name, Email, Role) must be filled!"
             })
         }
 
@@ -807,3 +819,79 @@ export const resetPassword = async (req, res, next) => {
         });
     }
 }
+
+// ─── Invitation Flow Controllers ────────────────────────────────
+
+export const setupPassword = async (req, res) => {
+    try {
+        const { token, password } = req.body;
+        if (!token || !password) {
+            return res.status(400).json({ message: "Token and password are required." });
+        }
+
+        const user = await User.findOne({
+            invitationToken: token,
+            invitationExpiry: { $gt: Date.now() }
+        });
+
+        if (!user) {
+            return res.status(400).json({ message: "Invalid or expired invitation link." });
+        }
+
+        if (password.length < 6) {
+            return res.status(400).json({ message: "Password must be at least 6 characters long." });
+        }
+
+        user.password = await generateHash(password);
+        user.invitationToken = null;
+        user.invitationExpiry = null;
+        user.isSetupComplete = true;
+        user.isActive = true;
+        await user.save();
+
+        res.status(200).json({ message: "Account setup successful! You can now login." });
+    } catch (error) {
+        res.status(500).json({ message: error.message || "Server error during account setup." });
+    }
+};
+
+export const resendInvitation = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const user = await User.findById(id);
+
+        if (!user) return res.status(404).json({ message: "User not found." });
+        if (user.isSetupComplete) return res.status(400).json({ message: "User has already completed setup." });
+
+        const invitationToken = crypto.randomBytes(32).toString("hex");
+        const invitationExpiry = Date.now() + 3600000; // 1 hour
+
+        user.invitationToken = invitationToken;
+        user.invitationExpiry = invitationExpiry;
+        await user.save();
+
+        const frontendUrl = process.env.FRONTEND_URL || req.get("origin") || "http://localhost:5173";
+        const setupUrl = `${frontendUrl}/setup-password?token=${invitationToken}`;
+
+        const message = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
+                <h2 style="color: #e11d48; text-align: center;">Account Setup Invitation</h2>
+                <p>Hello ${user.firstName},</p>
+                <p>An account invitation link has been generated for you. Please click below to set your password.</p>
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="${setupUrl}" style="background-color: #e11d48; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">Set Up Account</a>
+                </div>
+                <p>This link is valid for 1 hour.</p>
+                <p style="word-break: break-all; color: #64748b; font-size: 14px;">${setupUrl}</p>
+                <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
+                <p style="font-size: 12px; color: #94a3b8; text-align: center;">&copy; ${new Date().getFullYear()} mbdConsulting. All rights reserved.</p>
+            </div>
+        `;
+
+        await sendEmail(user.email, "Complete Your Account Setup", message);
+
+        res.status(200).json({ message: "Invitation link resent successfully!" });
+    } catch (error) {
+        res.status(500).json({ message: error.message || "Server error resending invitation." });
+    }
+};

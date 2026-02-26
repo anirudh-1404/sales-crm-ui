@@ -1,10 +1,23 @@
 import express from "express"
-import { adminTest, activateUser, adminResetPassword, bulkReassignRecords, changePassword, deactivateUser, forgotPassword, getProfile, getTeamUsers, loginUser, logoutUser, registerUser, resetPassword, updateUser, softDeleteUser, getDeletedUsers, restoreUser } from "../controllers/userController.js"
+import { adminTest, activateUser, adminResetPassword, bulkReassignRecords, changePassword, deactivateUser, forgotPassword, getProfile, getTeamUsers, loginUser, logoutUser, registerUser, resetPassword, updateUser, softDeleteUser, getDeletedUsers, restoreUser, setupPassword, resendInvitation } from "../controllers/userController.js"
 import { protect } from "../middlewares/authMiddleware.js"
 import { requireRole } from "../middlewares/roleMiddleware.js"
 const router = express.Router()
 
-router.post("/register", registerUser)
+const optionalProtect = async (req, res, next) => {
+    try {
+        const token = req.cookies.token;
+        if (token) {
+            const jwt = (await import("jsonwebtoken")).default;
+            const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+            const user = await (await import("../models/userSchema.js")).default.findById(decoded.id);
+            if (user) req.user = user;
+        }
+    } catch (e) { /* ignore */ }
+    next();
+};
+
+router.post("/register", optionalProtect, registerUser)
 router.post("/login", loginUser)
 router.post("/logout", protect, logoutUser)
 router.get("/profile", protect, getProfile)
