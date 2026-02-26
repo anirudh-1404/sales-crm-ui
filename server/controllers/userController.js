@@ -43,7 +43,7 @@ export const registerUser = async (req, res, next) => {
                 httpOnly: true,
                 secure: true,
                 sameSite: "none",
-                maxAge: 24 * 60 * 60 * 1000
+                maxAge: 15 * 60 * 1000
             })
         }
 
@@ -113,7 +113,7 @@ export const loginUser = async (req, res, next) => {
             httpOnly: true,
             secure: true,
             sameSite: "none",
-            maxAge: 24 * 60 * 60 * 1000
+            maxAge: 15 * 60 * 1000
         })
 
         const lastLogin = new Date();
