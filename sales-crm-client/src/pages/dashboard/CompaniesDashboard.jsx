@@ -154,7 +154,7 @@ export default function CompaniesDashboard() {
                                 className="w-full text-sm border border-gray-200 rounded-lg pl-9 pr-3 py-1.5 focus:ring-2 focus:ring-red-400 focus:outline-none bg-gray-50/50" />
                         </div>
                     </div>
-                    <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-350px)] custom-scrollbar">
+                    <div className="flex-1 overflow-x-auto overflow-y-auto max-h-[calc(100vh-350px)] custom-scrollbar">
                         <table className="w-full text-sm">
                             <thead>
                                 <tr className="border-b border-gray-100 bg-gray-50">

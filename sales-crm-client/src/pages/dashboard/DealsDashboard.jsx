@@ -225,7 +225,7 @@ export default function DealsDashboard() {
                                 <MoreHorizontal size={18} />
                             </button>
                         </CardHeader>
-                        <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-300px)] custom-scrollbar">
+                        <div className="flex-1 overflow-x-auto overflow-y-auto max-h-[calc(100vh-300px)] custom-scrollbar">
                             <table className="w-full text-sm">
                                 <thead>
                                     <tr className="border-b border-gray-100 bg-gray-50">
