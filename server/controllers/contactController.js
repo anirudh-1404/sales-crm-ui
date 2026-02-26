@@ -14,8 +14,11 @@ export const createContact = async (req, res, next) => {
             })
         }
 
-        if (companyId) {
-            const company = await Company.findById(companyId);
+        const sanitizedCompanyId = companyId && companyId.trim() !== "" ? companyId : null;
+        const sanitizedOwnerId = req.body.ownerId && req.body.ownerId.trim() !== "" ? req.body.ownerId : id;
+
+        if (sanitizedCompanyId) {
+            const company = await Company.findById(sanitizedCompanyId);
 
             if (!company) {
                 return res.status(404).json({
@@ -26,7 +29,6 @@ export const createContact = async (req, res, next) => {
             if (role !== "admin") {
                 if (role === "sales_manager") {
                     const teamUsers = await User.find({ $or: [{ _id: id }, { managerId: id }] }).select("_id");
-
                     const teamIds = teamUsers.map(user => user._id.toString());
 
                     if (!teamIds.includes(company.ownerId.toString())) {
@@ -51,9 +53,9 @@ export const createContact = async (req, res, next) => {
             lastName,
             email,
             jobTitle,
-            companyId,
+            companyId: sanitizedCompanyId,
             companyName,
-            ownerId: (role === "admin" || role === "sales_manager") && req.body.ownerId ? req.body.ownerId : id,
+            ownerId: (role === "admin" || role === "sales_manager") ? sanitizedOwnerId : id,
             phone,
             mobile,
             linkedin,
@@ -189,7 +191,12 @@ export const updateContact = async (req, res, next) => {
 
         fields.forEach(field => {
             if (req.body[field] !== undefined) {
-                contact[field] = req.body[field]
+                let value = req.body[field];
+                // Sanitize ID fields
+                if (["companyId", "ownerId"].includes(field) && typeof value === "string" && value.trim() === "") {
+                    value = null;
+                }
+                contact[field] = value;
             }
         });
 

@@ -367,7 +367,9 @@ export const updateUser = async (req, res, next) => {
 export const deactivateUser = async (req, res, next) => {
     try {
         const { id } = req.params; // user to deactivate
-        const { newOwnerId } = req.body; // optional - if omitted, records stay with the user
+        let { newOwnerId } = req.body; // optional - if omitted, records stay with the user
+        if (newOwnerId && newOwnerId.trim() === "") newOwnerId = null;
+
         const { role: currentUserRole, id: currentUserId } = req.user;
         console.log("[deactivateUser] req.body:", req.body, "| newOwnerId:", newOwnerId);
 

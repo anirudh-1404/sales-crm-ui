@@ -36,7 +36,7 @@ export const createCompany = async (req, res) => {
             phone,
             revenueRange,
             notes,
-            ownerId: (role === "admin" || role === "sales_manager") && req.body.ownerId ? req.body.ownerId : req.user.id
+            ownerId: (role === "admin" || role === "sales_manager") && req.body.ownerId && req.body.ownerId.trim() !== "" ? req.body.ownerId : req.user.id
         });
 
         res.status(201).json({
@@ -170,7 +170,12 @@ export const updateCompany = async (req, res) => {
 
         fields.forEach(field => {
             if (req.body[field] !== undefined) {
-                company[field] = req.body[field];
+                let value = req.body[field];
+                // Sanitize ID fields
+                if (field === "ownerId" && typeof value === "string" && value.trim() === "") {
+                    value = null;
+                }
+                company[field] = value;
             }
         });
 
@@ -288,7 +293,7 @@ export const changeOwnership = async (req, res) => {
 
             const teamIds = teamUsers.map(u => u._id.toString());
 
-            if (!teamIds.includes(newOwnerId)) {
+            if (!newOwnerId || newOwnerId.trim() === "" || !teamIds.includes(newOwnerId)) {
                 return res.status(403).json({
                     message: "New owner must belong to your team!"
                 });

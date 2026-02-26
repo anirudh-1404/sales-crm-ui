@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { Plus, Users2, CheckCircle2, XCircle, UserCheck, Search, Eye } from "lucide-react";
 import { getTeamUsers, deactivateUser, activateUser } from "../../../API/services/userService";
 import UserModal from "../../components/modals/UserModal";
-import DeactivateModal from "../../components/modals/DeactivateModal";
-import { Plus, Users2, CheckCircle2, XCircle, UserCheck, Search } from "lucide-react";
+import UserDetailsModal from "../../components/modals/UserDetailsModal";
 import { useAuth } from "../../context/AuthContext";
 import ConfirmDialog from "../../components/modals/ConfirmDialog";
 import { toast } from "react-hot-toast";
@@ -32,7 +32,7 @@ const roleBadge = {
     sales_manager: "bg-purple-100 text-purple-700",
     sales_rep: "bg-blue-100 text-blue-700",
 };
-const formatRole = (r) => ({ admin: "Admin", sales_manager: "Sales Manager", sales_rep: "Sales Representative" }[r] || r);
+const formatRole = (r) => ({ admin: "ADMIN", sales_manager: "SALES MANAGER", sales_rep: "SALES REPRESENTATIVE" }[r] || r?.toUpperCase());
 
 export default function ManagerTeam() {
     const { user: currentUser } = useAuth();
@@ -42,6 +42,7 @@ export default function ManagerTeam() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
     const [selectedMember, setSelectedMember] = useState(null);
+    const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
     const [confirmState, setConfirmState] = useState({ isOpen: false, title: "", message: "", confirmLabel: "", confirmColor: "", onConfirm: null });
     const openConfirm = (opts) => setConfirmState({ isOpen: true, ...opts });
     const closeConfirm = () => setConfirmState(s => ({ ...s, isOpen: false }));
@@ -137,7 +138,7 @@ export default function ManagerTeam() {
                     { label: "Total Members", value: loading ? "..." : String(members.length), color: "bg-purple-50 text-purple-600", icon: Users2 },
                     { label: "Active", value: loading ? "..." : String(activeCount), color: "bg-green-50 text-green-600", icon: CheckCircle2 },
                     { label: "Inactive", value: loading ? "..." : String(inactiveCount), color: "bg-red-50 text-red-500", icon: XCircle },
-                    { label: "Sales Representatives", value: loading ? "..." : String(repsOnly.length), color: "bg-blue-50 text-blue-600", icon: UserCheck },
+                    { label: "SALES REPRESENTATIVES", value: loading ? "..." : String(repsOnly.length), color: "bg-blue-50 text-blue-600", icon: UserCheck },
                 ].map(s => (
                     <div key={s.label} className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 sm:p-5 flex items-start gap-4">
                         <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${s.color}`}>
@@ -177,12 +178,16 @@ export default function ManagerTeam() {
                                 <tr><td colSpan={6} className="text-center py-10 text-gray-400">No members found.</td></tr>
                             ) : (
                                 filtered.map((m) => (
-                                    <tr key={m._id} className="hover:bg-gray-50/50 transition-colors">
+                                    <tr
+                                        key={m._id}
+                                        className="hover:bg-gray-50/50 transition-colors cursor-pointer group"
+                                        onClick={() => { setSelectedMember(m); setIsDetailsModalOpen(true); }}
+                                    >
                                         <td className="px-4 py-3 whitespace-nowrap">
                                             <div className="flex items-center gap-3">
                                                 <Avatar name={`${m.firstName} ${m.lastName}`} />
                                                 <div>
-                                                    <p className="font-medium text-gray-800 leading-none">{m.firstName} {m.lastName}</p>
+                                                    <p className="font-bold text-gray-800 leading-none group-hover:text-purple-600 transition-colors uppercase">{m.firstName} {m.lastName}</p>
                                                     <p className="text-xs text-gray-400 mt-0.5">{m.email}</p>
                                                 </div>
                                             </div>
@@ -207,17 +212,26 @@ export default function ManagerTeam() {
                                         <td className="px-4 py-3 text-gray-500 text-xs whitespace-nowrap">
                                             {m.lastLogin ? new Date(m.lastLogin).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "Never"}
                                         </td>
-                                        <td className="px-4 py-3 whitespace-nowrap">
-                                            {m.role === "sales_rep" ? (
+                                        <td className="px-4 py-3 whitespace-nowrap" onClick={e => e.stopPropagation()}>
+                                            <div className="flex items-center gap-1.5">
                                                 <button
-                                                    onClick={() => handleToggleActive(m)}
-                                                    className={`text-xs px-3 py-1.5 rounded-lg font-semibold border transition ${m.isActive ? "border-red-200 text-red-600 hover:bg-red-50" : "border-green-200 text-green-600 hover:bg-green-50"}`}
+                                                    onClick={() => { setSelectedMember(m); setIsDetailsModalOpen(true); }}
+                                                    className="p-1.5 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition"
+                                                    title="View profile details"
                                                 >
-                                                    {m.isActive ? "Deactivate" : "Activate"}
+                                                    <Eye size={15} />
                                                 </button>
-                                            ) : (
-                                                <span className="text-xs text-gray-400">—</span>
-                                            )}
+                                                {m.role === "sales_rep" ? (
+                                                    <button
+                                                        onClick={() => handleToggleActive(m)}
+                                                        className={`text-xs px-3 py-1.5 rounded-lg font-semibold border transition ${m.isActive ? "border-red-200 text-red-600 hover:bg-red-50" : "border-green-200 text-green-600 hover:bg-green-50"}`}
+                                                    >
+                                                        {m.isActive ? "Deactivate" : "Activate"}
+                                                    </button>
+                                                ) : (
+                                                    <span className="text-xs text-gray-400">—</span>
+                                                )}
+                                            </div>
                                         </td>
                                     </tr>
                                 ))
@@ -241,6 +255,11 @@ export default function ManagerTeam() {
                 user={selectedMember}
                 activeUsers={members}
                 onConfirm={confirmDeactivate}
+            />
+            <UserDetailsModal
+                isOpen={isDetailsModalOpen}
+                onClose={() => setIsDetailsModalOpen(false)}
+                user={selectedMember}
             />
             <ConfirmDialog
                 isOpen={confirmState.isOpen}

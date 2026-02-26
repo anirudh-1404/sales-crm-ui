@@ -179,13 +179,13 @@ export default function UserModal({ isOpen, onClose, user, managers = [], onSave
                     <label className="block text-xs font-semibold text-gray-600 mb-1">Role *</label>
                     {restrictedRole ? (
                         <div className="text-sm font-medium text-gray-800 bg-gray-50 px-3 py-2 rounded-lg border border-gray-200">
-                            {restrictedRole === "sales_rep" ? "Sales Representative" : restrictedRole.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())}
+                            {restrictedRole === "sales_rep" ? "SALES REPRESENTATIVE" : restrictedRole.replace(/_/g, " ").toUpperCase()}
                         </div>
                     ) : (
                         <select name="role" value={form.role} onChange={handleChange} className={inputClass(false)}>
-                            <option value="admin">Admin</option>
-                            <option value="sales_manager">Sales Manager</option>
-                            <option value="sales_rep">Sales Representative</option>
+                            <option value="admin">ADMIN</option>
+                            <option value="sales_manager">SALES MANAGER</option>
+                            <option value="sales_rep">SALES REPRESENTATIVE</option>
                         </select>
                     )}
                 </div>

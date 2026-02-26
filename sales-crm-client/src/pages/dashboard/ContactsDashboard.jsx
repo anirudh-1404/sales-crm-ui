@@ -161,7 +161,7 @@ export default function ContactsDashboard() {
                 <StatCard label="Records Loaded" value={String(contacts.length)} sub="Showing recent" color="bg-orange-50 text-orange-600" icon={CalendarPlus} />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 items-start">
                 <div className="lg:col-span-3 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                     <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
                         <h2 className="font-bold text-gray-800">All Contacts</h2>
@@ -171,7 +171,7 @@ export default function ContactsDashboard() {
                                 className="w-full sm:w-64 text-sm border border-gray-200 rounded-lg pl-9 pr-3 py-1.5 focus:ring-2 focus:ring-red-400 bg-gray-50/50 focus:outline-none transition-all" />
                         </div>
                     </div>
-                    <div className="overflow-x-auto min-h-[300px]">
+                    <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-350px)] custom-scrollbar">
                         <table className="w-full text-sm">
                             <thead>
                                 <tr className="border-b border-gray-100 bg-gray-50">

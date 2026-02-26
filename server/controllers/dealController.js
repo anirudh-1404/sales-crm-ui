@@ -14,6 +14,10 @@ export const createDeal = async (req, res, next) => {
             return res.status(400).json({ message: "All required fields must be filled!" });
         }
 
+        const sanitizedCompanyId = companyId && companyId.trim() !== "" ? companyId : null;
+        const sanitizedContactId = contactId && contactId.trim() !== "" ? contactId : null;
+        const sanitizedOwnerId = req.body.ownerId && req.body.ownerId.trim() !== "" ? req.body.ownerId : userId;
+
         let dealData = {
             name, value,
             currency: currency || "USD",
@@ -23,15 +27,15 @@ export const createDeal = async (req, res, next) => {
             stageHistory: [{ stage: stage || "Lead", changedBy: userId }]
         };
 
-        if (companyId && contactId) {
+        if (sanitizedCompanyId && sanitizedContactId) {
             // ID-based flow — validate against DB
-            const company = await Company.findById(companyId);
+            const company = await Company.findById(sanitizedCompanyId);
             if (!company) return res.status(404).json({ message: "Company not found!" });
 
-            const contact = await Contact.findById(contactId);
+            const contact = await Contact.findById(sanitizedContactId);
             if (!contact) return res.status(404).json({ message: "Contact not found!" });
 
-            if (contact.companyId.toString() !== companyId) {
+            if (contact.companyId.toString() !== sanitizedCompanyId) {
                 return res.status(400).json({ message: "Contact does not belong to this company!" });
             }
 
@@ -50,8 +54,8 @@ export const createDeal = async (req, res, next) => {
                 }
             }
 
-            dealData.companyId = companyId;
-            dealData.contactId = contactId;
+            dealData.companyId = sanitizedCompanyId;
+            dealData.contactId = sanitizedContactId;
         } else {
             // Free-text flow — store plain names (sales_rep)
             dealData.companyName = companyName;
@@ -154,7 +158,12 @@ export const updateDealInformation = async (req, res, next) => {
 
         fields.forEach(field => {
             if (req.body[field] !== undefined) {
-                deal[field] = req.body[field];
+                let value = req.body[field];
+                // Sanitize ID fields
+                if (["companyId", "contactId", "ownerId"].includes(field) && typeof value === "string" && value.trim() === "") {
+                    value = null;
+                }
+                deal[field] = value;
             }
         });
 

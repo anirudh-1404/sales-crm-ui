@@ -40,7 +40,7 @@ export default function DeactivateModal({ isOpen, onClose, user, activeUsers, on
 
     const opts = activeUsers.filter(u => u._id !== user._id && u.isActive);
 
-    const fmtRole = (r) => ({ admin: "Admin", sales_manager: "Sales Manager", sales_rep: "Sales Representative" }[r] || r);
+    const fmtRole = (r) => ({ admin: "ADMIN", sales_manager: "SALES MANAGER", sales_rep: "SALES REPRESENTATIVE" }[r] || r?.toUpperCase());
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} title={title}>

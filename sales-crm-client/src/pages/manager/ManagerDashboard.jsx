@@ -139,14 +139,14 @@ export default function ManagerDashboard() {
 
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
                 <Card className="lg:col-span-3">
-                    <CardHeader title="Team Rep Performance">
+                    <CardHeader title="TEAM SALES REPRESENTATIVE PERFORMANCE">
                         <Select options={periodOptions} value={period} onChange={setPeriod} />
                     </CardHeader>
                     <div className="overflow-x-auto min-h-[200px]">
                         <table className="w-full text-sm">
                             <thead>
                                 <tr className="border-b border-gray-100 bg-gray-50">
-                                    {["Rep", "Total Deals", "Won", "Lost", "Pipeline Value", "Status"].map(h => (
+                                    {["REPRESENTATIVE", "TOTAL DEALS", "WON", "LOST", "PIPELINE VALUE", "STATUS"].map(h => (
                                         <th key={h} className="text-left px-4 py-3 text-gray-500 font-semibold text-xs uppercase tracking-wide">{h}</th>
                                     ))}
                                 </tr>
@@ -155,7 +155,7 @@ export default function ManagerDashboard() {
                                 {loading ? (
                                     <tr><td colSpan={6} className="text-center py-10 text-gray-400">Loading team performance...</td></tr>
                                 ) : repStats.length === 0 ? (
-                                    <tr><td colSpan={6} className="text-center py-10 text-gray-400">No Sales Representatives in your team yet.</td></tr>
+                                    <tr><td colSpan={6} className="text-center py-10 text-gray-400">NO SALES REPRESENTATIVES IN YOUR TEAM YET.</td></tr>
                                 ) : (
                                     repStats.map((rep) => (
                                         <tr key={rep._id} className="hover:bg-gray-50/50 transition-colors">
@@ -210,14 +210,14 @@ export default function ManagerDashboard() {
 
             {/* Won vs Lost per Rep */}
             <Card>
-                <CardHeader title="Won vs Lost per Rep">
+                <CardHeader title="WON VS LOST PER REPRESENTATIVE">
                     <Select options={periodOptions} value={period} onChange={setPeriod} />
                 </CardHeader>
                 <div className="p-5 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                     {loading ? (
                         <p className="text-center text-gray-400 text-sm col-span-4 py-6">Loading rep data...</p>
                     ) : repStats.length === 0 ? (
-                        <p className="text-center text-gray-400 text-sm col-span-4 py-6">No Sales Representatives found in your team.</p>
+                        <p className="text-center text-gray-400 text-sm col-span-4 py-6">NO SALES REPRESENTATIVES FOUND IN YOUR TEAM.</p>
                     ) : (
                         repStats.map((rep) => (
                             <div key={rep._id} className="flex flex-col items-center gap-3 p-4 rounded-xl bg-gray-50 border border-gray-100">

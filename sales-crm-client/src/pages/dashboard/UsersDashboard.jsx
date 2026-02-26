@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Users2, ShieldCheck, Briefcase, UserCheck, Edit2, RefreshCw, Plus, X, Search, Trash2 } from "lucide-react";
+import { Users2, ShieldCheck, Briefcase, UserCheck, Edit2, RefreshCw, Plus, X, Search, Trash2, Eye } from "lucide-react";
 import { getTeamUsers, deactivateUser, activateUser, bulkReassignRecords, softDeleteUser } from "../../../API/services/userService";
 import UserModal from "../../components/modals/UserModal";
+import UserDetailsModal from "../../components/modals/UserDetailsModal";
 import DeactivateModal from "../../components/modals/DeactivateModal";
 import ConfirmDialog from "../../components/modals/ConfirmDialog";
 import { toast } from "react-hot-toast";
@@ -31,7 +32,7 @@ const roleBadge = {
     sales_manager: "bg-purple-100 text-purple-700",
     sales_rep: "bg-blue-100 text-blue-700",
 };
-const formatRole = (r) => ({ admin: "Admin", sales_manager: "Sales Manager", sales_rep: "Sales Representative" }[r] || r);
+const formatRole = (r) => ({ admin: "ADMIN", sales_manager: "SALES MANAGER", sales_rep: "SALES REPRESENTATIVE" }[r] || r?.toUpperCase());
 const ModalOverlay = ({ children, onClose }) => (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4"
         style={{ background: "rgba(15,15,25,0.5)", backdropFilter: "blur(4px)" }}
@@ -128,6 +129,7 @@ export default function UsersDashboard() {
 
     // Modal state
     const [isUserModalOpen, setIsUserModalOpen] = useState(false);
+    const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
     const [isReassignModalOpen, setIsReassignModalOpen] = useState(false);
     const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -276,7 +278,7 @@ export default function UsersDashboard() {
                             className="w-full sm:w-64 text-sm border border-gray-200 rounded-lg pl-9 pr-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-red-400 bg-gray-50/50 transition-all" />
                     </div>
                 </div>
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-350px)] custom-scrollbar">
                     <table className="w-full text-sm">
                         <thead>
                             <tr className="border-b border-gray-100 bg-gray-50">
@@ -292,12 +294,16 @@ export default function UsersDashboard() {
                                 <tr><td colSpan={6} className="text-center py-10 text-gray-400">No users found.</td></tr>
                             ) : (
                                 filtered.map((u) => (
-                                    <tr key={u._id} className="hover:bg-gray-50/50 transition-colors group">
+                                    <tr
+                                        key={u._id}
+                                        className="hover:bg-gray-50/50 transition-colors group cursor-pointer"
+                                        onClick={() => { setSelectedUser(u); setIsDetailsModalOpen(true); }}
+                                    >
                                         <td className="px-4 py-3 whitespace-nowrap">
                                             <div className="flex items-center gap-3">
                                                 <Avatar name={`${u.firstName} ${u.lastName}`} />
                                                 <div>
-                                                    <p className="font-medium text-gray-800 leading-none">{u.firstName} {u.lastName}</p>
+                                                    <p className="font-bold text-gray-800 leading-none hover:text-red-600 transition-colors">{u.firstName} {u.lastName}</p>
                                                     <p className="text-xs text-gray-400 mt-0.5">{u.email}</p>
                                                 </div>
                                             </div>
@@ -324,8 +330,16 @@ export default function UsersDashboard() {
                                         <td className="px-4 py-3 text-gray-500 text-xs whitespace-nowrap">
                                             {u.lastLogin ? new Date(u.lastLogin).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "Never"}
                                         </td>
-                                        <td className="px-4 py-3 whitespace-nowrap">
+                                        <td className="px-4 py-3 whitespace-nowrap" onClick={e => e.stopPropagation()}>
                                             <div className="flex items-center gap-1.5">
+                                                {/* View Details */}
+                                                <button
+                                                    onClick={() => { setSelectedUser(u); setIsDetailsModalOpen(true); }}
+                                                    className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                                                    title="View profile details"
+                                                >
+                                                    <Eye size={15} />
+                                                </button>
                                                 {/* Edit */}
                                                 <button
                                                     onClick={() => { setSelectedUser(u); setIsUserModalOpen(true); }}
@@ -411,6 +425,11 @@ export default function UsersDashboard() {
                 user={selectedUser}
                 managers={potentialManagers}
                 onSaved={fetchUsers}
+            />
+            <UserDetailsModal
+                isOpen={isDetailsModalOpen}
+                onClose={() => setIsDetailsModalOpen(false)}
+                user={selectedUser}
             />
             <ReassignModal
                 isOpen={isReassignModalOpen}

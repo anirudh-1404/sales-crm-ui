@@ -218,14 +218,14 @@ export default function DealsDashboard() {
 
             {/* List View */}
             {viewMode === "list" && (
-                <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+                <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 items-start">
                     <Card className="lg:col-span-3 overflow-hidden">
                         <CardHeader title="All Recent Deals">
                             <button className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition">
                                 <MoreHorizontal size={18} />
                             </button>
                         </CardHeader>
-                        <div className="overflow-x-auto min-h-[300px]">
+                        <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-300px)] custom-scrollbar">
                             <table className="w-full text-sm">
                                 <thead>
                                     <tr className="border-b border-gray-100 bg-gray-50">
