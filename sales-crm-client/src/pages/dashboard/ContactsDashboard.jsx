@@ -161,8 +161,8 @@ export default function ContactsDashboard() {
                 <StatCard label="Records Loaded" value={String(contacts.length)} sub="Showing recent" color="bg-red-50 text-red-500" icon={CalendarPlus} />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 items-start">
-                <div className="lg:col-span-3 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+                <div className="lg:col-span-3 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden h-full flex flex-col">
                     <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
                         <h2 className="font-bold text-gray-800">All Contacts</h2>
                         <div className="relative">
@@ -226,7 +226,7 @@ export default function ContactsDashboard() {
                     </div>
                 </div>
 
-                <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+                <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-5 h-full flex flex-col">
                     <h3 className="font-bold text-gray-800 mb-4">Top Job Titles</h3>
                     <div className="space-y-4">
                         {jobTitles.length > 0 ? jobTitles.map((j, i) => {

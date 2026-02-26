@@ -218,8 +218,8 @@ export default function DealsDashboard() {
 
             {/* List View */}
             {viewMode === "list" && (
-                <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 items-start">
-                    <Card className="lg:col-span-3 overflow-hidden">
+                <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+                    <Card className="lg:col-span-3 overflow-hidden h-full flex flex-col">
                         <CardHeader title="All Recent Deals">
                             <button className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition">
                                 <MoreHorizontal size={18} />
@@ -280,7 +280,7 @@ export default function DealsDashboard() {
                         </div>
                     </Card>
 
-                    <Card className="lg:col-span-2">
+                    <Card className="lg:col-span-2 h-full flex flex-col">
                         <CardHeader title="Deals by Stage" />
                         <div className="p-5 space-y-4">
                             {stageData.map(s => {
