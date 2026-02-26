@@ -36,26 +36,61 @@ export default function AdminDashboard() {
         companies: 0,
         contacts: 0,
         users: 0,
-        totalValue: 0
+        totalValue: 0,
+        revenueChart: [
+            { name: 'Jan', value: 0 },
+            { name: 'Feb', value: 0 },
+            { name: 'Mar', value: 0 },
+            { name: 'Apr', value: 0 },
+            { name: 'May', value: 0 },
+            { name: 'Jun', value: 0 }
+        ],
+        pendingUsers: 0,
+        stagnantDeals: 0
     });
     const [loading, setLoading] = useState(true);
 
     const fetchStats = async () => {
         try {
             const [dealsRes, companiesRes, contactsRes, usersRes] = await Promise.all([
-                getDeals({ limit: 1 }),
+                getDeals({ limit: 1000 }),
                 getCompanies({ limit: 1 }),
                 getContacts({ limit: 1 }),
                 getTeamUsers()
             ]);
 
-            const dealsData = dealsRes.data;
+            const dealsData = dealsRes.data.data || [];
+            const totalValue = dealsData.reduce((sum, d) => sum + (d.value || 0), 0);
+
+            // Group by month for chart (last 6 months)
+            const months = [];
+            for (let i = 5; i >= 0; i--) {
+                const date = new Date();
+                date.setMonth(date.getMonth() - i);
+                months.push({
+                    name: date.toLocaleString('default', { month: 'short' }),
+                    value: 0
+                });
+            }
+
+            dealsData.forEach(d => {
+                const dDate = new Date(d.createdAt);
+                const monthName = dDate.toLocaleString('default', { month: 'short' });
+                const mIndex = months.findIndex(m => m.name === monthName);
+                if (mIndex !== -1) {
+                    months[mIndex].value += (d.value || 0);
+                }
+            });
+
             setStats({
-                deals: dealsData.total || 0,
+                deals: dealsRes.data.total || 0,
                 companies: companiesRes.data.total || 0,
                 contacts: contactsRes.data.total || 0,
                 users: usersRes.data.data?.length || 0,
-                totalValue: dealsData.data?.reduce((sum, d) => sum + (d.value || 0), 0) || 0
+                totalValue,
+                revenueChart: months,
+                pendingUsers: usersRes.data.data?.filter(u => !u.isSetupComplete)?.length || 0,
+                stagnantDeals: dealsData.filter(d => d.stage === 'Negotiation' && new Date(d.updatedAt) < new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)).length || 0
             });
         } catch (error) {
             console.error(error);
@@ -69,12 +104,14 @@ export default function AdminDashboard() {
         fetchStats();
     }, []);
 
+    const maxChartValue = Math.max(...stats.revenueChart.map(m => m.value), 1000);
+
     return (
         <div className="p-6 max-w-7xl mx-auto space-y-8">
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-                    <p className="text-gray-500 mt-1">Global performance and system health overview</p>
+                    <p className="text-gray-500 mt-1">Global sales performance and activity overview</p>
                 </div>
                 <div className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 shadow-sm">
                     <Calendar size={16} className="text-red-500" />
@@ -85,7 +122,7 @@ export default function AdminDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <OverviewStat
                     label="Total Revenue"
-                    value={`$${(stats.totalValue / 1000).toFixed(1)}K`}
+                    value={`$${(stats.totalValue / (stats.totalValue >= 1000000 ? 1000000 : 1000)).toFixed(1)}${stats.totalValue >= 1000000 ? 'M' : 'K'}`}
                     trend={12}
                     icon={DollarSign}
                     color="bg-red-50 text-red-600"
@@ -117,80 +154,64 @@ export default function AdminDashboard() {
                 <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
                     <div className="flex items-center justify-between mb-8">
                         <h2 className="text-lg font-bold text-gray-900">Revenue Analytics</h2>
-                        <select className="bg-gray-50 border-none text-sm font-bold text-gray-600 rounded-lg px-3 py-1.5 focus:ring-0">
-                            <option>Last 6 months</option>
-                            <option>Last year</option>
-                        </select>
+                        <div className="text-xs font-bold text-gray-400 uppercase tracking-widest">Revenue by Month</div>
                     </div>
                     <div className="h-64 flex items-end gap-3 px-2">
-                        {[40, 70, 45, 90, 65, 80].map((h, i) => (
-                            <div key={i} className="flex-1 flex flex-col items-center gap-3 group">
-                                <div
-                                    className="w-full bg-red-100 group-hover:bg-red-500 transition-colors duration-300 rounded-t-lg relative"
-                                    style={{ height: `${h}%` }}
-                                >
-                                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                                        ${h}k
+                        {stats.revenueChart.map((m, i) => {
+                            const h = (m.value / maxChartValue) * 100;
+                            return (
+                                <div key={i} className="flex-1 flex flex-col items-center gap-3 group">
+                                    <div
+                                        className="w-full bg-red-100 group-hover:bg-red-500 transition-colors duration-300 rounded-t-lg relative"
+                                        style={{ height: `${Math.max(h, 5)}%` }}
+                                    >
+                                        <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                                            ${m.value.toLocaleString()}
+                                        </div>
                                     </div>
+                                    <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+                                        {m.name}
+                                    </span>
                                 </div>
-                                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
-                                    {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'][i]}
-                                </span>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </div>
 
                 <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col">
-                    <h2 className="text-lg font-bold text-gray-900 mb-6">Network Status</h2>
+                    <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+                        <Activity size={20} className="text-red-500" />
+                        Action Items
+                    </h2>
                     <div className="flex-1 space-y-6">
-                        <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-green-500">
-                                <Zap size={20} />
-                            </div>
-                            <div className="flex-1">
-                                <div className="flex justify-between mb-1">
-                                    <span className="text-sm font-bold text-gray-700">API Health</span>
-                                    <span className="text-xs font-bold text-green-600">99.9%</span>
+                        <ul className="space-y-4">
+                            <li className="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100">
+                                <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-red-500">
+                                    <Users size={18} />
                                 </div>
-                                <div className="h-1.5 bg-gray-50 rounded-full overflow-hidden">
-                                    <div className="h-full bg-green-500 w-[99%]" />
+                                <div>
+                                    <p className="text-sm font-bold text-gray-800">{stats.pendingUsers} Pending Invites</p>
+                                    <p className="text-xs text-gray-500">Users who haven't set password</p>
                                 </div>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-500">
-                                <TrendingUp size={20} />
-                            </div>
-                            <div className="flex-1">
-                                <div className="flex justify-between mb-1">
-                                    <span className="text-sm font-bold text-gray-700">Storage</span>
-                                    <span className="text-xs font-bold text-blue-600">42%</span>
+                            </li>
+                            <li className="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100">
+                                <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-500">
+                                    <Briefcase size={18} />
                                 </div>
-                                <div className="h-1.5 bg-gray-50 rounded-full overflow-hidden">
-                                    <div className="h-full bg-blue-500 w-[42%]" />
+                                <div>
+                                    <p className="text-sm font-bold text-gray-800">{stats.stagnantDeals} Stagnant Deals</p>
+                                    <p className="text-xs text-gray-500">Inactive in Negotiation for 7+ days</p>
                                 </div>
+                            </li>
+                        </ul>
+                        <div className="mt-auto pt-6 border-t border-gray-50 bg-gray-50/30 -mx-6 -mb-6 p-6 rounded-b-2xl">
+                            <div className="flex items-center justify-between items-center">
+                                <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">System Health</span>
+                                <span className="text-xs font-bold text-green-500 bg-green-50 px-2 py-1 rounded-full uppercase">Operational</span>
                             </div>
-                        </div>
-                        <div className="mt-8 pt-6 border-t border-gray-50">
-                            <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
-                                <Activity size={16} className="text-red-500" />
-                                Action Items
-                            </h3>
-                            <ul className="space-y-3">
-                                <li className="flex items-center gap-2 text-xs text-gray-500">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
-                                    Review 5 pending user invitations
-                                </li>
-                                <li className="flex items-center gap-2 text-xs text-gray-500">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-orange-500" />
-                                    Check 2 stagnant deals in negotiation
-                                </li>
-                            </ul>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    );
+            );
 }
