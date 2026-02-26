@@ -145,95 +145,29 @@ const Login = () => {
     }
 
     return (
-        <section className="h-screen bg-gray-100 grid grid-cols-1 lg:grid-cols-2">
+        <section className="h-screen bg-gray-100 grid grid-cols-1 lg:grid-cols-2 overflow-hidden">
 
-            <div className="h-screen overflow-y-auto bg-white p-12">
-                <div className="w-full max-w-md mx-auto">
-                    <Logo />
-                    {rememberedUser ? (
-                        <div className="text-center">
-                            <div className="relative inline-block mb-4">
-                                <div className="w-24 h-24 rounded-full bg-red-100 flex items-center justify-center border-4 border-white shadow-lg overflow-hidden">
-                                    <span className="text-3xl font-bold text-red-600 uppercase">
-                                        {rememberedUser.firstName[0]}{rememberedUser.lastName[0]}
-                                    </span>
+            <div className="h-full bg-white px-8 py-6 flex flex-col overflow-hidden">
+                <div className="w-full max-w-md mx-auto flex-1 flex flex-col">
+                    <div className="py-4">
+                        <Logo />
+                    </div>
+
+                    <div className="flex-1 flex flex-col justify-center py-8">
+                        {rememberedUser ? (
+                            <div className="text-center w-full">
+                                <div className="relative inline-block mb-4">
+                                    <div className="w-24 h-24 rounded-full bg-red-100 flex items-center justify-center border-4 border-white shadow-lg overflow-hidden">
+                                        <span className="text-3xl font-bold text-red-600 uppercase">
+                                            {rememberedUser.firstName[0]}{rememberedUser.lastName[0]}
+                                        </span>
+                                    </div>
                                 </div>
-                            </div>
-                            <h2 className="text-2xl font-bold text-gray-800 mb-1">Welcome back!</h2>
-                            <p className="text-gray-600 mb-8 font-medium">{rememberedUser.firstName} {rememberedUser.lastName}</p>
+                                <h2 className="text-2xl font-bold text-gray-800 mb-1">Welcome back!</h2>
+                                <p className="text-gray-600 mb-8 font-medium">{rememberedUser.firstName} {rememberedUser.lastName}</p>
 
-                            <form onSubmit={handleSubmission} noValidate className="text-left">
-                                <div className="mb-6">
-                                    <input
-                                        type={showPassword ? "text" : "password"}
-                                        id="password"
-                                        name="password"
-                                        value={formData.password}
-                                        onChange={handleChange}
-                                        className={fieldClass("password")}
-                                        placeholder="Enter Your Password"
-                                        autoComplete="current-password"
-                                    />
-                                    {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
-                                </div>
-
-                                <button
-                                    type="submit"
-                                    disabled={submitting}
-                                    className={`w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-bold transition shadow-lg shadow-red-200 cursor-pointer ${submitting ? "opacity-50 cursor-not-allowed" : ""}`}
-                                >
-                                    {submitting ? "Logging In..." : "Log In"}
-                                </button>
-
-                                <div className="mt-8 text-center space-y-4">
-                                    <Link to="/forgot-password">
-                                        <button type="button" className="text-red-600 text-sm font-semibold hover:underline cursor-pointer block w-full">
-                                            Forgot Password?
-                                        </button>
-                                    </Link>
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            setRememberedUser(null);
-                                            setFormData({ email: "", password: "" });
-                                            localStorage.removeItem("rememberedUser");
-                                        }}
-                                        className="text-gray-500 text-sm hover:text-gray-800 transition font-medium cursor-pointer"
-                                    >
-                                        Not you? <span className="text-red-600 underline">Switch account</span>
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    ) : (
-                        <>
-                            <h2 className="text-3xl font-bold mb-2 text-gray-800">Sign In</h2>
-                            <p className="text-gray-500 mb-6">
-                                Access the CRM panel using your email and passcode
-                            </p>
-                            <form onSubmit={handleSubmission} noValidate>
-                                <div className="mb-5">
-                                    <label className="block mb-2 font-medium text-gray-700" htmlFor="email">
-                                        Email Address
-                                    </label>
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        id="email"
-                                        value={formData.email}
-                                        onChange={handleChange}
-                                        className={fieldClass("email")}
-                                        placeholder="you@example.com"
-                                        autoComplete="email"
-                                    />
-                                    {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
-                                </div>
-
-                                <div className="mb-4">
-                                    <label className="block mb-2 font-medium text-gray-700">
-                                        Password
-                                    </label>
-                                    <div className="relative">
+                                <form onSubmit={handleSubmission} noValidate className="text-left w-full">
+                                    <div className="mb-6">
                                         <input
                                             type={showPassword ? "text" : "password"}
                                             id="password"
@@ -241,56 +175,127 @@ const Login = () => {
                                             value={formData.password}
                                             onChange={handleChange}
                                             className={fieldClass("password")}
-                                            placeholder="••••••••"
+                                            placeholder="Enter Your Password"
                                             autoComplete="current-password"
                                         />
+                                        {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
+                                    </div>
+
+                                    <button
+                                        type="submit"
+                                        disabled={submitting}
+                                        className={`w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-bold transition shadow-lg shadow-red-200 cursor-pointer ${submitting ? "opacity-50 cursor-not-allowed" : ""}`}
+                                    >
+                                        {submitting ? "Logging In..." : "Log In"}
+                                    </button>
+
+                                    <div className="mt-8 text-center space-y-4">
+                                        <Link to="/forgot-password">
+                                            <button type="button" className="text-red-600 text-sm font-semibold hover:underline cursor-pointer block w-full">
+                                                Forgot Password?
+                                            </button>
+                                        </Link>
                                         <button
                                             type="button"
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
-                                            onClick={() => setShowPassword(!showPassword)}
+                                            onClick={() => {
+                                                setRememberedUser(null);
+                                                setFormData({ email: "", password: "" });
+                                                localStorage.removeItem("rememberedUser");
+                                            }}
+                                            className="text-gray-500 text-sm hover:text-gray-800 transition font-medium cursor-pointer"
                                         >
-                                            {showPassword ? <EyeOpen /> : <EyeOff />}
+                                            Not you? <span className="text-red-600 underline">Switch account</span>
                                         </button>
                                     </div>
-                                    {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
-                                </div>
-
-                                <div className="flex justify-between items-center mb-6 text-sm">
-                                    <label className="flex items-center gap-2 text-gray-600 cursor-pointer group">
+                                </form>
+                            </div>
+                        ) : (
+                            <div className="w-full">
+                                <h2 className="text-3xl font-bold mb-2 text-gray-800">Sign In</h2>
+                                <p className="text-gray-500 mb-6">
+                                    Access the CRM panel using your email and passcode
+                                </p>
+                                <form onSubmit={handleSubmission} noValidate>
+                                    <div className="mb-5">
+                                        <label className="block mb-2 font-medium text-gray-700" htmlFor="email">
+                                            Email Address
+                                        </label>
                                         <input
-                                            type="checkbox"
-                                            checked={rememberMe}
-                                            onChange={(e) => setRememberMe(e.target.checked)}
-                                            className="w-4 h-4 accent-red-600 cursor-pointer"
+                                            type="email"
+                                            name="email"
+                                            id="email"
+                                            value={formData.email}
+                                            onChange={handleChange}
+                                            className={fieldClass("email")}
+                                            placeholder="you@example.com"
+                                            autoComplete="email"
                                         />
-                                        <span className="group-hover:text-gray-900 transition font-medium">Remember me</span>
-                                    </label>
-                                    <Link to="/forgot-password">
-                                        <button type="button" className="text-red-600 font-semibold hover:underline cursor-pointer">
-                                            Forgot Password?
-                                        </button>
-                                    </Link>
-                                </div>
+                                        {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+                                    </div>
 
-                                <button
-                                    type="submit"
-                                    disabled={submitting}
-                                    className={`w-full bg-red-600 hover:bg-orange-400 text-white py-3 rounded-lg font-semibold transition duration-300 cursor-pointer shadow-lg shadow-red-100 ${submitting ? "opacity-50 cursor-not-allowed" : ""}`}
-                                >
-                                    {submitting ? "Signing In..." : "Sign In"}
-                                </button>
-                            </form>
-                        </>
-                    )}
+                                    <div className="mb-4">
+                                        <label className="block mb-2 font-medium text-gray-700">
+                                            Password
+                                        </label>
+                                        <div className="relative">
+                                            <input
+                                                type={showPassword ? "text" : "password"}
+                                                id="password"
+                                                name="password"
+                                                value={formData.password}
+                                                onChange={handleChange}
+                                                className={fieldClass("password")}
+                                                placeholder="••••••••"
+                                                autoComplete="current-password"
+                                            />
+                                            <button
+                                                type="button"
+                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
+                                                onClick={() => setShowPassword(!showPassword)}
+                                            >
+                                                {showPassword ? <EyeOpen /> : <EyeOff />}
+                                            </button>
+                                        </div>
+                                        {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
+                                    </div>
+
+                                    <div className="flex justify-between items-center mb-6 text-sm">
+                                        <label className="flex items-center gap-2 text-gray-600 cursor-pointer group">
+                                            <input
+                                                type="checkbox"
+                                                checked={rememberMe}
+                                                onChange={(e) => setRememberMe(e.target.checked)}
+                                                className="w-4 h-4 accent-red-600 cursor-pointer"
+                                            />
+                                            <span className="group-hover:text-gray-900 transition font-medium">Remember me</span>
+                                        </label>
+                                        <Link to="/forgot-password">
+                                            <button type="button" className="text-red-600 font-semibold hover:underline cursor-pointer">
+                                                Forgot Password?
+                                            </button>
+                                        </Link>
+                                    </div>
+
+                                    <button
+                                        type="submit"
+                                        disabled={submitting}
+                                        className={`w-full bg-red-600 hover:bg-orange-400 text-white py-3 rounded-lg font-semibold transition duration-300 cursor-pointer shadow-lg shadow-red-100 ${submitting ? "opacity-50 cursor-not-allowed" : ""}`}
+                                    >
+                                        {submitting ? "Signing In..." : "Sign In"}
+                                    </button>
+                                </form>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="text-center py-4 border-t border-gray-50 mt-auto">
+                        <p className="text-gray-500 text-sm mb-0">Copyright &copy; mbdConsulting</p>
+                    </div>
                 </div>
             </div>
 
             <div className="hidden lg:block h-screen p-3">
-                <img src={loginBg} alt="login-img" className="w-full h-full object-cover rounded-lg" />
-            </div>
-
-            <div className="text-center pb-4">
-                <p className="text-black mb-0">Copyright &copy; mbdConsulting</p>
+                <img src={loginBg} alt="login-img" className="w-full h-full object-cover rounded-xl" />
             </div>
 
         </section>

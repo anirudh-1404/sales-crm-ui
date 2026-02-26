@@ -81,14 +81,15 @@ const Resetpassword = () => {
         }`;
 
     return (
-        <section className="h-screen bg-gray-100 grid grid-cols-1 lg:grid-cols-2">
+        <section className="h-screen bg-gray-100 grid grid-cols-1 lg:grid-cols-2 overflow-hidden">
 
-            <div className="h-screen overflow-y-auto bg-white p-12 flex flex-col">
+            <div className="h-full bg-white px-8 py-6 flex flex-col overflow-hidden">
                 <div className="w-full max-w-md mx-auto flex-1 flex flex-col">
+                    <div className="py-4">
+                        <Logo />
+                    </div>
 
-                    <Logo />
-
-                    <div className="flex-1 flex flex-col justify-center">
+                    <div className="flex-1 flex flex-col justify-center py-8">
                         <h2 className="text-2xl font-bold mb-1 text-gray-800">Reset Password</h2>
                         <p className="text-gray-500 text-sm mb-6">
                             Choose a strong new password for your account
@@ -159,14 +160,14 @@ const Resetpassword = () => {
                         </p>
                     </div>
 
-                    <div className="text-center py-4">
+                    <div className="text-center py-4 border-t border-gray-50 mt-auto">
                         <p className="text-gray-500 text-sm mb-0">Copyright &copy; mbdConsulting</p>
                     </div>
                 </div>
             </div>
 
             <div className="hidden lg:block h-screen p-3">
-                <img src={resetBg} alt="reset-password-img" className="w-full h-full object-cover rounded-lg" />
+                <img src={resetBg} alt="reset-password-img" className="w-full h-full object-cover rounded-xl" />
             </div>
 
         </section>
