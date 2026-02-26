@@ -4,8 +4,12 @@ import { getDeals, createDeal, updateDeal, deleteDeal, updateDealStage } from ".
 import { getCompanies } from "../../../API/services/companyService";
 import { getContacts } from "../../../API/services/contactService";
 import DealModal from "../../components/modals/DealModal";
+import DealDetailsModal from "../../components/modals/DealDetailsModal";
+import CompanyDetailsModal from "../../components/modals/CompanyDetailsModal";
+import ContactDetailsModal from "../../components/modals/ContactDetailsModal";
 import DeleteConfirmModal from "../../components/modals/DeleteConfirmModal";
 import { toast } from "react-hot-toast";
+import { Eye } from "lucide-react";
 
 const Select = ({ options, value, onChange }) => (
     <div className="relative">
@@ -54,8 +58,13 @@ export default function ManagerDeals() {
     const [period, setPeriod] = useState("Last 30 Days");
 
     const [isDealModalOpen, setIsDealModalOpen] = useState(false);
+    const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+    const [isCompanyDetailsOpen, setIsCompanyDetailsOpen] = useState(false);
+    const [isContactDetailsOpen, setIsContactDetailsOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedDeal, setSelectedDeal] = useState(null);
+    const [selectedCompany, setSelectedCompany] = useState(null);
+    const [selectedContact, setSelectedContact] = useState(null);
 
     const fetchData = async () => {
         setLoading(true);
@@ -176,10 +185,25 @@ export default function ManagerDeals() {
                             ) : (
                                 deals.map((d) => (
                                     <tr key={d._id} className="hover:bg-gray-50/50 transition-colors group">
-                                        <td className="px-4 py-3 font-medium text-gray-800 whitespace-nowrap">{d.name}</td>
+                                        <td className="px-4 py-3 font-medium text-gray-800 whitespace-nowrap cursor-pointer hover:text-red-600 transition-colors"
+                                            onClick={() => { setSelectedDeal(d); setIsDetailsModalOpen(true); }}>
+                                            {d.name}
+                                        </td>
                                         <td className="px-4 py-3 text-red-600 font-bold whitespace-nowrap">{d.ownerId?.firstName || "Unknown"}</td>
-                                        <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{d.companyId?.name || d.companyName || "—"}</td>
-                                        <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{d.contactId ? `${d.contactId.firstName} ${d.contactId.lastName}`.trim() : (d.contactName || "—")}</td>
+                                        <td className="px-4 py-3 text-gray-500 whitespace-nowrap cursor-pointer hover:text-red-600 transition-colors"
+                                            onClick={() => {
+                                                const comp = companies.find(c => c._id === (d.companyId?._id || d.companyId));
+                                                if (comp) { setSelectedCompany(comp); setIsCompanyDetailsOpen(true); }
+                                            }}>
+                                            {d.companyId?.name || d.companyName || "—"}
+                                        </td>
+                                        <td className="px-4 py-3 text-gray-500 whitespace-nowrap cursor-pointer hover:text-red-600 transition-colors"
+                                            onClick={() => {
+                                                const cont = contacts.find(c => c._id === (d.contactId?._id || d.contactId));
+                                                if (cont) { setSelectedContact(cont); setIsContactDetailsOpen(true); }
+                                            }}>
+                                            {d.contactId ? `${d.contactId.firstName} ${d.contactId.lastName}`.trim() : (d.contactName || "—")}
+                                        </td>
                                         <td className="px-4 py-3">
                                             <select
                                                 value={d.stage}
@@ -195,6 +219,13 @@ export default function ManagerDeals() {
                                         <td className="px-4 py-3 text-gray-500 text-xs whitespace-nowrap">{d.expectedCloseDate ? new Date(d.expectedCloseDate).toLocaleDateString() : "—"}</td>
                                         <td className="px-4 py-3 whitespace-nowrap">
                                             <div className="flex items-center gap-2">
+                                                <button
+                                                    onClick={() => { setSelectedDeal(d); setIsDetailsModalOpen(true); }}
+                                                    title="View details"
+                                                    className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                                                >
+                                                    <Eye size={16} />
+                                                </button>
                                                 <button
                                                     onClick={() => { setSelectedDeal(d); setIsDealModalOpen(true); }}
                                                     className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
@@ -224,6 +255,24 @@ export default function ManagerDeals() {
                 onSave={handleSaveDeal}
                 companies={companies}
                 contacts={contacts}
+            />
+
+            <DealDetailsModal
+                isOpen={isDetailsModalOpen}
+                onClose={() => setIsDetailsModalOpen(false)}
+                deal={selectedDeal}
+            />
+
+            <CompanyDetailsModal
+                isOpen={isCompanyDetailsOpen}
+                onClose={() => setIsCompanyDetailsOpen(false)}
+                company={selectedCompany}
+            />
+
+            <ContactDetailsModal
+                isOpen={isContactDetailsOpen}
+                onClose={() => setIsContactDetailsOpen(false)}
+                contact={selectedContact}
             />
 
             <DeleteConfirmModal

@@ -3,8 +3,10 @@ import { Users, Building2, Users2, ChevronDown, Plus, Edit2, Trash2, Search, Lin
 import { getContacts, createContact, updateContact, deleteContact } from "../../../API/services/contactService";
 import { getCompanies } from "../../../API/services/companyService";
 import ContactModal from "../../components/modals/ContactModal";
+import ContactDetailsModal from "../../components/modals/ContactDetailsModal";
 import DeleteConfirmModal from "../../components/modals/DeleteConfirmModal";
 import { toast } from "react-hot-toast";
+import { Eye } from "lucide-react";
 
 const Card = ({ children, className = "" }) => (
     <div className={`bg-white rounded-xl border border-gray-100 shadow-sm ${className}`}>{children}</div>
@@ -45,6 +47,7 @@ export default function ManagerContacts() {
 
     // Modal states
     const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+    const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedContact, setSelectedContact] = useState(null);
 
@@ -166,10 +169,11 @@ export default function ManagerContacts() {
                                 contacts.map((c) => (
                                     <tr key={c._id} className="hover:bg-gray-50/50 transition-colors group">
                                         <td className="px-4 py-3">
-                                            <div className="flex items-center gap-3">
+                                            <div className="flex items-center gap-3 cursor-pointer group/item"
+                                                onClick={() => { setSelectedContact(c); setIsDetailsModalOpen(true); }}>
                                                 <Avatar name={`${c.firstName} ${c.lastName}`} />
                                                 <div>
-                                                    <p className="font-medium text-gray-800 leading-none">{c.firstName} {c.lastName}</p>
+                                                    <p className="font-medium text-gray-800 leading-none group-hover/item:text-red-600 transition-colors uppercase text-[11px] font-bold">{c.firstName} {c.lastName}</p>
                                                     <p className="text-xs text-gray-400 mt-0.5">{c.email}</p>
                                                 </div>
                                             </div>
@@ -190,6 +194,13 @@ export default function ManagerContacts() {
                                         </td>
                                         <td className="px-4 py-3">
                                             <div className="flex items-center gap-2">
+                                                <button
+                                                    onClick={() => { setSelectedContact(c); setIsDetailsModalOpen(true); }}
+                                                    title="View details"
+                                                    className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                                                >
+                                                    <Eye size={16} />
+                                                </button>
                                                 <button
                                                     onClick={() => { setSelectedContact(c); setIsContactModalOpen(true); }}
                                                     className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
@@ -218,6 +229,12 @@ export default function ManagerContacts() {
                 contact={selectedContact}
                 onSave={handleSaveContact}
                 companies={companies}
+            />
+
+            <ContactDetailsModal
+                isOpen={isDetailsModalOpen}
+                onClose={() => setIsDetailsModalOpen(false)}
+                contact={selectedContact}
             />
 
             <DeleteConfirmModal
