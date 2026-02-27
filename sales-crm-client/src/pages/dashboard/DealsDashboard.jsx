@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
     Briefcase, Zap, CheckCircle2, DollarSign,
