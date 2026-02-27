@@ -116,7 +116,7 @@ export default function CompanyDetailsModal({ isOpen, onClose, company }) {
                             <div className="flex flex-col p-3 bg-red-50/50 rounded-xl border border-red-100/50">
                                 <span className="text-xs text-red-400 font-bold uppercase tracking-tighter mb-1">Strategic Owner</span>
                                 <span className="text-sm font-bold text-red-700">
-                                    {company.ownerId ? `${company.ownerId.firstName || ""} ${company.ownerId.lastName || ""}`.trim() : "System Unassigned"}
+                                    {company.ownerId ? `${company.ownerId.firstName || ""} ${company.ownerId.lastName || ""}`.trim() : "Not Assigned"}
                                 </span>
                                 <span className="text-[10px] text-red-400/80 italic mt-0.5">{company.ownerId?.email || "No contact info"}</span>
                             </div>

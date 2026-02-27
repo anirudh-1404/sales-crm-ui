@@ -144,7 +144,7 @@ export default function ContactDetails() {
                             <label className="text-gray-400 block mb-1">Owner</label>
                             <div className="flex items-center gap-2 font-medium text-gray-900">
                                 <User size={16} className="text-red-400" />
-                                {contact.ownerId?.firstName} {contact.ownerId?.lastName}
+                                {contact.ownerId ? `${contact.ownerId.firstName} ${contact.ownerId.lastName}` : "Not Assigned"}
                             </div>
                         </div>
                     </div>

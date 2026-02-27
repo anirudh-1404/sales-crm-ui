@@ -176,7 +176,7 @@ export default function CompanyDetails() {
                 {/* Metadata */}
                 <div className="bg-gray-50/50 px-6 py-3 border-t border-gray-50 flex flex-wrap items-center justify-between text-[11px] text-gray-400">
                     <div className="flex items-center gap-4">
-                        <span className="flex items-center gap-1"><Clock size={12} /> Managed by: {company.ownerId?.firstName} {company.ownerId?.lastName}</span>
+                        <span className="flex items-center gap-1"><Clock size={12} /> Managed by: {company.ownerId ? `${company.ownerId.firstName} ${company.ownerId.lastName}` : "Not Assigned"}</span>
                         <span className="flex items-center gap-1"><Calendar size={12} /> Registry Date: {formatDate(company.createdAt)}</span>
                     </div>
                     <span className="uppercase tracking-wider">REF: {company._id}</span>

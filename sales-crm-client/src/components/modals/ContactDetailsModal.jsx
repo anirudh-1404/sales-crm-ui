@@ -105,7 +105,7 @@ export default function ContactDetailsModal({ isOpen, onClose, contact }) {
                             <div className="flex flex-col p-4 bg-red-50/50 rounded-2xl border border-red-100/50">
                                 <span className="text-[10px] text-red-500 font-bold uppercase tracking-tighter mb-1">Assigned Manager</span>
                                 <span className="text-sm font-bold text-red-700">
-                                    {`${contact.ownerId?.firstName || ""} ${contact.ownerId?.lastName || ""}`.trim() || "Unassigned"}
+                                    {`${contact.ownerId?.firstName || ""} ${contact.ownerId?.lastName || ""}`.trim() || "Not Assigned"}
                                 </span>
                                 <span className="text-[10px] text-red-400/80 italic mt-0.5">{contact.ownerId?.email}</span>
                             </div>

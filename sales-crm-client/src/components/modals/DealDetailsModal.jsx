@@ -138,7 +138,7 @@ export default function DealDetailsModal({ isOpen, onClose, deal }) {
                             <div className="flex flex-col p-4 bg-red-50/50 rounded-2xl border border-red-100/50">
                                 <span className="text-[10px] text-red-500 font-bold uppercase tracking-tighter mb-1">Assigned Executive</span>
                                 <span className="text-sm font-bold text-red-700">
-                                    {`${deal.ownerId?.firstName || ""} ${deal.ownerId?.lastName || ""}`.trim() || "Unassigned"}
+                                    {`${deal.ownerId?.firstName || ""} ${deal.ownerId?.lastName || ""}`.trim() || "Not Assigned"}
                                 </span>
                                 <span className="text-[10px] text-red-400/80 italic mt-0.5">Strategic Account Unit</span>
                             </div>
