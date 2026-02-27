@@ -126,25 +126,26 @@ export default function GlobalSearch({ isOpen, onClose }) {
                                 <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Deals</span>
                                 <span className="ml-auto text-xs text-gray-400">{results.deals.length} result{results.deals.length > 1 ? "s" : ""}</span>
                             </div>
-                            <div
-                                key={d._id}
-                                className="px-4 py-3 hover:bg-red-50 cursor-pointer border-b border-gray-50 transition-colors"
-                                onClick={() => {
-                                    navigate(`/dashboard/deals/${d._id}`);
-                                    onClose();
-                                }}
-                            >
-                                <div className="flex items-center justify-between gap-3">
-                                    <div className="min-w-0">
-                                        <p className="text-sm font-medium text-gray-800 truncate">{d.name}</p>
-                                        <p className="text-xs text-gray-400 mt-0.5">{d.companyId?.name || "No company"}</p>
-                                    </div>
-                                    <div className="flex-shrink-0 flex items-center gap-2">
-                                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${stageBadge[d.stage] || "bg-gray-100 text-gray-600"}`}>{d.stage}</span>
-                                        <span className="text-xs font-semibold text-gray-700">${d.value?.toLocaleString()}</span>
+                            {results.deals.map(d => (
+                                <div
+                                    key={d._id}
+                                    className="px-4 py-3 hover:bg-red-50 cursor-pointer border-b border-gray-50 transition-colors"
+                                    onClick={() => {
+                                        navigate(`/dashboard/deals/${d._id}`);
+                                        onClose();
+                                    }}
+                                >
+                                    <div className="flex items-center justify-between gap-3">
+                                        <div className="min-w-0">
+                                            <p className="text-sm font-medium text-gray-800 truncate">{d.name}</p>
+                                            <p className="text-xs text-gray-400 mt-0.5">{d.companyId?.name || "No company"}</p>
+                                        </div>
+                                        <div className="flex-shrink-0 flex items-center gap-2">
+                                            <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${stageBadge[d.stage] || "bg-gray-100 text-gray-600"}`}>{d.stage}</span>
+                                            <span className="text-xs font-semibold text-gray-700">${d.value?.toLocaleString()}</span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
                             ))}
                         </div>
                     )}
