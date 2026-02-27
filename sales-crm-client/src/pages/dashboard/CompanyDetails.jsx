@@ -7,7 +7,7 @@ import {
     ChevronRight, Download, RotateCw, Maximize2,
     Star, Layers, Users, Target, Info, DollarSign,
     MoreHorizontal, List, FileText, Paperclip,
-    Loader2, ExternalLink
+    Loader2, ExternalLink, History
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -37,7 +37,6 @@ export default function CompanyDetails() {
     const navigate = useNavigate();
     const [company, setCompany] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState("Activities");
 
     useEffect(() => {
         const fetchCompany = async () => {
@@ -233,76 +232,55 @@ export default function CompanyDetails() {
                         </div>
                     </div>
 
-                    {/* Tabs Section */}
-                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                        <div className="px-6 flex items-center gap-8 border-b border-gray-50 h-14 overflow-x-auto no-scrollbar">
-                            {[
-                                { id: "Activities", icon: Clock },
-                                { id: "Intelligence", icon: FileText },
-                                { id: "Relationships", icon: Users },
-                                { id: "Opportunities", icon: Target },
-                                { id: "Files", icon: Paperclip }
-                            ].map((tab) => (
-                                <button
-                                    key={tab.id}
-                                    onClick={() => setActiveTab(tab.id)}
-                                    className={`
-                                        flex items-center gap-2 h-full text-xs font-bold transition-all relative border-b-2
-                                        ${activeTab === tab.id ? "text-red-600 border-red-600" : "text-gray-400 border-transparent hover:text-gray-600"}
-                                    `}
-                                >
-                                    <tab.icon size={14} />
-                                    {tab.id}
-                                </button>
-                            ))}
+                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden min-h-[400px]">
+                        <div className="px-6 h-14 border-b border-gray-50 flex items-center justify-between">
+                            <h3 className="text-sm font-black text-gray-900 uppercase tracking-wider">Corporate Remarks</h3>
+                            <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest bg-gray-50 px-2.5 py-1 rounded-full">
+                                <Clock size={12} className="text-red-400" /> Operational Status
+                            </div>
                         </div>
 
-                        {/* Tab Content */}
-                        <div className="p-6">
-                            {activeTab === "Activities" && (
-                                <div className="space-y-6">
-                                    <div className="flex items-center justify-between">
-                                        <h4 className="text-base font-black text-gray-900">Corporate Activity</h4>
-                                        <button className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 border border-gray-100 rounded-lg text-xs font-bold text-gray-600 hover:bg-gray-100 transition-all">
-                                            <List size={14} className="text-gray-400" />
-                                            Sort
-                                        </button>
-                                    </div>
+                        <div className="p-8 space-y-8">
+                            {/* Narratives/Intel */}
+                            <div className="space-y-4">
+                                <div className="flex items-center gap-2 text-[10px] font-black text-red-500 uppercase tracking-[0.2em]">
+                                    <FileText size={10} /> Operational Intel
+                                </div>
+                                <div className="p-6 bg-gray-50/50 rounded-2xl border border-gray-100 text-[13px] text-gray-600 leading-relaxed italic whitespace-pre-wrap shadow-inner">
+                                    {company.notes || "No operational intelligence or interaction notes recorded for this organization yet."}
+                                </div>
+                            </div>
 
-                                    {/* Activity Feed */}
-                                    <div className="space-y-6">
-                                        <div className="flex items-start gap-4 p-4 border border-gray-100 rounded-xl hover:bg-gray-50/50 transition-colors">
-                                            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shadow-sm">
-                                                <Building2 size={18} />
-                                            </div>
-                                            <div className="space-y-1">
-                                                <p className="text-sm font-bold text-gray-800">Company record registered in CRM system</p>
-                                                <p className="text-[10px] text-gray-400 font-medium">{formatDate(company.createdAt, true)}</p>
-                                            </div>
+                            {/* Activity Feed */}
+                            <div className="space-y-6 pt-6 border-t border-gray-50">
+                                <div className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
+                                    <History size={10} /> System Interactions
+                                </div>
+
+                                <div className="space-y-6">
+                                    <div className="flex items-start gap-4 p-4 border border-gray-50/50 rounded-xl bg-gray-50/20 hover:bg-gray-50 transition-colors group">
+                                        <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shadow-sm border-2 border-white transition-transform group-hover:rotate-12">
+                                            <Building2 size={18} />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <p className="text-sm font-bold text-gray-800">Company node registered in Registry</p>
+                                            <p className="text-[10px] text-gray-400 font-medium">{formatDate(company.createdAt, true)}</p>
                                         </div>
                                     </div>
                                 </div>
-                            )}
+                            </div>
 
-                            {activeTab === "Intelligence" && (
-                                <div className="space-y-4">
-                                    <h4 className="text-base font-black text-gray-900">Account Intel</h4>
-                                    <div className="p-5 bg-gray-50 border border-gray-100 rounded-2xl text-[13px] text-gray-600 leading-relaxed italic whitespace-pre-wrap">
-                                        {company.notes || "No operational intelligence recorded for this organization."}
-                                    </div>
+                            {/* Cross-Linking Stats */}
+                            <div className="pt-8 grid grid-cols-2 gap-4">
+                                <div className="flex items-center gap-3 p-4 rounded-xl bg-gray-50/50 border border-gray-100/50">
+                                    <Target size={14} className="text-gray-300" />
+                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">0 Opportunities Open</span>
                                 </div>
-                            )}
-
-                            {/* Placeholders */}
-                            {["Relationships", "Opportunities", "Files"].includes(activeTab) && (
-                                <div className="py-20 text-center">
-                                    <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
-                                        {activeTab === "Relationships" ? <Users size={30} /> : activeTab === "Opportunities" ? <Target size={30} /> : <Paperclip size={30} />}
-                                    </div>
-                                    <p className="text-sm font-bold text-gray-400 font-black uppercase tracking-widest">Secure Environment</p>
-                                    <p className="text-xs text-gray-300 mt-2">No active {activeTab.toLowerCase()} data point found for this node.</p>
+                                <div className="flex items-center gap-3 p-4 rounded-xl bg-gray-50/50 border border-gray-100/50">
+                                    <Users size={14} className="text-gray-300" />
+                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Multiple Stakeholders Linked</span>
                                 </div>
-                            )}
+                            </div>
                         </div>
                     </div>
                 </div>

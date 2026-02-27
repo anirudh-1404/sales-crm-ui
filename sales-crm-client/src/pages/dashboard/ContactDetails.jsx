@@ -38,7 +38,6 @@ export default function ContactDetails() {
     const navigate = useNavigate();
     const [contact, setContact] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState("Activities");
 
     useEffect(() => {
         const fetchContact = async () => {
@@ -190,85 +189,64 @@ export default function ContactDetails() {
 
                 {/* Right Column - Activities & Notes */}
                 <div className="lg:col-span-8 space-y-8">
-                    {/* Tabs Section */}
-                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                        <div className="px-6 flex items-center gap-8 border-b border-gray-50 h-14 overflow-x-auto no-scrollbar">
-                            {[
-                                { id: "Activities", icon: Clock },
-                                { id: "Notes", icon: FileText },
-                                { id: "Tasks", icon: List },
-                                { id: "Files", icon: Paperclip },
-                                { id: "Emails", icon: Mail }
-                            ].map((tab) => (
-                                <button
-                                    key={tab.id}
-                                    onClick={() => setActiveTab(tab.id)}
-                                    className={`
-                                        flex items-center gap-2 h-full text-xs font-bold transition-all relative border-b-2
-                                        ${activeTab === tab.id ? "text-red-600 border-red-600" : "text-gray-400 border-transparent hover:text-gray-600"}
-                                    `}
-                                >
-                                    <tab.icon size={14} />
-                                    {tab.id}
-                                </button>
-                            ))}
+                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden min-h-[400px]">
+                        <div className="px-6 h-14 border-b border-gray-50 flex items-center justify-between">
+                            <h3 className="text-sm font-black text-gray-900 uppercase tracking-wider">Remarks & Intel</h3>
+                            <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest bg-gray-50 px-2.5 py-1 rounded-full">
+                                <Clock size={12} className="text-red-400" /> Latest Update
+                            </div>
                         </div>
 
-                        {/* Tab Content */}
-                        <div className="p-6">
-                            {activeTab === "Activities" && (
-                                <div className="space-y-6">
-                                    <div className="flex items-center justify-between">
-                                        <h4 className="text-base font-black text-gray-900">Recent Interactions</h4>
-                                        <button className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 border border-gray-100 rounded-lg text-xs font-bold text-gray-600 hover:bg-gray-100 transition-all">
-                                            <List size={14} className="text-gray-400" />
-                                            Filter
-                                        </button>
-                                    </div>
+                        <div className="p-8 space-y-8">
+                            {/* Narratives/Notes */}
+                            <div className="space-y-4">
+                                <div className="flex items-center gap-2 text-[10px] font-black text-red-500 uppercase tracking-[0.2em]">
+                                    <FileText size={10} /> Interaction Notes
+                                </div>
+                                <div className="p-6 bg-gray-50/50 rounded-2xl border border-gray-100 text-[13px] text-gray-600 leading-relaxed italic whitespace-pre-wrap shadow-inner">
+                                    {contact.notes || "No operational intelligence or interaction notes recorded for this contact yet. Click edit to add context."}
+                                </div>
+                            </div>
 
-                                    {/* Activity Feed */}
-                                    <div className="space-y-6 relative before:absolute before:left-5 before:top-2 before:bottom-0 before:w-0.5 before:bg-gray-100">
-                                        <div className="relative pl-12">
-                                            <div className="absolute left-0 top-0 w-10 h-10 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center border-2 border-white shadow-sm z-10">
-                                                <Mail size={18} />
-                                            </div>
-                                            <div className="space-y-1">
-                                                <p className="text-sm font-bold text-gray-800">Email sent regarding upcoming meeting</p>
-                                                <p className="text-[10px] text-gray-400 font-medium">{formatDate(contact.updatedAt, true)}</p>
-                                            </div>
+                            {/* Simplified Activity Feed as Remarks */}
+                            <div className="space-y-6 pt-6 border-t border-gray-50">
+                                <div className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
+                                    <History size={10} /> Recent Activities
+                                </div>
+
+                                <div className="space-y-6 relative before:absolute before:left-5 before:top-2 before:bottom-0 before:w-px before:bg-gray-100">
+                                    <div className="relative pl-12 group">
+                                        <div className="absolute left-0 top-0 w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center border-2 border-white shadow-sm z-10 transition-transform group-hover:scale-110">
+                                            <Mail size={18} />
                                         </div>
-                                        <div className="relative pl-12">
-                                            <div className="absolute left-0 top-0 w-10 h-10 bg-green-50 text-green-600 rounded-lg flex items-center justify-center border-2 border-white shadow-sm z-10">
-                                                <User size={18} />
-                                            </div>
-                                            <div className="space-y-1">
-                                                <p className="text-sm font-bold text-gray-800">Contact profile updated by system</p>
-                                                <p className="text-[10px] text-gray-400 font-medium">{formatDate(contact.createdAt, true)}</p>
-                                            </div>
+                                        <div className="space-y-1">
+                                            <p className="text-sm font-bold text-gray-800">Email sent regarding upcoming meeting</p>
+                                            <p className="text-[10px] text-gray-400 font-medium">{formatDate(contact.updatedAt, true)}</p>
                                         </div>
                                     </div>
-                                </div>
-                            )}
-
-                            {activeTab === "Notes" && (
-                                <div className="space-y-4">
-                                    <h4 className="text-base font-black text-gray-900">Personal Intelligence</h4>
-                                    <div className="p-5 bg-gray-50 border border-gray-100 rounded-2xl text-[13px] text-gray-600 leading-relaxed italic whitespace-pre-wrap">
-                                        {contact.notes || "No interaction notes recorded for this contact."}
+                                    <div className="relative pl-12 group">
+                                        <div className="absolute left-0 top-0 w-10 h-10 bg-green-50 text-green-600 rounded-xl flex items-center justify-center border-2 border-white shadow-sm z-10 transition-transform group-hover:scale-110">
+                                            <User size={18} />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <p className="text-sm font-bold text-gray-800">Contact profile updated by system</p>
+                                            <p className="text-[10px] text-gray-400 font-medium">{formatDate(contact.createdAt, true)}</p>
+                                        </div>
                                     </div>
                                 </div>
-                            )}
+                            </div>
 
-                            {/* Placeholders for others */}
-                            {["Tasks", "Files", "Emails"].includes(activeTab) && (
-                                <div className="py-16 text-center">
-                                    <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
-                                        {activeTab === "Tasks" ? <List size={30} /> : activeTab === "Files" ? <Paperclip size={30} /> : <Mail size={30} />}
-                                    </div>
-                                    <p className="text-sm font-bold text-gray-400">Vault reaches here</p>
-                                    <p className="text-xs text-gray-300 mt-1">No {activeTab} linked to this profile yet.</p>
+                            {/* Meta Placeholder for Files/Calls */}
+                            <div className="pt-8 grid grid-cols-2 gap-4">
+                                <div className="flex items-center gap-3 p-4 rounded-xl bg-gray-50/50 border border-gray-100/50">
+                                    <Paperclip size={14} className="text-gray-300" />
+                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">0 Documents Linked</span>
                                 </div>
-                            )}
+                                <div className="flex items-center gap-3 p-4 rounded-xl bg-gray-50/50 border border-gray-100/50">
+                                    <Phone size={14} className="text-gray-300" />
+                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">0 Calls Logged</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -7,7 +7,7 @@ import {
     TrendingUp, ArrowLeft, Tag, Share2, Loader2,
     Star, RotateCw, Maximize2, Lock, ThumbsUp,
     MoreHorizontal, Download, ChevronRight,
-    MapPin, Mail, Phone, FileText, Paperclip, List
+    MapPin, Mail, Phone, FileText, Paperclip, List, History
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -39,7 +39,6 @@ export default function DealDetails() {
     const navigate = useNavigate();
     const [deal, setDeal] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState("Activities");
 
     useEffect(() => {
         const fetchDeal = async () => {
@@ -269,80 +268,63 @@ export default function DealDetails() {
                         </div>
                     </div>
 
-                    {/* Tabs Section */}
-                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                        <div className="px-6 flex items-center gap-8 border-b border-gray-50 h-14 overflow-x-auto no-scrollbar">
-                            {[
-                                { id: "Activities", icon: Clock },
-                                { id: "Notes", icon: FileText },
-                                { id: "Calls", icon: Phone },
-                                { id: "Files", icon: Paperclip },
-                                { id: "Email", icon: Mail }
-                            ].map((tab) => (
-                                <button
-                                    key={tab.id}
-                                    onClick={() => setActiveTab(tab.id)}
-                                    className={`
-                                        flex items-center gap-2 h-full text-xs font-bold transition-all relative border-b-2
-                                        ${activeTab === tab.id ? "text-red-600 border-red-600" : "text-gray-400 border-transparent hover:text-gray-600"}
-                                    `}
-                                >
-                                    <tab.icon size={14} />
-                                    {tab.id}
-                                </button>
-                            ))}
+                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden min-h-[400px]">
+                        <div className="px-6 h-14 border-b border-gray-50 flex items-center justify-between">
+                            <h3 className="text-sm font-black text-gray-900 uppercase tracking-wider">Deal Remarks</h3>
+                            <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest bg-gray-50 px-2.5 py-1 rounded-full">
+                                <Clock size={12} className="text-red-400" /> Synchronization High
+                            </div>
                         </div>
 
-                        {/* Tab Content */}
-                        <div className="p-6">
-                            {activeTab === "Activities" && (
-                                <div className="space-y-6">
-                                    <div className="flex items-center justify-between">
-                                        <h4 className="text-base font-black text-gray-900">Activities</h4>
-                                        <button className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 border border-gray-100 rounded-lg text-xs font-bold text-gray-600 hover:bg-gray-100 transition-all">
-                                            <List size={14} className="text-gray-400" />
-                                            Sort By
-                                            <ChevronRight size={12} className="rotate-90 opacity-50" />
-                                        </button>
-                                    </div>
-
-                                    {/* Activity Timeline */}
-                                    <div className="space-y-4">
-                                        <div className="flex items-center gap-2 text-[10px] font-black text-blue-500 bg-blue-50 w-fit px-2 py-0.5 rounded uppercase">
-                                            <Calendar size={10} />
-                                            28 May 2025
-                                        </div>
-                                        <div className="p-5 bg-white border border-gray-100 rounded-xl shadow-sm flex items-start gap-4 hover:border-blue-100 transition-colors">
-                                            <div className="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center text-white flex-shrink-0 shadow-lg shadow-blue-100">
-                                                <Mail size={20} />
-                                            </div>
-                                            <div className="space-y-1">
-                                                <p className="text-sm font-bold text-gray-800">You sent 1 Message to the contact.</p>
-                                                <p className="text-[10px] text-gray-400 font-medium">10:25 pm</p>
-                                            </div>
-                                        </div>
-                                    </div>
+                        <div className="p-8 space-y-8">
+                            {/* Narratives/Notes */}
+                            <div className="space-y-4">
+                                <div className="flex items-center gap-2 text-[10px] font-black text-red-500 uppercase tracking-[0.2em]">
+                                    <FileText size={10} /> Deal Briefing
                                 </div>
-                            )}
+                                <div className="p-6 bg-gray-50/50 rounded-2xl border border-gray-100 text-[13px] text-gray-600 leading-relaxed italic whitespace-pre-wrap shadow-inner">
+                                    {deal.notes || "No interaction notes or briefing recorded for this deal node yet."}
+                                </div>
+                            </div>
 
-                            {activeTab === "Notes" && (
+                            {/* Activities Mapping */}
+                            <div className="space-y-6 pt-6 border-t border-gray-50">
+                                <div className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
+                                    <History size={10} /> Deal Activities
+                                </div>
+
                                 <div className="space-y-4">
-                                    <h4 className="text-base font-black text-gray-900">Notes</h4>
-                                    <div className="p-4 bg-gray-50/50 rounded-xl border border-dashed border-gray-200 text-xs text-gray-500 italic leading-relaxed">
-                                        {deal.notes || "No interaction notes recorded for this deal."}
+                                    <div className="flex items-center gap-2 text-[10px] font-black text-blue-500 bg-blue-50 w-fit px-2 py-0.5 rounded uppercase">
+                                        <Calendar size={10} />
+                                        28 May 2025
+                                    </div>
+                                    <div className="p-5 bg-white border border-gray-100 rounded-xl shadow-sm flex items-start gap-4 hover:border-blue-100 transition-colors group">
+                                        <div className="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center text-white flex-shrink-0 shadow-lg shadow-blue-100 transition-transform group-hover:scale-105">
+                                            <Mail size={20} />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <p className="text-sm font-bold text-gray-800">You sent 1 Message to the contact.</p>
+                                            <p className="text-[10px] text-gray-400 font-medium">10:25 pm</p>
+                                        </div>
                                     </div>
                                 </div>
-                            )}
+                            </div>
 
-                            {(activeTab === "Calls" || activeTab === "Files" || activeTab === "Email") && (
-                                <div className="py-12 flex flex-col items-center justify-center text-gray-400 space-y-3">
-                                    <div className="p-4 bg-gray-50 rounded-full">
-                                        {activeTab === "Calls" ? <Phone size={32} /> : activeTab === "Files" ? <Paperclip size={32} /> : <Mail size={32} />}
-                                    </div>
-                                    <p className="text-sm font-bold">No {activeTab} recorded</p>
-                                    <p className="text-xs">Start by adding a new {activeTab.slice(0, -1).toLowerCase()} to this deal.</p>
+                            {/* Footer Information */}
+                            <div className="pt-8 grid grid-cols-3 gap-4">
+                                <div className="flex flex-col items-center justify-center p-4 rounded-xl bg-gray-50/50 border border-gray-100/50">
+                                    <Phone size={14} className="text-gray-300 mb-1" />
+                                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">0 Call Logs</span>
                                 </div>
-                            )}
+                                <div className="flex flex-col items-center justify-center p-4 rounded-xl bg-gray-50/50 border border-gray-100/50">
+                                    <Paperclip size={14} className="text-gray-300 mb-1" />
+                                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">0 Assets</span>
+                                </div>
+                                <div className="flex flex-col items-center justify-center p-4 rounded-xl bg-gray-50/50 border border-gray-100/50">
+                                    <Mail size={14} className="text-gray-300 mb-1" />
+                                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">1 Message</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
