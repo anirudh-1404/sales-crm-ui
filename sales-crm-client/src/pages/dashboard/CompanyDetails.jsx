@@ -61,181 +61,116 @@ export default function CompanyDetails() {
         );
     }
 
-    const initials = company.name?.substring(0, 2).toUpperCase() || "CO";
-    const colors = ["bg-red-600", "bg-orange-500", "bg-rose-500", "bg-red-400", "bg-pink-600"];
-    const avatarColor = colors[(company.name?.charCodeAt(0) || 0) % colors.length];
-
     return (
-        <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-8 animate-in fade-in duration-500">
+        <div className="max-w-4xl mx-auto p-6 space-y-6">
             {/* Header */}
-            <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center justify-between">
                 <button
                     onClick={() => navigate(-1)}
-                    className="flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors group px-3 py-1.5 rounded-lg hover:bg-gray-100"
+                    className="flex items-center gap-2 text-gray-400 hover:text-gray-900 transition-colors"
                 >
-                    <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
-                    <span className="text-sm font-medium">Back</span>
+                    <ArrowLeft size={20} />
+                    <span className="text-sm">Back</span>
                 </button>
-                <div className="flex items-center gap-3">
-                    <button className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50 border border-transparent hover:border-gray-200">
-                        <Share2 size={18} />
-                    </button>
-                    <button className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg shadow-red-100 transition-all active:scale-[0.98]">
-                        Edit Profile
-                    </button>
-                </div>
+                <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${company.status === "Customer" ? "bg-green-100 text-green-700 border-green-200" :
+                        company.status === "Prospect" ? "bg-blue-100 text-blue-700 border-blue-200" :
+                            company.status === "Churned" ? "bg-red-100 text-red-700 border-red-200" :
+                                "bg-gray-100 text-gray-700 border-gray-200"
+                    }`}>
+                    {company.status || "Lead"}
+                </span>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Left: Identity & Core Details */}
-                <div className="lg:col-span-2 space-y-8">
-                    {/* Hero Card */}
-                    <div className="bg-white p-10 rounded-[2.5rem] border border-gray-100 shadow-sm relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 w-80 h-80 bg-red-500/5 rounded-full blur-3xl -mr-40 -mt-40 transition-transform duration-1000 group-hover:scale-125"></div>
-                        <div className="relative flex flex-col md:flex-row items-start md:items-center gap-8">
-                            <div className={`w-32 h-32 rounded-[2rem] ${avatarColor} flex items-center justify-center text-white text-4xl font-black border-[10px] border-white shadow-2xl flex-shrink-0 animate-in zoom-in duration-700`}>
-                                {initials}
+            {/* Content Card */}
+            <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+                <div className="p-6 border-b border-gray-50 bg-gray-50/30 flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-lg bg-red-600 flex items-center justify-center text-white text-xl font-bold">
+                        {company.name?.[0]?.toUpperCase() || "C"}
+                    </div>
+                    <h1 className="text-2xl font-bold text-gray-900">{company.name}</h1>
+                </div>
+
+                <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12">
+                    {/* Identification */}
+                    <div className="space-y-4 text-sm">
+                        <div>
+                            <label className="text-gray-400 block mb-1">Industry</label>
+                            <div className="flex items-center gap-2 font-medium text-gray-900">
+                                <Layers size={16} className="text-red-400" />
+                                {company.industry || "N/A"}
                             </div>
-                            <div className="min-w-0 space-y-3">
-                                <h1 className="text-4xl font-black text-gray-900 tracking-tighter leading-tight uppercase underline decoration-red-500 decoration-8 underline-offset-8 decoration-skip-ink-none">
-                                    {company.name}
-                                </h1>
-                                <div className="flex flex-wrap items-center gap-4 pt-2">
-                                    <span className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest bg-gray-900 text-white shadow-lg`}>
-                                        {company.status || "Business Unit"}
-                                    </span>
-                                    <span className="flex items-center gap-2 text-sm font-bold text-gray-400">
-                                        <Layers size={16} className="text-red-500" />
-                                        {company.industry || "General Industry"}
-                                    </span>
-                                </div>
+                        </div>
+
+                        <div>
+                            <label className="text-gray-400 block mb-1">Company Size</label>
+                            <div className="flex items-center gap-2 font-medium text-gray-900">
+                                <Users size={16} className="text-red-400" />
+                                {company.size || "N/A"} employees
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="text-gray-400 block mb-1">Website</label>
+                            <div className="flex items-center gap-2 font-medium text-red-600">
+                                <Globe size={16} className="text-red-400" />
+                                <a href={company.website?.startsWith('http') ? company.website : `https://${company.website}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                                    {company.website || "N/A"}
+                                </a>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="text-gray-400 block mb-1">Revenue Range</label>
+                            <div className="flex items-center gap-2 font-medium text-gray-900">
+                                <DollarSign size={16} className="text-green-500" />
+                                {company.revenueRange || "N/A"}
                             </div>
                         </div>
                     </div>
 
-                    {/* Quick Stats */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 font-black uppercase tracking-widest">
-                        <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm space-y-3 hover:shadow-md transition-shadow">
-                            <div className="flex items-center gap-2 text-[10px] text-gray-400">
-                                <Users size={14} className="text-red-500" /> Size Band
-                            </div>
-                            <p className="text-xl text-gray-900">{company.size || "11-50"}</p>
-                            <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
-                                <div className="h-full bg-red-500 w-1/3"></div>
+                    {/* Contact & Address */}
+                    <div className="space-y-4 text-sm">
+                        <div>
+                            <label className="text-gray-400 block mb-1">Primary Contact Name</label>
+                            <div className="flex items-center gap-2 font-medium text-gray-900">
+                                <User size={16} className="text-red-400" />
+                                {company.primaryContact || "N/A"}
                             </div>
                         </div>
-                        <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm space-y-3 hover:shadow-md transition-shadow">
-                            <div className="flex items-center gap-2 text-[10px] text-gray-400">
-                                <Globe size={14} className="text-red-500" /> Origin
+
+                        <div>
+                            <label className="text-gray-400 block mb-1">Phone</label>
+                            <div className="flex items-center gap-2 font-medium text-gray-900">
+                                <Phone size={16} className="text-red-400" />
+                                {company.phone || "N/A"}
                             </div>
-                            <p className="text-xl text-gray-900 truncate">{company.website?.replace(/^https?:\/\//, '') || "SALES.CRM"}</p>
                         </div>
-                        <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm space-y-3 hover:shadow-md transition-shadow">
-                            <div className="flex items-center gap-2 text-[10px] text-gray-400">
-                                <Building2 size={14} className="text-red-500" /> Mandates
+
+                        <div>
+                            <label className="text-gray-400 block mb-1">Office Address</label>
+                            <div className="flex items-start gap-2 font-medium text-gray-900">
+                                <MapPin size={16} className="text-red-400 mt-0.5" />
+                                <span className="flex-1">{company.address || "N/A"}</span>
                             </div>
-                            <p className="text-xl text-gray-900">Total Units</p>
                         </div>
                     </div>
 
-                    {/* Information Grid */}
-                    <div className="bg-white rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden">
-                        <div className="bg-gray-50 border-b border-gray-100 p-6">
-                            <h3 className="flex items-center gap-3 text-sm font-black text-gray-900 uppercase tracking-[0.2em]">
-                                <Target size={20} className="text-red-500" /> Corporate Profile
-                            </h3>
-                        </div>
-                        <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-10">
-                            <div className="space-y-6">
-                                <section className="space-y-3">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">Operational Presence</label>
-                                    <div className="flex items-start gap-4">
-                                        <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center text-red-500 flex-shrink-0">
-                                            <MapPin size={18} />
-                                        </div>
-                                        <p className="text-sm font-bold text-gray-600 leading-relaxed italic uppercase">
-                                            {company.address || "No central headquarters address recorded in master registry."}
-                                        </p>
-                                    </div>
-                                </section>
-                                <section className="space-y-3">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">Executive Summary</label>
-                                    <div className="p-6 bg-gray-50 rounded-[1.5rem] border border-gray-100 text-sm text-gray-600 leading-relaxed italic">
-                                        {company.notes || "No operational intelligence available for this entity."}
-                                    </div>
-                                </section>
-                            </div>
-                            <div className="space-y-6">
-                                <section className="space-y-3">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">Communication Channels</label>
-                                    <div className="space-y-3">
-                                        <div className="flex items-center gap-4 text-sm font-bold text-gray-700 bg-white border border-gray-100 p-3 rounded-2xl shadow-sm">
-                                            <Phone size={14} className="text-red-500" /> {company.phone || "No Registry Phone"}
-                                        </div>
-                                        <div className="flex items-center gap-4 text-sm font-bold text-gray-700 bg-white border border-gray-100 p-3 rounded-2xl shadow-sm">
-                                            <Mail size={14} className="text-red-500" /> {company.email || "registry@business.com"}
-                                        </div>
-                                        <div className="flex items-center gap-4 text-sm font-bold text-gray-700 bg-white border border-gray-100 p-3 rounded-2xl shadow-sm">
-                                            <Globe size={14} className="text-red-500" /> {company.website || "https://business.com"}
-                                        </div>
-                                    </div>
-                                </section>
-                            </div>
+                    {/* Notes Section */}
+                    <div className="md:col-span-2 pt-4 border-t border-gray-50">
+                        <label className="text-gray-400 text-sm block mb-2">Internal Notes</label>
+                        <div className="text-sm text-gray-600 bg-gray-50/50 p-4 rounded-lg whitespace-pre-wrap leading-relaxed">
+                            {company.notes || "No operational intelligence available."}
                         </div>
                     </div>
                 </div>
 
-                {/* Right: Governance & Ownership */}
-                <div className="space-y-8">
-                    {/* Stewardship Card */}
-                    <div className="bg-gray-900 p-8 rounded-[2.5rem] text-white space-y-8 shadow-2xl relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-48 h-48 bg-red-500/10 rounded-full blur-[60px] -mr-24 -mt-24"></div>
-                        <h3 className="text-xs font-black uppercase tracking-[0.3em] text-gray-500">Resource Ownership</h3>
-
-                        <div className="space-y-6">
-                            <span className="text-[10px] font-bold text-red-500 uppercase tracking-widest block">Strategic Principal</span>
-                            <div className="flex items-center gap-4 bg-white/5 p-4 rounded-3xl border border-white/5 group hover:bg-white/10 transition-colors cursor-pointer">
-                                <div className="w-14 h-14 rounded-2xl bg-white text-gray-900 flex items-center justify-center font-black text-xl shadow-lg group-hover:scale-110 transition-transform">
-                                    {company.ownerId?.firstName?.[0] || "U"}
-                                </div>
-                                <div className="min-w-0">
-                                    <p className="text-md font-black uppercase tracking-tight truncate">
-                                        {`${company.ownerId?.firstName || ""} ${company.ownerId?.lastName || ""}`.trim() || "Unassigned"}
-                                    </p>
-                                    <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest mt-1">Acquisition Lead</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="space-y-6 pt-4 border-t border-white/5">
-                            <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-500">Security & Logs</h3>
-                            <div className="space-y-4">
-                                <div className="flex items-center gap-3">
-                                    <Clock size={16} className="text-red-500" />
-                                    <div>
-                                        <p className="text-[9px] font-bold uppercase text-gray-500">Registry Created</p>
-                                        <p className="text-xs font-black">{formatDate(company.createdAt)}</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <Clock size={16} className="text-gray-600" />
-                                    <div>
-                                        <p className="text-[9px] font-bold uppercase text-gray-500">Master Record Update</p>
-                                        <p className="text-xs font-black text-gray-400">{formatDate(company.updatedAt)}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                {/* Metadata */}
+                <div className="bg-gray-50/50 px-6 py-3 border-t border-gray-50 flex flex-wrap items-center justify-between text-[11px] text-gray-400">
+                    <div className="flex items-center gap-4">
+                        <span className="flex items-center gap-1"><Clock size={12} /> Managed by: {company.ownerId?.firstName} {company.ownerId?.lastName}</span>
+                        <span className="flex items-center gap-1"><Calendar size={12} /> Registry Date: {formatDate(company.createdAt)}</span>
                     </div>
-
-                    {/* Reference Map */}
-                    <div className="bg-red-600 p-8 rounded-[2.5rem] text-white shadow-xl shadow-red-100 flex flex-col items-center justify-center text-center space-y-4 overflow-hidden relative">
-                        <div className="absolute inset-0 opacity-10 flex items-center justify-center pointer-events-none">
-                            <Building2 size={200} weight="black" />
-                        </div>
-                        <p className="text-[10px] font-black uppercase tracking-[0.4em] opacity-80">Master ID</p>
-                        <p className="text-xs font-bold font-mono tracking-tighter opacity-60 truncate w-full">{company._id}</p>
-                    </div>
+                    <span className="uppercase tracking-wider">REF: {company._id}</span>
                 </div>
             </div>
         </div>

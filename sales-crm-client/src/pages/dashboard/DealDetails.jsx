@@ -75,185 +75,116 @@ export default function DealDetails() {
         );
     }
 
-    const initials = deal.name?.substring(0, 2).toUpperCase() || "DL";
-    const colors = ["bg-red-600", "bg-orange-500", "bg-rose-500", "bg-red-400", "bg-pink-600"];
-    const avatarColor = colors[(deal.name?.charCodeAt(0) || 0) % colors.length];
-
     return (
-        <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-8 animate-in fade-in duration-500">
-            {/* Navigation Header */}
-            <div className="flex items-center justify-between gap-4">
+        <div className="max-w-4xl mx-auto p-6 space-y-6">
+            {/* Header */}
+            <div className="flex items-center justify-between">
                 <button
                     onClick={() => navigate(-1)}
-                    className="flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors group px-3 py-1.5 rounded-lg hover:bg-gray-100"
+                    className="flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors"
                 >
-                    <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
-                    <span className="text-sm font-medium">Back to records</span>
+                    <ArrowLeft size={20} />
+                    <span className="text-sm">Back</span>
                 </button>
                 <div className="flex items-center gap-3">
-                    <button className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50 border border-transparent hover:border-gray-200">
-                        <Share2 size={18} />
-                    </button>
-                    <button className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg shadow-red-100 transition-all active:scale-[0.98]">
-                        Edit Opportunity
-                    </button>
+                    <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${stageBadge[deal.stage] || "bg-gray-100 text-gray-600 border-gray-200"}`}>
+                        {deal.stage}
+                    </span>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Left Column: Core Info */}
-                <div className="lg:col-span-2 space-y-8">
-                    {/* Hero Section */}
-                    <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/5 rounded-full blur-3xl -mr-32 -mt-32 transition-transform duration-700 group-hover:scale-125"></div>
-                        <div className="relative flex flex-col sm:flex-row items-start sm:items-center gap-6">
-                            <div className={`w-24 h-24 rounded-3xl ${avatarColor} flex items-center justify-center text-white text-3xl font-bold border-8 border-white shadow-xl flex-shrink-0`}>
-                                {initials}
+            {/* Main Content */}
+            <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+                <div className="p-6 border-b border-gray-50 bg-gray-50/30">
+                    <h1 className="text-2xl font-bold text-gray-900">{deal.name}</h1>
+                </div>
+
+                <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12">
+                    {/* Basic Info */}
+                    <div className="space-y-4 text-sm">
+                        <div>
+                            <label className="text-gray-400 block mb-1">Company</label>
+                            <div className="flex items-center gap-2 font-medium text-gray-900">
+                                <Building2 size={16} className="text-red-400" />
+                                <button
+                                    onClick={() => deal.companyId?._id && navigate(`/dashboard/companies/${deal.companyId._id}`)}
+                                    className="hover:text-red-600 Transition-colors"
+                                >
+                                    {deal.companyId?.name || deal.companyName || "N/A"}
+                                </button>
                             </div>
-                            <div className="min-w-0 space-y-2">
-                                <h1 className="text-3xl font-black text-gray-900 tracking-tight leading-tight uppercase">{deal.name}</h1>
-                                <div className="flex flex-wrap items-center gap-3">
-                                    <span className={`px-4 py-1 rounded-full text-[11px] font-black border uppercase tracking-widest ${stageBadge[deal.stage] || "bg-gray-100 text-gray-600 border-gray-200"}`}>
-                                        {deal.stage}
-                                    </span>
-                                    <span className="text-gray-200">|</span>
-                                    <div className="flex items-center gap-2 text-sm font-bold text-gray-500">
-                                        <Building2 size={16} className="text-red-400" />
-                                        <span className="hover:text-red-500 cursor-pointer transition-colors" onClick={() => navigate(`/dashboard/companies/${deal.companyId?._id}`)}>
-                                            {deal.companyId?.name || deal.companyName}
-                                        </span>
-                                    </div>
-                                </div>
+                        </div>
+
+                        <div>
+                            <label className="text-gray-400 block mb-1">Contact</label>
+                            <div className="flex items-center gap-2 font-medium text-gray-900">
+                                <User size={16} className="text-red-400" />
+                                <button
+                                    onClick={() => deal.contactId?._id && navigate(`/dashboard/contacts/${deal.contactId._id}`)}
+                                    className="hover:text-red-600 transition-colors"
+                                >
+                                    {deal.contactId ? `${deal.contactId.firstName} ${deal.contactId.lastName}` : (deal.contactName || "N/A")}
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="text-gray-400 block mb-1">Expected Close Date</label>
+                            <div className="flex items-center gap-2 font-medium text-gray-900">
+                                <Calendar size={16} className="text-red-400" />
+                                {formatDate(deal.expectedCloseDate)}
                             </div>
                         </div>
                     </div>
 
-                    {/* Financials Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm space-y-3">
-                            <div className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
-                                <DollarSign size={14} className="text-red-500" /> Deal Value
-                            </div>
-                            <p className="text-2xl font-black text-gray-900 leading-none">
+                    {/* Financial Info */}
+                    <div className="space-y-4 text-sm">
+                        <div>
+                            <label className="text-gray-400 block mb-1">Value</label>
+                            <div className="flex items-center gap-2 text-lg font-bold text-gray-900">
+                                <DollarSign size={18} className="text-green-500" />
                                 {deal.currency} {deal.value?.toLocaleString() || "0"}
-                            </p>
-                            <p className="text-xs text-gray-500">Total estimated revenue</p>
-                        </div>
-                        <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm space-y-3">
-                            <div className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
-                                <TrendingUp size={14} className="text-green-500" /> Probability
                             </div>
-                            <div className="flex items-end gap-2">
-                                <p className={`text-2xl font-black leading-none ${getProbabilityColor(deal.probability)}`}>
-                                    {deal.probability}%
-                                </p>
-                                <div className="flex-1 h-3 bg-gray-100 rounded-full mb-1 overflow-hidden">
+                        </div>
+
+                        <div>
+                            <label className="text-gray-400 block mb-1">Probability</label>
+                            <div className="flex items-center gap-3">
+                                <div className="flex-1 bg-gray-100 h-2 rounded-full overflow-hidden">
                                     <div
-                                        className="h-full bg-green-500 transition-all duration-1000"
-                                        style={{ width: `${deal.probability}%` }}
+                                        className="bg-green-500 h-full transition-all duration-500"
+                                        style={{ width: `${deal.probability || 0}%` }}
                                     ></div>
                                 </div>
+                                <span className="font-bold text-gray-700">{deal.probability || 0}%</span>
                             </div>
-                            <p className="text-xs text-gray-500">Confidence score</p>
                         </div>
-                        <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm space-y-3">
-                            <div className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
-                                <Calendar size={14} className="text-orange-500" /> Timeline
+
+                        <div>
+                            <label className="text-gray-400 block mb-1">Source</label>
+                            <div className="flex items-center gap-2 font-medium text-gray-900 capitalize">
+                                <Info size={16} className="text-red-400" />
+                                {deal.source || "N/A"}
                             </div>
-                            <p className="text-lg font-black text-gray-900 leading-none">
-                                {formatDate(deal.expectedCloseDate)}
-                            </p>
-                            <p className="text-xs text-gray-500 italic">Target closing date</p>
                         </div>
                     </div>
 
-                    {/* Detailed Overview */}
-                    <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm space-y-6">
-                        <div className="flex items-center justify-between">
-                            <h3 className="flex items-center gap-3 text-lg font-black text-gray-900 uppercase tracking-tighter">
-                                <Info size={20} className="text-red-500" /> Opportunity Intelligence
-                            </h3>
-                            <div className="text-[10px] font-bold text-gray-400 bg-gray-50 px-3 py-1 rounded-full uppercase">Source: {deal.source || "Direct"}</div>
-                        </div>
-                        <div className="prose prose-sm max-w-none text-gray-600 leading-relaxed bg-gray-50/50 p-6 rounded-2xl border border-gray-100/50 italic min-h-[120px]">
-                            {deal.notes || "No strategic overview provided for this mandate."}
+                    {/* Bottom Row */}
+                    <div className="md:col-span-2 pt-4 border-t border-gray-50">
+                        <label className="text-gray-400 text-sm block mb-2">Notes</label>
+                        <div className="text-sm text-gray-600 bg-gray-50/50 p-4 rounded-lg whitespace-pre-wrap leading-relaxed">
+                            {deal.notes || "No additional notes provided."}
                         </div>
                     </div>
                 </div>
 
-                {/* Right Column: Stakeholders & Metadata */}
-                <div className="space-y-8">
-                    {/* Stakeholder Card */}
-                    <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm space-y-6">
-                        <h3 className="flex items-center gap-2 text-xs font-black text-gray-400 uppercase tracking-widest">
-                            <User size={16} className="text-red-500" /> Stakeholders
-                        </h3>
-
-                        {/* Primary Contact */}
-                        <div className="space-y-4">
-                            <span className="text-[10px] font-bold text-gray-400 uppercase">Primary Liaison</span>
-                            <div
-                                className="flex items-center gap-4 p-4 rounded-2xl hover:bg-red-50 border border-transparent hover:border-red-100 transition-all cursor-pointer group"
-                                onClick={() => navigate(`/dashboard/contacts/${deal.contactId?._id}`)}
-                            >
-                                <div className="w-12 h-12 rounded-xl bg-red-100 flex items-center justify-center text-red-600 font-bold text-lg group-hover:scale-110 transition-transform">
-                                    {(deal.contactId?.firstName?.[0] || deal.contactName?.[0] || "?").toUpperCase()}
-                                </div>
-                                <div className="min-w-0">
-                                    <p className="text-sm font-black text-gray-900 truncate">
-                                        {deal.contactId ? `${deal.contactId.firstName || ""} ${deal.contactId.lastName || ""}`.trim() : (deal.contactName || "Direct Inquiry")}
-                                    </p>
-                                    <p className="text-xs text-gray-500 truncate">{deal.contactId?.jobTitle || "Business Contact"}</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="h-px bg-gray-100"></div>
-
-                        {/* Owner */}
-                        <div className="space-y-4">
-                            <span className="text-[10px] font-bold text-gray-400 uppercase">Strategic Account Lead</span>
-                            <div className="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 border border-gray-100">
-                                <div className="w-10 h-10 rounded-xl bg-gray-800 flex items-center justify-center text-white font-bold text-sm">
-                                    {deal.ownerId?.firstName?.[0] || "U"}
-                                </div>
-                                <div className="min-w-0">
-                                    <p className="text-sm font-black text-gray-900 truncate">
-                                        {`${deal.ownerId?.firstName || ""} ${deal.ownerId?.lastName || ""}`.trim() || "Unassigned"}
-                                    </p>
-                                    <p className="text-[10px] text-red-500 font-bold uppercase tracking-tighter">Strategic Account Unit</p>
-                                </div>
-                            </div>
-                        </div>
+                {/* Footer Metadata */}
+                <div className="bg-gray-50/50 px-6 py-3 border-t border-gray-50 flex flex-wrap items-center justify-between text-[11px] text-gray-400">
+                    <div className="flex items-center gap-4">
+                        <span className="flex items-center gap-1"><Clock size={12} /> Created: {formatDate(deal.createdAt)}</span>
+                        <span className="flex items-center gap-1"><Clock size={12} /> Updated: {formatDate(deal.updatedAt)}</span>
                     </div>
-
-                    {/* Metadata Card */}
-                    <div className="bg-gray-900 p-8 rounded-3xl text-white space-y-6 shadow-2xl relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/20 rounded-full blur-3xl -mr-16 -mt-16"></div>
-                        <h3 className="text-xs font-black uppercase tracking-widest text-gray-400">System Logs</h3>
-                        <div className="space-y-4">
-                            <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-gray-400">
-                                    <Clock size={14} />
-                                </div>
-                                <div>
-                                    <p className="text-[10px] font-bold uppercase text-gray-500">Established</p>
-                                    <p className="text-xs font-bold">{formatDate(deal.createdAt)}</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-gray-400">
-                                    <Clock size={14} />
-                                </div>
-                                <div>
-                                    <p className="text-[10px] font-bold uppercase text-gray-500">Last Intelligence Update</p>
-                                    <p className="text-xs font-bold">{formatDate(deal.updatedAt)}</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="pt-4 h-px bg-white/5"></div>
-                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest text-center">Reference: {deal._id}</p>
-                    </div>
+                    <span className="uppercase tracking-wider">ID: {deal._id}</span>
                 </div>
             </div>
         </div>
