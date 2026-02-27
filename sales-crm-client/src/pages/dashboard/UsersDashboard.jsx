@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Users2, ShieldCheck, Briefcase, UserCheck, Edit2, RefreshCw, Plus, X, Search, Trash2, Eye } from "lucide-react";
+import { Users2, ShieldCheck, Briefcase, UserCheck, Edit2, RefreshCw, Plus, X, Search, Trash2, Eye, ArrowLeft, ChevronRight } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { getTeamUsers, deactivateUser, activateUser, bulkReassignRecords, softDeleteUser, resendInvitation as apiResendInvitation } from "../../../API/services/userService";
 import UserModal from "../../components/modals/UserModal";
 import UserDetailsModal from "../../components/modals/UserDetailsModal";
@@ -242,7 +243,22 @@ export default function UsersDashboard() {
     ];
 
     return (
-        <div className="p-6 space-y-6 max-w-screen-xl mx-auto">
+        <div className="p-4 sm:p-6 space-y-6 max-w-screen-xl mx-auto">
+            {/* Symmetric Navigation Header */}
+            <div className="flex items-center gap-4 mb-2">
+                <button
+                    onClick={() => navigate(-1)}
+                    className="p-2 bg-white border border-gray-200 rounded-xl text-gray-400 hover:text-red-600 hover:border-red-100 transition-all shadow-sm group"
+                >
+                    <ArrowLeft size={20} className="group-hover:-translate-x-0.5 transition-transform" />
+                </button>
+                <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-gray-400">
+                    <Link to="/dashboard" className="hover:text-red-600 transition-colors">Dashboard</Link>
+                    <ChevronRight size={14} className="text-gray-200" />
+                    <span className="text-gray-900">User Management</span>
+                </div>
+            </div>
+
             {/* Header */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
                 <div>

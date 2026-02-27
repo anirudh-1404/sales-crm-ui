@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { History, Search, Filter, ArrowUpDown, ChevronLeft, ChevronRight, User, Briefcase, Building2, ContactRound, Shield } from "lucide-react";
+import { History, Search, Filter, ArrowUpDown, ChevronLeft, ChevronRight, User, Briefcase, Building2, ContactRound, Shield, ArrowLeft } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { getAuditLogs } from "../../../API/services/auditLogService";
 import { toast } from "react-hot-toast";
 
@@ -34,6 +35,7 @@ const ActionBadge = ({ action }) => {
 };
 
 export default function AuditLogs() {
+    const navigate = useNavigate();
     const [logs, setLogs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [total, setTotal] = useState(0);
@@ -75,6 +77,21 @@ export default function AuditLogs() {
 
     return (
         <div className="p-6 space-y-6 max-w-screen-xl mx-auto">
+            {/* Symmetric Navigation Header */}
+            <div className="flex items-center gap-4 mb-2">
+                <button
+                    onClick={() => navigate(-1)}
+                    className="p-2 bg-white border border-gray-200 rounded-xl text-gray-400 hover:text-red-600 hover:border-red-100 transition-all shadow-sm group"
+                >
+                    <ArrowLeft size={20} className="group-hover:-translate-x-0.5 transition-transform" />
+                </button>
+                <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-gray-400">
+                    <Link to="/dashboard" className="hover:text-red-600 transition-colors">Dashboard</Link>
+                    <ChevronRight size={14} className="text-gray-200" />
+                    <span className="text-gray-900">Audit Logs</span>
+                </div>
+            </div>
+
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
                 <div>
                     <h1 className="text-xl sm:text-2xl font-bold text-gray-800 flex items-center gap-3">

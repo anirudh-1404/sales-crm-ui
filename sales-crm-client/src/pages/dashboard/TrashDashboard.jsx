@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Trash2, RotateCcw, User } from "lucide-react";
+import { Trash2, RotateCcw, User, ArrowLeft, ChevronRight } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { getDeletedUsers, restoreUser } from "../../../API/services/userService";
 import { toast } from "react-hot-toast";
 
@@ -20,6 +21,7 @@ function Avatar({ name }) {
 }
 
 export default function TrashDashboard() {
+    const navigate = useNavigate();
     const [deletedUsers, setDeletedUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [restoringId, setRestoringId] = useState(null);
@@ -53,7 +55,21 @@ export default function TrashDashboard() {
 
     return (
         <div className="p-6 space-y-6 max-w-screen-xl mx-auto">
-            {/* Header */}
+            {/* Symmetric Navigation Header */}
+            <div className="flex items-center gap-4 mb-2">
+                <button
+                    onClick={() => navigate(-1)}
+                    className="p-2 bg-white border border-gray-200 rounded-xl text-gray-400 hover:text-red-600 hover:border-red-100 transition-all shadow-sm group"
+                >
+                    <ArrowLeft size={20} className="group-hover:-translate-x-0.5 transition-transform" />
+                </button>
+                <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-gray-400">
+                    <Link to="/dashboard" className="hover:text-red-600 transition-colors">Dashboard</Link>
+                    <ChevronRight size={14} className="text-gray-200" />
+                    <span className="text-gray-900">Trash</span>
+                </div>
+            </div>
+
             <div className="flex items-center gap-3">
                 <div className="p-2.5 bg-red-50 rounded-xl border border-red-100">
                     <Trash2 size={22} className="text-red-500" />

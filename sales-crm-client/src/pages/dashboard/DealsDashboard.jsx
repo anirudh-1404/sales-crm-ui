@@ -3,8 +3,9 @@ import { useNavigate } from "react-router-dom";
 import {
     Briefcase, Zap, CheckCircle2, DollarSign,
     MoreHorizontal, Plus, Edit2, Trash2,
-    LayoutDashboard, Users, Building2, LayoutList, Kanban, Eye
+    LayoutDashboard, Users, Building2, LayoutList, Kanban, Eye, ArrowLeft, ChevronRight
 } from "lucide-react";
+import { Link } from "react-router-dom";
 import KanbanBoard from "../../components/KanbanBoard";
 import { getDeals, createDeal, updateDeal, deleteDeal, updateDealStage } from "../../../API/services/dealService";
 import { getCompanies } from "../../../API/services/companyService";
@@ -144,6 +145,21 @@ export default function DealsDashboard() {
 
     return (
         <div className="p-4 sm:p-6 space-y-6 max-w-screen-xl mx-auto">
+            {/* Symmetric Navigation Header */}
+            <div className="flex items-center gap-4 mb-2">
+                <button
+                    onClick={() => navigate(-1)}
+                    className="p-2 bg-white border border-gray-200 rounded-xl text-gray-400 hover:text-red-600 hover:border-red-100 transition-all shadow-sm group"
+                >
+                    <ArrowLeft size={20} className="group-hover:-translate-x-0.5 transition-transform" />
+                </button>
+                <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-gray-400">
+                    <Link to="/dashboard" className="hover:text-red-600 transition-colors">Dashboard</Link>
+                    <ChevronRight size={14} className="text-gray-200" />
+                    <span className="text-gray-900">Deals</span>
+                </div>
+            </div>
+
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
                 <div>
                     <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Deals Dashboard</h1>
