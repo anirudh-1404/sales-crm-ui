@@ -100,17 +100,6 @@ export default function CompanyDetails() {
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
-                    <button className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-xs font-semibold text-gray-600 hover:bg-gray-50 transition-colors shadow-sm">
-                        <Download size={14} className="text-gray-400" />
-                        Export
-                        <ChevronRight size={12} className="rotate-90 text-gray-400" />
-                    </button>
-                    <button className="p-1.5 bg-white border border-gray-200 rounded-lg text-gray-400 hover:text-gray-600 transition-colors shadow-sm">
-                        <RotateCw size={16} />
-                    </button>
-                    <button className="p-1.5 bg-white border border-gray-200 rounded-lg text-gray-400 hover:text-gray-600 transition-colors shadow-sm">
-                        <Maximize2 size={16} />
-                    </button>
                 </div>
             </div>
 
@@ -143,16 +132,6 @@ export default function CompanyDetails() {
                     </div>
                 </div>
                 <div className="flex items-center gap-3">
-                    <span className={`px-4 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider border ${company.status === "Customer" ? "bg-green-50 text-green-700 border-green-100" :
-                        company.status === "Prospect" ? "bg-blue-50 text-blue-700 border-blue-100" :
-                            company.status === "Churned" ? "bg-red-50 text-red-700 border-red-100" :
-                                "bg-gray-50 text-gray-600 border-gray-100"
-                        }`}>
-                        {company.status || "Lead"} Account
-                    </span>
-                    <button className="p-2 bg-gray-50 text-gray-400 rounded-lg hover:text-gray-600 transition-colors">
-                        <MoreHorizontal size={20} />
-                    </button>
                 </div>
             </div>
 

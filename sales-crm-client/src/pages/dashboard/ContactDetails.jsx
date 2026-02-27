@@ -98,17 +98,6 @@ export default function ContactDetails() {
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
-                    <button className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-xs font-semibold text-gray-600 hover:bg-gray-50 transition-colors shadow-sm">
-                        <Download size={14} className="text-gray-400" />
-                        Export
-                        <ChevronRight size={12} className="rotate-90 text-gray-400" />
-                    </button>
-                    <button className="p-1.5 bg-white border border-gray-200 rounded-lg text-gray-400 hover:text-gray-600 transition-colors shadow-sm">
-                        <RotateCw size={16} />
-                    </button>
-                    <button className="p-1.5 bg-white border border-gray-200 rounded-lg text-gray-400 hover:text-gray-600 transition-colors shadow-sm">
-                        <Maximize2 size={16} />
-                    </button>
                 </div>
             </div>
 
@@ -146,17 +135,6 @@ export default function ContactDetails() {
                     </div>
                 </div>
                 <div className="flex items-center gap-3">
-                    <span className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 text-gray-500 rounded-lg text-[11px] font-bold uppercase tracking-wider border border-gray-100">
-                        <Shield size={12} className="text-red-400" />
-                        Resource Contact
-                    </span>
-                    <div className="flex items-center -space-x-2">
-                        <div className="w-8 h-8 rounded-full border-2 border-white bg-gray-200"></div>
-                        <div className="w-8 h-8 rounded-full border-2 border-white bg-gray-300 flex items-center justify-center text-[10px] font-bold text-gray-600">+2</div>
-                    </div>
-                    <button className="p-2 bg-gray-50 text-gray-400 rounded-lg hover:text-gray-600 transition-colors">
-                        <MoreHorizontal size={20} />
-                    </button>
                 </div>
             </div>
 
