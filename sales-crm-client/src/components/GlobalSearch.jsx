@@ -179,7 +179,7 @@ export default function GlobalSearch({ isOpen, onClose }) {
                                             <span className="text-xs font-semibold text-gray-700">${d.value?.toLocaleString()}</span>
                                         </div>
                                     </div>
-                                </div>
+                                </button>
                             ))}
                         </div>
                     )}
@@ -216,7 +216,7 @@ export default function GlobalSearch({ isOpen, onClose }) {
                                             <p className="text-xs text-gray-400 mt-0.5">{c.jobTitle || c.email || "—"} · {c.companyId?.name || "No company"}</p>
                                         </div>
                                     </div>
-                                </div>
+                                </button>
                             ))}
                         </div>
                     )}
