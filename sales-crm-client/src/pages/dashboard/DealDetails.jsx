@@ -61,19 +61,14 @@ export default function DealDetails() {
         );
     }
 
-    if (!deal) {
-        return (
-            <div className="p-8 text-center text-gray-500">
-                <p className="text-lg font-semibold">Deal not found</p>
-                <button
-                    onClick={() => navigate(-1)}
-                    className="mt-4 text-red-500 hover:text-red-600 font-medium flex items-center justify-center gap-2 mx-auto"
-                >
-                    <ArrowLeft size={18} /> Go Back
-                </button>
-            </div>
-        );
-    }
+    const getInitials = (name) => {
+        if (!name) return "D";
+        const parts = name.split(" ");
+        if (parts.length >= 2) {
+            return (parts[0][0] + parts[1][0]).toUpperCase();
+        }
+        return parts[0].slice(0, 2).toUpperCase();
+    };
 
     return (
         <div className="max-w-4xl mx-auto p-6 space-y-6">
@@ -95,7 +90,10 @@ export default function DealDetails() {
 
             {/* Main Content */}
             <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-                <div className="p-6 border-b border-gray-50 bg-gray-50/30">
+                <div className="p-6 border-b border-gray-50 bg-gray-50/30 flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center text-white text-xl font-bold border-4 border-white shadow-sm ring-1 ring-gray-100 uppercase">
+                        {getInitials(deal.name)}
+                    </div>
                     <h1 className="text-2xl font-bold text-gray-900">{deal.name}</h1>
                 </div>
 

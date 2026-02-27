@@ -80,7 +80,7 @@ export default function ContactDetails() {
             {/* Content Card */}
             <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
                 <div className="p-6 border-b border-gray-50 bg-gray-50/30 flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-lg bg-red-600 flex items-center justify-center text-white text-xl font-bold">
+                    <div className="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center text-white text-xl font-bold border-4 border-white shadow-sm ring-1 ring-gray-100 uppercase">
                         {contact.firstName?.[0]?.toUpperCase()}{contact.lastName?.[0]?.toUpperCase()}
                     </div>
                     <div>
