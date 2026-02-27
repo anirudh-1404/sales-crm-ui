@@ -146,16 +146,16 @@ export default function ContactsDashboard() {
     return (
         <div className="p-4 sm:p-6 space-y-6 max-w-screen-xl mx-auto">
             {/* Symmetric Navigation Header */}
-            <div className="flex items-center gap-4 mb-2">
+            <div className="flex items-center gap-3 mb-2">
                 <button
                     onClick={() => navigate(-1)}
-                    className="p-2 bg-white border border-gray-200 rounded-xl text-gray-400 hover:text-red-600 hover:border-red-100 transition-all shadow-sm group"
+                    className="p-1.5 bg-white border border-gray-200 rounded-lg text-gray-400 hover:text-red-600 hover:border-red-50 transition-all shadow-sm group"
                 >
-                    <ArrowLeft size={20} className="group-hover:-translate-x-0.5 transition-transform" />
+                    <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
                 </button>
-                <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-gray-400">
+                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.12em] text-gray-400">
                     <Link to="/dashboard" className="hover:text-red-600 transition-colors">Dashboard</Link>
-                    <ChevronRight size={14} className="text-gray-200" />
+                    <ChevronRight size={12} className="text-gray-200" />
                     <span className="text-gray-900">Contacts</span>
                 </div>
             </div>
