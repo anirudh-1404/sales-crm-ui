@@ -144,7 +144,10 @@ export default function GlobalSearch({ isOpen, onClose }) {
                                     to={`${basePath}/deals/${d._id}`}
                                     className="block px-4 py-3 hover:bg-red-50 cursor-pointer border-b border-gray-50 transition-colors"
                                     onClick={(e) => {
+                                        e.preventDefault();
                                         e.stopPropagation();
+                                        console.log("Global Search: Clicking deal", d._id);
+                                        navigate(`${basePath}/deals/${d._id}`);
                                         onClose();
                                     }}
                                 >
@@ -177,7 +180,10 @@ export default function GlobalSearch({ isOpen, onClose }) {
                                     to={`${basePath}/contacts/${c._id}`}
                                     className="block px-4 py-3 hover:bg-red-50 cursor-pointer border-b border-gray-50 transition-colors"
                                     onClick={(e) => {
+                                        e.preventDefault();
                                         e.stopPropagation();
+                                        console.log("Global Search: Clicking contact", c._id);
+                                        navigate(`${basePath}/contacts/${c._id}`);
                                         onClose();
                                     }}
                                 >
@@ -209,7 +215,10 @@ export default function GlobalSearch({ isOpen, onClose }) {
                                     to={`${basePath}/companies/${co._id}`}
                                     className="block px-4 py-3 hover:bg-red-50 cursor-pointer border-b border-gray-50 transition-colors"
                                     onClick={(e) => {
+                                        e.preventDefault();
                                         e.stopPropagation();
+                                        console.log("Global Search: Clicking company", co._id);
+                                        navigate(`${basePath}/companies/${co._id}`);
                                         onClose();
                                     }}
                                 >
