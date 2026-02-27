@@ -85,26 +85,22 @@ export default function ContactDetails() {
 
     return (
         <div className="min-h-screen bg-gray-50/50 p-6 space-y-6">
-            {/* Top Navigation & Breadcrumbs */}
-            <div className="flex items-center justify-between mb-2">
-                <div className="space-y-1">
-                    <div className="flex items-center gap-2 text-xs font-medium text-gray-500">
-                        <span className="font-bold text-gray-900">Contacts</span>
-                        <span className="px-1.5 py-0.5 bg-red-100 text-red-600 rounded text-[10px]">42</span>
-                        <ChevronRight size={14} className="text-gray-300" />
-                        <Link to="/dashboard" className="hover:text-red-600">Home</Link>
-                        <ChevronRight size={14} className="text-gray-300" />
-                        <span className="text-gray-400">Contacts</span>
-                    </div>
-                </div>
-                <div className="flex items-center gap-2">
+            {/* Symmetric Navigation Header */}
+            <div className="flex items-center gap-4 mb-4">
+                <button
+                    onClick={() => navigate(-1)}
+                    className="p-2 bg-white border border-gray-200 rounded-xl text-gray-400 hover:text-red-600 hover:border-red-100 transition-all shadow-sm group"
+                >
+                    <ArrowLeft size={20} className="group-hover:-translate-x-0.5 transition-transform" />
+                </button>
+                <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-gray-400">
+                    <Link to="/dashboard" className="hover:text-red-600 transition-colors">Dashboard</Link>
+                    <ChevronRight size={14} className="text-gray-200" />
+                    <Link to="/dashboard/contacts" className="hover:text-red-600 transition-colors">Contacts</Link>
+                    <ChevronRight size={14} className="text-gray-200" />
+                    <span className="text-gray-900">View Details</span>
                 </div>
             </div>
-
-            <button onClick={() => navigate(-1)} className="inline-flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-gray-900 transition-colors mb-4">
-                <ArrowLeft size={18} />
-                Back to Contacts
-            </button>
 
             {/* Hero Section */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 flex items-center justify-between">

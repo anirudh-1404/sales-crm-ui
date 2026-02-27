@@ -88,37 +88,22 @@ export default function DealDetails() {
 
     return (
         <div className="min-h-screen bg-gray-50/50 p-6 space-y-6">
-            {/* Top Navigation & Breadcrumbs */}
-            <div className="flex items-center justify-between mb-2">
-                <div className="space-y-1">
-                    <div className="flex items-center gap-2 text-xs font-medium text-gray-500">
-                        <span className="font-bold text-gray-900">Deals</span>
-                        <span className="px-1.5 py-0.5 bg-red-100 text-red-600 rounded text-[10px]">125</span>
-                        <ChevronRight size={14} className="text-gray-300" />
-                        <Link to="/dashboard" className="hover:text-red-600">Home</Link>
-                        <ChevronRight size={14} className="text-gray-300" />
-                        <span className="text-gray-400">Deals</span>
-                    </div>
-                </div>
-                <div className="flex items-center gap-2">
-                    <button className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-xs font-semibold text-gray-600 hover:bg-gray-50 transition-colors shadow-sm">
-                        <Download size={14} className="text-gray-400" />
-                        Export
-                        <ChevronRight size={12} className="rotate-90 text-gray-400" />
-                    </button>
-                    <button className="p-1.5 bg-white border border-gray-200 rounded-lg text-gray-400 hover:text-gray-600 transition-colors shadow-sm">
-                        <RotateCw size={16} />
-                    </button>
-                    <button className="p-1.5 bg-white border border-gray-200 rounded-lg text-gray-400 hover:text-gray-600 transition-colors shadow-sm">
-                        <Maximize2 size={16} />
-                    </button>
+            {/* Symmetric Navigation Header */}
+            <div className="flex items-center gap-4 mb-4">
+                <button
+                    onClick={() => navigate(-1)}
+                    className="p-2 bg-white border border-gray-200 rounded-xl text-gray-400 hover:text-red-600 hover:border-red-100 transition-all shadow-sm group"
+                >
+                    <ArrowLeft size={20} className="group-hover:-translate-x-0.5 transition-transform" />
+                </button>
+                <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-gray-400">
+                    <Link to="/dashboard" className="hover:text-red-600 transition-colors">Dashboard</Link>
+                    <ChevronRight size={14} className="text-gray-200" />
+                    <Link to="/dashboard/deals" className="hover:text-red-600 transition-colors">Deals</Link>
+                    <ChevronRight size={14} className="text-gray-200" />
+                    <span className="text-gray-900">View Details</span>
                 </div>
             </div>
-
-            <Link to="/dashboard/deals" className="inline-flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-gray-900 transition-colors mb-4">
-                <ArrowLeft size={18} />
-                Back to Deals
-            </Link>
 
             {/* Hero Section */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 flex items-center justify-between">
