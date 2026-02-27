@@ -81,6 +81,8 @@ export default function GlobalSearch({ isOpen, onClose }) {
 
     const basePath = getBasePath();
 
+    console.log("[GlobalSearch] Rendered with role:", user?.role, "basePath:", basePath);
+
     return (
         <div
             className="fixed inset-0 z-[9999] flex items-start justify-center pt-20 px-4"
@@ -139,15 +141,16 @@ export default function GlobalSearch({ isOpen, onClose }) {
                                 <span className="ml-auto text-xs text-gray-400">{results.deals.length} result{results.deals.length > 1 ? "s" : ""}</span>
                             </div>
                             {results.deals.map(d => (
-                                <Link
+                                <div
                                     key={d._id}
-                                    to={`${basePath}/deals/${d._id}`}
-                                    className="block px-4 py-3 hover:bg-red-50 cursor-pointer border-b border-gray-50 transition-colors"
+                                    className="block px-4 py-3 hover:bg-red-50 cursor-pointer border-b border-gray-50 transition-colors z-[1001] relative pointer-events-auto"
                                     onClick={(e) => {
                                         e.preventDefault();
                                         e.stopPropagation();
-                                        console.log("Global Search: Clicking deal", d._id);
-                                        navigate(`${basePath}/deals/${d._id}`);
+                                        const path = `${basePath}/deals/${d._id}`;
+                                        console.log("[GlobalSearch] Clicking deal item. Path:", path);
+                                        window.alert("Clicking Deal: " + d.name);
+                                        navigate(path);
                                         onClose();
                                     }}
                                 >
@@ -161,7 +164,7 @@ export default function GlobalSearch({ isOpen, onClose }) {
                                             <span className="text-xs font-semibold text-gray-700">${d.value?.toLocaleString()}</span>
                                         </div>
                                     </div>
-                                </Link>
+                                </div>
                             ))}
                         </div>
                     )}
@@ -175,15 +178,16 @@ export default function GlobalSearch({ isOpen, onClose }) {
                                 <span className="ml-auto text-xs text-gray-400">{results.contacts.length} result{results.contacts.length > 1 ? "s" : ""}</span>
                             </div>
                             {results.contacts.map(c => (
-                                <Link
+                                <div
                                     key={c._id}
-                                    to={`${basePath}/contacts/${c._id}`}
-                                    className="block px-4 py-3 hover:bg-red-50 cursor-pointer border-b border-gray-50 transition-colors"
+                                    className="block px-4 py-3 hover:bg-red-50 cursor-pointer border-b border-gray-50 transition-colors z-[1001] relative pointer-events-auto"
                                     onClick={(e) => {
                                         e.preventDefault();
                                         e.stopPropagation();
-                                        console.log("Global Search: Clicking contact", c._id);
-                                        navigate(`${basePath}/contacts/${c._id}`);
+                                        const path = `${basePath}/contacts/${c._id}`;
+                                        console.log("[GlobalSearch] Clicking contact item. Path:", path);
+                                        window.alert("Clicking Contact: " + c.firstName);
+                                        navigate(path);
                                         onClose();
                                     }}
                                 >
@@ -196,7 +200,7 @@ export default function GlobalSearch({ isOpen, onClose }) {
                                             <p className="text-xs text-gray-400 mt-0.5">{c.jobTitle || c.email || "—"} · {c.companyId?.name || "No company"}</p>
                                         </div>
                                     </div>
-                                </Link>
+                                </div>
                             ))}
                         </div>
                     )}
@@ -210,15 +214,16 @@ export default function GlobalSearch({ isOpen, onClose }) {
                                 <span className="ml-auto text-xs text-gray-400">{results.companies.length} result{results.companies.length > 1 ? "s" : ""}</span>
                             </div>
                             {results.companies.map(co => (
-                                <Link
+                                <div
                                     key={co._id}
-                                    to={`${basePath}/companies/${co._id}`}
-                                    className="block px-4 py-3 hover:bg-red-50 cursor-pointer border-b border-gray-50 transition-colors"
+                                    className="block px-4 py-3 hover:bg-red-50 cursor-pointer border-b border-gray-50 transition-colors z-[1001] relative pointer-events-auto"
                                     onClick={(e) => {
                                         e.preventDefault();
                                         e.stopPropagation();
-                                        console.log("Global Search: Clicking company", co._id);
-                                        navigate(`${basePath}/companies/${co._id}`);
+                                        const path = `${basePath}/companies/${co._id}`;
+                                        console.log("[GlobalSearch] Clicking company item. Path:", path);
+                                        window.alert("Clicking Company: " + co.name);
+                                        navigate(path);
                                         onClose();
                                     }}
                                 >
@@ -229,7 +234,7 @@ export default function GlobalSearch({ isOpen, onClose }) {
                                         </div>
                                         <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold flex-shrink-0 ${co.status === "Active" ? "bg-green-100 text-green-700" : co.status === "Prospect" ? "bg-red-100 text-red-700" : "bg-gray-100 text-gray-500"}`}>{co.status || "—"}</span>
                                     </div>
-                                </Link>
+                                </div>
                             ))}
                         </div>
                     )}
