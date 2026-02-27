@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { getCompanyById } from "../../../API/services/companyService";
 import {
     Building2, User, MapPin, Globe,
-    Phone, Mail, Briefcase, Calendar,
+    Phone, Mail, Briefcase, Calendar, Clock,
     ArrowLeft, Info, Loader2, Share2,
     Users, Target, Layers
 } from "lucide-react";
