@@ -5,7 +5,7 @@ import {
     Building2, User, MapPin, Globe,
     Phone, Mail, Briefcase, Calendar, Clock,
     ArrowLeft, Info, Loader2, Share2,
-    Users, Target, Layers
+    Users, Target, Layers, DollarSign
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -73,9 +73,9 @@ export default function CompanyDetails() {
                     <span className="text-sm">Back</span>
                 </button>
                 <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${company.status === "Customer" ? "bg-green-100 text-green-700 border-green-200" :
-                        company.status === "Prospect" ? "bg-blue-100 text-blue-700 border-blue-200" :
-                            company.status === "Churned" ? "bg-red-100 text-red-700 border-red-200" :
-                                "bg-gray-100 text-gray-700 border-gray-200"
+                    company.status === "Prospect" ? "bg-blue-100 text-blue-700 border-blue-200" :
+                        company.status === "Churned" ? "bg-red-100 text-red-700 border-red-200" :
+                            "bg-gray-100 text-gray-700 border-gray-200"
                     }`}>
                     {company.status || "Lead"}
                 </span>
