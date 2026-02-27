@@ -194,10 +194,10 @@ export default function DealsDashboard() {
             </div>
 
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <StatCard label="Total Value" value={`$${totalValue >= 1000000 ? `${(totalValue / 1000000).toFixed(2)}M` : `${(totalValue / 1000).toFixed(1)}K`}`} sub="+12.5% vs last month" color="bg-red-50 text-red-600" icon={DollarSign} />
-                <StatCard label="Active Deals" value={String(activeCount)} sub="15 pending" color="bg-orange-50 text-red-500" icon={Zap} />
-                <StatCard label="Won Deals" value={String(wonCount)} sub="82% win rate" color="bg-green-50 text-green-600" icon={CheckCircle2} />
-                <StatCard label="New Deals" value={String(deals.length)} sub="This week" color="bg-red-100 text-red-700" icon={Briefcase} />
+                <StatCard label="Total Value" value={`$${totalValue >= 1000000 ? `${(totalValue / 1000000).toFixed(2)}M` : `${(totalValue / 1000).toFixed(1)}K`}`} color="bg-red-50 text-red-600" icon={DollarSign} />
+                <StatCard label="Active Deals" value={String(activeCount)} color="bg-orange-50 text-red-500" icon={Zap} />
+                <StatCard label="Won Deals" value={String(wonCount)} color="bg-green-50 text-green-600" icon={CheckCircle2} />
+                <StatCard label="New Deals" value={String(deals.length)} color="bg-red-100 text-red-700" icon={Briefcase} />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">

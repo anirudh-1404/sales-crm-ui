@@ -165,12 +165,22 @@ export default function AuditLogs() {
                                         </td>
                                         <td className="px-5 py-4 whitespace-nowrap">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center font-bold text-xs">
-                                                    {log.performedBy?.firstName?.[0]}{log.performedBy?.lastName?.[0]}
+                                                <div className="w-8 h-8 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center font-bold text-xs overflow-hidden">
+                                                    {log.performedBy ? (
+                                                        <span className="text-red-600 bg-red-100 w-full h-full flex items-center justify-center">
+                                                            {log.performedBy?.firstName?.[0]}{log.performedBy?.lastName?.[0]}
+                                                        </span>
+                                                    ) : (
+                                                        <User size={16} />
+                                                    )}
                                                 </div>
                                                 <div>
-                                                    <p className="font-semibold text-gray-800 leading-none">{log.performedBy?.firstName} {log.performedBy?.lastName}</p>
-                                                    <p className="text-[10px] text-gray-400 mt-1">{log.performedBy?.email}</p>
+                                                    <p className="font-semibold text-gray-800 leading-none">
+                                                        {log.performedBy ? `${log.performedBy.firstName} ${log.performedBy.lastName || ""}` : "Deleted User"}
+                                                    </p>
+                                                    <p className="text-[10px] text-gray-400 mt-1">
+                                                        {log.performedBy?.email || "System/Unknown"}
+                                                    </p>
                                                 </div>
                                             </div>
                                         </td>
@@ -181,10 +191,12 @@ export default function AuditLogs() {
                                             <div className="flex items-center gap-2 text-gray-800">
                                                 <EntityIcon type={log.entityType} />
                                                 <span className="font-semibold text-xs">
-                                                    {log.entityId?.name || (log.entityId?.firstName ? `${log.entityId.firstName} ${log.entityId.lastName || ""}` : log.entityType)}
+                                                    {log.entityId?.name ||
+                                                        (log.entityId?.firstName ? `${log.entityId.firstName} ${log.entityId.lastName || ""}` :
+                                                            `Deleted ${log.entityType}`)}
                                                 </span>
                                             </div>
-                                            <p className="text-[9px] font-mono text-gray-400 mt-0.5">{log.entityId?._id || log.entityId}</p>
+                                            <p className="text-[9px] font-mono text-gray-400 mt-0.5">{log.entityId?._id || log.entityId || "ID Unknown"}</p>
                                         </td>
                                         <td className="px-5 py-4 max-w-xs">
                                             <p className="text-xs text-gray-600 font-medium">

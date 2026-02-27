@@ -1,3 +1,11 @@
+import fetch, { Headers } from 'node-fetch';
+if (!global.Headers) {
+    global.Headers = Headers;
+}
+if (!global.fetch) {
+    global.fetch = fetch;
+}
+
 import { Resend } from 'resend';
 
 // Initialize Resend with API key

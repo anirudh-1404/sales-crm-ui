@@ -59,20 +59,26 @@ export const getAuditLogs = async (req, res) => {
 
         const skip = (page - 1) * limit;
 
-        const logs = await AuditLog.find(filter)
+        // Fetch logs with population
+        let logs = await AuditLog.find(filter)
             .populate("performedBy", "firstName lastName email")
             .populate("entityId", "name firstName lastName email")
-            .sort(sort)
-            .skip(skip)
-            .limit(Number(limit));
+            .sort(sort);
 
-        const total = await AuditLog.countDocuments(filter);
+        // Filter out orphaned logs (where performedBy user was deleted)
+        // We do this post-query because we can't easily filter by a populated field existence in one MongoDB query without aggregation
+        const filteredLogs = logs.filter(log => log.performedBy !== null);
+
+        // Paginate manually after filtering
+        const paginatedLogs = filteredLogs.slice(skip, skip + Number(limit));
+
+        const total = filteredLogs.length;
 
         res.status(200).json({
-            data: logs,
+            data: paginatedLogs,
             total,
             page: Number(page),
-            totalPages: Math.ceil(total / limit)
+            totalPages: Math.ceil(total / Number(limit))
         });
     } catch (error) {
         res.status(500).json({

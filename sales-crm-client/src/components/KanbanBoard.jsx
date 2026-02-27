@@ -61,7 +61,6 @@ function DealCard({ deal, onEdit, onDelete }) {
 
             {/* Value Badge */}
             <div className="flex items-center gap-1.5 mb-3">
-                <DollarSign size={13} className="text-green-600 flex-shrink-0" />
                 <span className="text-base font-bold text-green-700">{formatValue(deal.value)}</span>
                 {deal.probability != null && (
                     <span className="ml-auto text-[10px] text-gray-400 font-medium">{deal.probability}% prob.</span>
