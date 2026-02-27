@@ -21,6 +21,9 @@ import ContactsDashboard from "./pages/dashboard/ContactsDashboard";
 import UsersDashboard from "./pages/dashboard/UsersDashboard";
 import AuditLogs from "./pages/dashboard/AuditLogs";
 import TrashDashboard from "./pages/dashboard/TrashDashboard";
+import DealDetails from "./pages/dashboard/DealDetails";
+import CompanyDetails from "./pages/dashboard/CompanyDetails";
+import ContactDetails from "./pages/dashboard/ContactDetails";
 
 // Sales Manager dashboard
 import SalesManagerLayout from "./components/SalesManagerLayout";
@@ -81,6 +84,9 @@ const router = createBrowserRouter([
       { path: "users", element: <UsersDashboard /> },
       { path: "audit-logs", element: <AuditLogs /> },
       { path: "trash", element: <TrashDashboard /> },
+      { path: "deals/:id", element: <DealDetails /> },
+      { path: "companies/:id", element: <CompanyDetails /> },
+      { path: "contacts/:id", element: <ContactDetails /> },
     ]
   },
   {

@@ -492,3 +492,21 @@ export const getDeals = async (req, res, next) => {
         })
     }
 }
+
+export const getDealById = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const deal = await Deal.findById(id)
+            .populate("ownerId", "firstName lastName email")
+            .populate("companyId", "name industry size website address phone")
+            .populate("contactId", "firstName lastName email jobTitle phone mobile linkedin");
+
+        if (!deal) {
+            return res.status(404).json({ message: "Deal not found!" });
+        }
+
+        res.status(200).json({ data: deal });
+    } catch (error) {
+        res.status(500).json({ message: error.message || "Server error!" });
+    }
+};

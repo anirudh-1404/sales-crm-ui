@@ -15,3 +15,7 @@ export const updateContact = async (id, contactData) => {
 export const deleteContact = async (id) => {
     return API.delete(`/contacts/delete/${id}`);
 };
+
+export const getContactById = async (id) => {
+    return API.get(`/contacts/${id}`);
+};

@@ -19,3 +19,7 @@ export const deleteCompany = async (id) => {
 export const changeCompanyOwnership = async (id, newOwnerId) => {
     return API.patch(`/companies/${id}/change-owner`, { newOwnerId });
 };
+
+export const getCompanyById = async (id) => {
+    return API.get(`/companies/${id}`);
+};

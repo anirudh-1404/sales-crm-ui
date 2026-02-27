@@ -23,3 +23,7 @@ export const updateDealStage = async (id, newStage) => {
 export const markDealResult = async (id, result) => {
     return API.patch(`/deals/${id}/result`, { result });
 };
+
+export const getDealById = async (id) => {
+    return API.get(`/deals/${id}`);
+};

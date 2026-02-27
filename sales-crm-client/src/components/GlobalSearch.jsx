@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { Search, Briefcase, Building2, ContactRound, X, Loader2 } from "lucide-react";
 import { getDeals } from "../../API/services/dealService";
 import { getContacts } from "../../API/services/contactService";
@@ -11,6 +12,7 @@ const stageBadge = {
 };
 
 export default function GlobalSearch({ isOpen, onClose }) {
+    const navigate = useNavigate();
     const [query, setQuery] = useState("");
     const [loading, setLoading] = useState(false);
     const [results, setResults] = useState({ deals: [], contacts: [], companies: [] });
@@ -124,19 +126,25 @@ export default function GlobalSearch({ isOpen, onClose }) {
                                 <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Deals</span>
                                 <span className="ml-auto text-xs text-gray-400">{results.deals.length} result{results.deals.length > 1 ? "s" : ""}</span>
                             </div>
-                            {results.deals.map(d => (
-                                <div key={d._id} className="px-4 py-3 hover:bg-red-50 cursor-pointer border-b border-gray-50 transition-colors" onClick={onClose}>
-                                    <div className="flex items-center justify-between gap-3">
-                                        <div className="min-w-0">
-                                            <p className="text-sm font-medium text-gray-800 truncate">{d.name}</p>
-                                            <p className="text-xs text-gray-400 mt-0.5">{d.companyId?.name || "No company"}</p>
-                                        </div>
-                                        <div className="flex-shrink-0 flex items-center gap-2">
-                                            <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${stageBadge[d.stage] || "bg-gray-100 text-gray-600"}`}>{d.stage}</span>
-                                            <span className="text-xs font-semibold text-gray-700">${d.value?.toLocaleString()}</span>
-                                        </div>
+                            <div
+                                key={d._id}
+                                className="px-4 py-3 hover:bg-red-50 cursor-pointer border-b border-gray-50 transition-colors"
+                                onClick={() => {
+                                    navigate(`/dashboard/deals/${d._id}`);
+                                    onClose();
+                                }}
+                            >
+                                <div className="flex items-center justify-between gap-3">
+                                    <div className="min-w-0">
+                                        <p className="text-sm font-medium text-gray-800 truncate">{d.name}</p>
+                                        <p className="text-xs text-gray-400 mt-0.5">{d.companyId?.name || "No company"}</p>
+                                    </div>
+                                    <div className="flex-shrink-0 flex items-center gap-2">
+                                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${stageBadge[d.stage] || "bg-gray-100 text-gray-600"}`}>{d.stage}</span>
+                                        <span className="text-xs font-semibold text-gray-700">${d.value?.toLocaleString()}</span>
                                     </div>
                                 </div>
+                            </div>
                             ))}
                         </div>
                     )}
@@ -150,7 +158,14 @@ export default function GlobalSearch({ isOpen, onClose }) {
                                 <span className="ml-auto text-xs text-gray-400">{results.contacts.length} result{results.contacts.length > 1 ? "s" : ""}</span>
                             </div>
                             {results.contacts.map(c => (
-                                <div key={c._id} className="px-4 py-3 hover:bg-red-50 cursor-pointer border-b border-gray-50 transition-colors" onClick={onClose}>
+                                <div
+                                    key={c._id}
+                                    className="px-4 py-3 hover:bg-red-50 cursor-pointer border-b border-gray-50 transition-colors"
+                                    onClick={() => {
+                                        navigate(`/dashboard/contacts/${c._id}`);
+                                        onClose();
+                                    }}
+                                >
                                     <div className="flex items-center gap-3">
                                         <div className="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
                                             {`${c.firstName?.[0] || ""}${c.lastName?.[0] || ""}`.toUpperCase()}
@@ -174,7 +189,14 @@ export default function GlobalSearch({ isOpen, onClose }) {
                                 <span className="ml-auto text-xs text-gray-400">{results.companies.length} result{results.companies.length > 1 ? "s" : ""}</span>
                             </div>
                             {results.companies.map(co => (
-                                <div key={co._id} className="px-4 py-3 hover:bg-red-50 cursor-pointer border-b border-gray-50 transition-colors" onClick={onClose}>
+                                <div
+                                    key={co._id}
+                                    className="px-4 py-3 hover:bg-red-50 cursor-pointer border-b border-gray-50 transition-colors"
+                                    onClick={() => {
+                                        navigate(`/dashboard/companies/${co._id}`);
+                                        onClose();
+                                    }}
+                                >
                                     <div className="flex items-center justify-between gap-3">
                                         <div className="min-w-0">
                                             <p className="text-sm font-medium text-gray-800 truncate">{co.name}</p>
