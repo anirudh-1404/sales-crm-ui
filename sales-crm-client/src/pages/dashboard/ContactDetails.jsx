@@ -1,4 +1,3 @@
-```
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { getContactById } from "../../../API/services/contactService";
@@ -137,7 +136,7 @@ export default function ContactDetails() {
                             <div className="flex items-center gap-2 text-xs text-red-500">
                                 <Building2 size={12} className="text-red-400" />
                                 <button
-                                    onClick={() => contact.companyId?._id && navigate(`/ dashboard / companies / ${ contact.companyId._id } `)}
+                                    onClick={() => contact.companyId?._id && navigate(`/dashboard/companies/${contact.companyId._id}`)}
                                     className="hover:underline font-bold"
                                 >
                                     {contact.companyId?.name || contact.companyName || "No Company"}
@@ -195,17 +194,17 @@ export default function ContactDetails() {
                                 </label>
                                 {contact.linkedin ? (
                                     <a href={contact.linkedin.startsWith('http') ? contact.linkedin : `https://${contact.linkedin}`} target="_blank" rel="noopener noreferrer" className="text-sm font-bold text-blue-600 hover:underline flex items-center gap-1">
-                                        View Profile < ExternalLink size = { 10} />
-                                    </a >
+                                        View Profile <ExternalLink size={10} />
+                                    </a>
                                 ) : (
-    <p className="text-sm font-bold text-gray-300 italic">Not available</p>
-)}
-                            </div >
-                        </div >
-                    </div >
+                                    <p className="text-sm font-bold text-gray-300 italic">Not available</p>
+                                )}
+                            </div>
+                        </div>
+                    </div>
 
-    {/* Relationship Owner */ }
-    < div className = "bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden" >
+                    {/* Relationship Owner */}
+                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                         <div className="px-6 py-4 border-b border-gray-50 flex items-center justify-between">
                             <h3 className="text-sm font-black text-gray-900 uppercase tracking-wider">Relationship Owner</h3>
                         </div>
@@ -220,13 +219,13 @@ export default function ContactDetails() {
                                 </div>
                             </div>
                         </div>
-                    </div >
-                </div >
+                    </div>
+                </div>
 
-    {/* Right Column - Pipeline & Interactions */ }
-    < div className = "lg:col-span-8 space-y-8" >
-        {/* Pipeline Status */ }
-        < div className = "space-y-4" >
+                {/* Right Column - Pipeline & Interactions */}
+                <div className="lg:col-span-8 space-y-8">
+                    {/* Pipeline Status */}
+                    <div className="space-y-4">
                         <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest">Contact Lifecycle Status</h3>
                         <div className="flex flex-wrap items-center">
                             {lifecycleStages.map((stage, index) => {
@@ -256,100 +255,100 @@ export default function ContactDetails() {
                                 );
                             })}
                         </div>
-                    </div >
+                    </div>
 
-    {/* Tabs Section */ }
-    < div className = "bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden" >
-        <div className="px-6 flex items-center gap-8 border-b border-gray-50 h-14 overflow-x-auto no-scrollbar">
-            {[
-                { id: "Activities", icon: Clock },
-                { id: "Notes", icon: FileText },
-                { id: "Tasks", icon: List },
-                { id: "Files", icon: Paperclip },
-                { id: "Emails", icon: Mail }
-            ].map((tab) => (
-                <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`
+                    {/* Tabs Section */}
+                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                        <div className="px-6 flex items-center gap-8 border-b border-gray-50 h-14 overflow-x-auto no-scrollbar">
+                            {[
+                                { id: "Activities", icon: Clock },
+                                { id: "Notes", icon: FileText },
+                                { id: "Tasks", icon: List },
+                                { id: "Files", icon: Paperclip },
+                                { id: "Emails", icon: Mail }
+                            ].map((tab) => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveTab(tab.id)}
+                                    className={`
                                         flex items-center gap-2 h-full text-xs font-bold transition-all relative border-b-2
                                         ${activeTab === tab.id ? "text-red-600 border-red-600" : "text-gray-400 border-transparent hover:text-gray-600"}
                                     `}
-                >
-                    <tab.icon size={14} />
-                    {tab.id}
-                </button>
-            ))}
-        </div>
+                                >
+                                    <tab.icon size={14} />
+                                    {tab.id}
+                                </button>
+                            ))}
+                        </div>
 
-{/* Tab Content */ }
-<div className="p-6">
-    {activeTab === "Activities" && (
-        <div className="space-y-6">
-            <div className="flex items-center justify-between">
-                <h4 className="text-base font-black text-gray-900">Recent Interactions</h4>
-                <button className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 border border-gray-100 rounded-lg text-xs font-bold text-gray-600 hover:bg-gray-100 transition-all">
-                    <List size={14} className="text-gray-400" />
-                    Filter
-                </button>
-            </div>
+                        {/* Tab Content */}
+                        <div className="p-6">
+                            {activeTab === "Activities" && (
+                                <div className="space-y-6">
+                                    <div className="flex items-center justify-between">
+                                        <h4 className="text-base font-black text-gray-900">Recent Interactions</h4>
+                                        <button className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 border border-gray-100 rounded-lg text-xs font-bold text-gray-600 hover:bg-gray-100 transition-all">
+                                            <List size={14} className="text-gray-400" />
+                                            Filter
+                                        </button>
+                                    </div>
 
-            {/* Activity Feed */}
-            <div className="space-y-6 relative before:absolute before:left-5 before:top-2 before:bottom-0 before:w-0.5 before:bg-gray-100">
-                <div className="relative pl-12">
-                    <div className="absolute left-0 top-0 w-10 h-10 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center border-2 border-white shadow-sm z-10">
-                        <Mail size={18} />
-                    </div>
-                    <div className="space-y-1">
-                        <p className="text-sm font-bold text-gray-800">Email sent regarding upcoming meeting</p>
-                        <p className="text-[10px] text-gray-400 font-medium">{formatDate(contact.updatedAt, true)}</p>
+                                    {/* Activity Feed */}
+                                    <div className="space-y-6 relative before:absolute before:left-5 before:top-2 before:bottom-0 before:w-0.5 before:bg-gray-100">
+                                        <div className="relative pl-12">
+                                            <div className="absolute left-0 top-0 w-10 h-10 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center border-2 border-white shadow-sm z-10">
+                                                <Mail size={18} />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <p className="text-sm font-bold text-gray-800">Email sent regarding upcoming meeting</p>
+                                                <p className="text-[10px] text-gray-400 font-medium">{formatDate(contact.updatedAt, true)}</p>
+                                            </div>
+                                        </div>
+                                        <div className="relative pl-12">
+                                            <div className="absolute left-0 top-0 w-10 h-10 bg-green-50 text-green-600 rounded-lg flex items-center justify-center border-2 border-white shadow-sm z-10">
+                                                <User size={18} />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <p className="text-sm font-bold text-gray-800">Contact profile updated by system</p>
+                                                <p className="text-[10px] text-gray-400 font-medium">{formatDate(contact.createdAt, true)}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {activeTab === "Notes" && (
+                                <div className="space-y-4">
+                                    <h4 className="text-base font-black text-gray-900">Personal Intelligence</h4>
+                                    <div className="p-5 bg-gray-50 border border-gray-100 rounded-2xl text-[13px] text-gray-600 leading-relaxed italic whitespace-pre-wrap">
+                                        {contact.notes || "No interaction notes recorded for this contact."}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Placeholders for others */}
+                            {["Tasks", "Files", "Emails"].includes(activeTab) && (
+                                <div className="py-16 text-center">
+                                    <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
+                                        {activeTab === "Tasks" ? <List size={30} /> : activeTab === "Files" ? <Paperclip size={30} /> : <Mail size={30} />}
+                                    </div>
+                                    <p className="text-sm font-bold text-gray-400">Vault reaches here</p>
+                                    <p className="text-xs text-gray-300 mt-1">No {activeTab} linked to this profile yet.</p>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
-                <div className="relative pl-12">
-                    <div className="absolute left-0 top-0 w-10 h-10 bg-green-50 text-green-600 rounded-lg flex items-center justify-center border-2 border-white shadow-sm z-10">
-                        <User size={18} />
-                    </div>
-                    <div className="space-y-1">
-                        <p className="text-sm font-bold text-gray-800">Contact profile updated by system</p>
-                        <p className="text-[10px] text-gray-400 font-medium">{formatDate(contact.createdAt, true)}</p>
-                    </div>
-                </div>
             </div>
-        </div>
-    )}
 
-    {activeTab === "Notes" && (
-        <div className="space-y-4">
-            <h4 className="text-base font-black text-gray-900">Personal Intelligence</h4>
-            <div className="p-5 bg-gray-50 border border-gray-100 rounded-2xl text-[13px] text-gray-600 leading-relaxed italic whitespace-pre-wrap">
-                {contact.notes || "No interaction notes recorded for this contact."}
-            </div>
-        </div>
-    )}
-
-    {/* Placeholders for others */}
-    {["Tasks", "Files", "Emails"].includes(activeTab) && (
-        <div className="py-16 text-center">
-            <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
-                {activeTab === "Tasks" ? <List size={30} /> : activeTab === "Files" ? <Paperclip size={30} /> : <Mail size={30} />}
-            </div>
-            <p className="text-sm font-bold text-gray-400">Vault reaches here</p>
-            <p className="text-xs text-gray-300 mt-1">No {activeTab} linked to this profile yet.</p>
-        </div>
-    )}
-</div>
-                    </div >
-                </div >
-            </div >
-
-    {/* Sticky Meta Footer */ }
-    < div className = "flex items-center justify-between pt-6 border-t border-gray-100 text-[10px] font-bold text-gray-400 uppercase tracking-widest" >
+            {/* Sticky Meta Footer */}
+            <div className="flex items-center justify-between pt-6 border-t border-gray-100 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                 <div className="flex items-center gap-6">
                     <span className="flex items-center gap-1.5"><History size={12} className="text-gray-300" /> Registry: {formatDate(contact.createdAt)}</span>
                     <span className="flex items-center gap-1.5"><Clock size={12} className="text-gray-300" /> Synchronization: {formatDate(contact.updatedAt)}</span>
                 </div>
                 <span>Ref: {contact._id}</span>
-            </div >
-        </div >
+            </div>
+        </div>
     );
 }
