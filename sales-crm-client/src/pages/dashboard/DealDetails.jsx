@@ -12,11 +12,12 @@ import {
 import toast from "react-hot-toast";
 
 const pipelineStages = [
-    { id: "Lead", label: "Quality To Buy" },
-    { id: "Qualified", label: "Contact Made" },
-    { id: "Proposal", label: "Presentation" },
-    { id: "Negotiation", label: "Proposal Made" },
-    { id: "Closed Won", label: "Appointment" } // Simplified mapping for UI consistency with image
+    { id: "Lead", label: "Lead" },
+    { id: "Qualified", label: "Qualified" },
+    { id: "Proposal", label: "Proposal" },
+    { id: "Negotiation", label: "Negotiation" },
+    { id: "Closed Won", label: "Closed Won" },
+    { id: "Closed Lost", label: "Closed Lost" }
 ];
 
 const formatDate = (date, includeTime = false) => {
@@ -249,7 +250,13 @@ export default function DealDetails() {
                                             h-full w-full flex items-center justify-center text-[10px] font-bold px-4
                                             transition-all duration-300 cursor-default
                                             ${isActive
-                                                ? (index === 0 ? "bg-blue-700 text-white" : index === 1 ? "bg-amber-400 text-white" : index === 2 ? "bg-orange-600 text-white" : index === 3 ? "bg-pink-600 text-white" : "bg-gray-200 text-gray-500")
+                                                ? (index === 0 ? "bg-blue-700 text-white" :
+                                                    index === 1 ? "bg-amber-400 text-white" :
+                                                        index === 2 ? "bg-orange-600 text-white" :
+                                                            index === 3 ? "bg-pink-600 text-white" :
+                                                                index === 4 ? "bg-green-600 text-white" :
+                                                                    index === 5 ? "bg-red-600 text-white" :
+                                                                        "bg-gray-200 text-gray-500")
                                                 : "bg-gray-100 text-gray-400"}
                                             ${index === 0 ? "rounded-l-lg" : ""}
                                             ${index === pipelineStages.length - 1 ? "rounded-r-lg" : ""}
