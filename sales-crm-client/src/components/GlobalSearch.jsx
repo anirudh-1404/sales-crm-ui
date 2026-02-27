@@ -90,9 +90,23 @@ export default function GlobalSearch({ isOpen, onClose }) {
             onClick={onClose}
         >
             <div
-                className="bg-white rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden"
-                onClick={e => e.stopPropagation()}
+                className="bg-white rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden pointer-events-auto"
+                onClick={e => {
+                    console.log("[GlobalSearch] Modal Box Clicked (stopped propagation)");
+                    e.stopPropagation();
+                }}
             >
+                {/* DEBUG TEST BUTTON */}
+                <div
+                    className="bg-blue-500 text-white p-3 text-center font-bold cursor-pointer hover:bg-blue-600"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        console.log("[GlobalSearch] DEBUG TEST BUTTON CLICKED");
+                        window.alert("IF YOU SEE THIS, CLICK EVENTS ARE WORKING IN THE MODAL");
+                    }}
+                >
+                    DEBUG: CLICK HERE TO TEST SEARCH BOX
+                </div>
                 {/* Search input */}
                 <div className="flex items-center gap-3 px-4 py-4 border-b border-gray-100">
                     {loading
@@ -141,15 +155,16 @@ export default function GlobalSearch({ isOpen, onClose }) {
                                 <span className="ml-auto text-xs text-gray-400">{results.deals.length} result{results.deals.length > 1 ? "s" : ""}</span>
                             </div>
                             {results.deals.map(d => (
-                                <div
+                                <button
                                     key={d._id}
-                                    className="block px-4 py-3 hover:bg-red-50 cursor-pointer border-b border-gray-50 transition-colors z-[1001] relative pointer-events-auto"
+                                    type="button"
+                                    className="w-full text-left block px-4 py-3 hover:bg-red-50 cursor-pointer border-b border-gray-50 transition-colors relative z-[1001] pointer-events-auto"
                                     onClick={(e) => {
+                                        console.log("[GlobalSearch] Deal Item Clicked: ", d._id);
                                         e.preventDefault();
                                         e.stopPropagation();
+                                        window.alert("CLICKED DEAL: " + d.name);
                                         const path = `${basePath}/deals/${d._id}`;
-                                        console.log("[GlobalSearch] Clicking deal item. Path:", path);
-                                        window.alert("Clicking Deal: " + d.name);
                                         navigate(path);
                                         onClose();
                                     }}
@@ -178,15 +193,16 @@ export default function GlobalSearch({ isOpen, onClose }) {
                                 <span className="ml-auto text-xs text-gray-400">{results.contacts.length} result{results.contacts.length > 1 ? "s" : ""}</span>
                             </div>
                             {results.contacts.map(c => (
-                                <div
+                                <button
                                     key={c._id}
-                                    className="block px-4 py-3 hover:bg-red-50 cursor-pointer border-b border-gray-50 transition-colors z-[1001] relative pointer-events-auto"
+                                    type="button"
+                                    className="w-full text-left block px-4 py-3 hover:bg-red-50 cursor-pointer border-b border-gray-50 transition-colors relative z-[1001] pointer-events-auto"
                                     onClick={(e) => {
+                                        console.log("[GlobalSearch] Contact Item Clicked: ", c._id);
                                         e.preventDefault();
                                         e.stopPropagation();
+                                        window.alert("CLICKED CONTACT: " + c.firstName);
                                         const path = `${basePath}/contacts/${c._id}`;
-                                        console.log("[GlobalSearch] Clicking contact item. Path:", path);
-                                        window.alert("Clicking Contact: " + c.firstName);
                                         navigate(path);
                                         onClose();
                                     }}
@@ -214,15 +230,16 @@ export default function GlobalSearch({ isOpen, onClose }) {
                                 <span className="ml-auto text-xs text-gray-400">{results.companies.length} result{results.companies.length > 1 ? "s" : ""}</span>
                             </div>
                             {results.companies.map(co => (
-                                <div
+                                <button
                                     key={co._id}
-                                    className="block px-4 py-3 hover:bg-red-50 cursor-pointer border-b border-gray-50 transition-colors z-[1001] relative pointer-events-auto"
+                                    type="button"
+                                    className="w-full text-left block px-4 py-3 hover:bg-red-50 cursor-pointer border-b border-gray-50 transition-colors relative z-[1001] pointer-events-auto"
                                     onClick={(e) => {
+                                        console.log("[GlobalSearch] Company Item Clicked: ", co._id);
                                         e.preventDefault();
                                         e.stopPropagation();
+                                        window.alert("CLICKED COMPANY: " + co.name);
                                         const path = `${basePath}/companies/${co._id}`;
-                                        console.log("[GlobalSearch] Clicking company item. Path:", path);
-                                        window.alert("Clicking Company: " + co.name);
                                         navigate(path);
                                         onClose();
                                     }}
@@ -234,7 +251,7 @@ export default function GlobalSearch({ isOpen, onClose }) {
                                         </div>
                                         <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold flex-shrink-0 ${co.status === "Active" ? "bg-green-100 text-green-700" : co.status === "Prospect" ? "bg-red-100 text-red-700" : "bg-gray-100 text-gray-500"}`}>{co.status || "—"}</span>
                                     </div>
-                                </div>
+                                </button>
                             ))}
                         </div>
                     )}
