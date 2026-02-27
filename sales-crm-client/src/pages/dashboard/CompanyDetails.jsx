@@ -144,9 +144,9 @@ export default function CompanyDetails() {
                 </div>
                 <div className="flex items-center gap-3">
                     <span className={`px-4 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider border ${company.status === "Customer" ? "bg-green-50 text-green-700 border-green-100" :
-                            company.status === "Prospect" ? "bg-blue-50 text-blue-700 border-blue-100" :
-                                company.status === "Churned" ? "bg-red-50 text-red-700 border-red-100" :
-                                    "bg-gray-50 text-gray-600 border-gray-100"
+                        company.status === "Prospect" ? "bg-blue-50 text-blue-700 border-blue-100" :
+                            company.status === "Churned" ? "bg-red-50 text-red-700 border-red-100" :
+                                "bg-gray-50 text-gray-600 border-gray-100"
                         }`}>
                         {company.status || "Lead"} Account
                     </span>
@@ -202,6 +202,12 @@ export default function CompanyDetails() {
                                 </label>
                                 <p className="text-sm font-bold text-gray-900">{company.phone || "—"}</p>
                             </div>
+                            <div className="space-y-1">
+                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
+                                    <MapPin size={10} className="text-red-400" /> Headquarters
+                                </label>
+                                <p className="text-sm font-bold text-gray-900 leading-relaxed">{company.address || "No address on file"}</p>
+                            </div>
                         </div>
                     </div>
 
@@ -216,7 +222,7 @@ export default function CompanyDetails() {
                                     {company.ownerId?.firstName?.[0]}{company.ownerId?.lastName?.[0]}
                                 </div>
                                 <div>
-                                    <p className="text-sm font-black text-gray-900 leading-none">{company.ownerId?.firstName} {company.ownerId?.lastName || "Not Assigned"}</p>
+                                    <p className="text-sm font-black text-gray-900 leading-none">{company.ownerId?.firstName} {company.ownerId?.lastName || ""}</p>
                                     <p className="text-[10px] text-gray-400 font-bold mt-1 uppercase tracking-tighter">Account Executive</p>
                                 </div>
                             </div>

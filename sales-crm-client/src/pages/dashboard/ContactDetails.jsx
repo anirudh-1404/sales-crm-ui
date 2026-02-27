@@ -209,54 +209,21 @@ export default function ContactDetails() {
                             <h3 className="text-sm font-black text-gray-900 uppercase tracking-wider">Relationship Owner</h3>
                         </div>
                         <div className="p-5">
-                            <div className="flex items-center gap-4 bg-red-50/30 p-4 rounded-xl border border-red-50">
-                                <div className="w-10 h-10 rounded-full bg-red-600 flex items-center justify-center text-white text-xs font-bold border-2 border-white shadow-sm ring-1 ring-red-100">
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-red-600 text-[10px] font-bold border-2 border-white shadow-sm ring-1 ring-red-50">
                                     {contact.ownerId?.firstName?.[0]}{contact.ownerId?.lastName?.[0]}
                                 </div>
                                 <div>
-                                    <p className="text-sm font-black text-gray-900 leading-none">{contact.ownerId?.firstName} {contact.ownerId?.lastName || "Not Assigned"}</p>
-                                    <p className="text-[10px] text-red-500 font-bold mt-1 uppercase tracking-tighter">Assigned Manager</p>
+                                    <p className="text-xs font-bold text-gray-800 leading-none">{contact.ownerId?.firstName} {contact.ownerId?.lastName || ""}</p>
+                                    <p className="text-[10px] text-gray-400 font-medium mt-1">Relationship Manager</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Right Column - Pipeline & Interactions */}
+                {/* Right Column - Activities & Notes */}
                 <div className="lg:col-span-8 space-y-8">
-                    {/* Pipeline Status */}
-                    <div className="space-y-4">
-                        <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest">Contact Lifecycle Status</h3>
-                        <div className="flex flex-wrap items-center">
-                            {lifecycleStages.map((stage, index) => {
-                                const isActive = index <= 2; // Hardcoded active for visual demo following the pattern
-                                return (
-                                    <div key={stage.id} className="flex-1 min-w-[120px] relative group h-10 mb-2 mr-2">
-                                        <div className={`
-                                            h-full w-full flex items-center justify-center text-[10px] font-bold px-4
-                                            transition-all duration-300 cursor-default
-                                            ${isActive
-                                                ? (index === 0 ? "bg-blue-600 text-white" : index === 1 ? "bg-amber-400 text-white" : index === 2 ? "bg-orange-600 text-white" : "bg-gray-200 text-gray-500")
-                                                : "bg-gray-100 text-gray-400"}
-                                            ${index === 0 ? "rounded-l-lg" : ""}
-                                            ${index === lifecycleStages.length - 1 ? "rounded-r-lg" : ""}
-                                            relative z-10
-                                        `}
-                                            style={{
-                                                clipPath: index === 0
-                                                    ? "polygon(0% 0%, 90% 0%, 100% 50%, 90% 100%, 0% 100%)"
-                                                    : index === lifecycleStages.length - 1
-                                                        ? "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 10% 50%)"
-                                                        : "polygon(0% 0%, 90% 0%, 100% 50%, 90% 100%, 0% 100%, 10% 50%)"
-                                            }}>
-                                            {stage.label}
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
-
                     {/* Tabs Section */}
                     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                         <div className="px-6 flex items-center gap-8 border-b border-gray-50 h-14 overflow-x-auto no-scrollbar">

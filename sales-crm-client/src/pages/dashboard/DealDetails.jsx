@@ -217,7 +217,6 @@ export default function DealDetails() {
                     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                         <div className="px-6 py-4 border-b border-gray-50 flex items-center justify-between">
                             <h3 className="text-sm font-black text-gray-900">Deal Owner</h3>
-                            <button className="text-[10px] font-bold text-red-500 hover:text-red-600 transition-colors uppercase tracking-widest">+ Add New</button>
                         </div>
                         <div className="p-4 space-y-4">
                             <div className="flex items-center gap-3">
@@ -225,12 +224,39 @@ export default function DealDetails() {
                                     {deal.ownerId?.firstName?.[0]}{deal.ownerId?.lastName?.[0]}
                                 </div>
                                 <div>
-                                    <p className="text-xs font-bold text-gray-800 leading-none">{deal.ownerId?.firstName} {deal.ownerId?.lastName || "Not Assigned"}</p>
+                                    <p className="text-xs font-bold text-gray-800 leading-none">{deal.ownerId?.firstName} {deal.ownerId?.lastName || ""}</p>
                                     <p className="text-[10px] text-gray-400 font-medium mt-1">Relationship Manager</p>
                                 </div>
                             </div>
                         </div>
                     </div>
+
+                    {/* Stage History */}
+                    {deal.stageHistory && deal.stageHistory.length > 0 && (
+                        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                            <div className="px-6 py-4 border-b border-gray-50">
+                                <h3 className="text-sm font-black text-gray-900">Stage History</h3>
+                            </div>
+                            <div className="p-6 space-y-4">
+                                {deal.stageHistory.map((history, idx) => (
+                                    <div key={idx} className="flex items-start gap-4">
+                                        <div className="flex flex-col items-center">
+                                            <div className="w-2 h-2 rounded-full bg-red-500 mt-1" />
+                                            {idx !== deal.stageHistory.length - 1 && (
+                                                <div className="w-0.5 h-8 bg-gray-100" />
+                                            )}
+                                        </div>
+                                        <div className="flex-1">
+                                            <p className="text-[11px] font-bold text-gray-800 leading-none">{history.stage}</p>
+                                            <p className="text-[10px] text-gray-400 font-medium mt-1">
+                                                {new Date(history.changedAt).toLocaleString()} by {history.changedBy?.firstName || "System"}
+                                            </p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Right Column - Pipeline & Interactions */}
