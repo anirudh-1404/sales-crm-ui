@@ -1,21 +1,35 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { getCompanyById } from "../../../API/services/companyService";
 import {
-    Building2, User, MapPin, Globe,
-    Phone, Mail, Briefcase, Calendar, Clock,
-    ArrowLeft, Info, Loader2, Share2,
-    Users, Target, Layers, DollarSign
+    Building2, User, MapPin, Globe, Phone,
+    Mail, Briefcase, Calendar, Clock, ArrowLeft,
+    ChevronRight, Download, RotateCw, Maximize2,
+    Star, Layers, Users, Target, Info, DollarSign,
+    MoreHorizontal, List, FileText, Paperclip,
+    Loader2, ExternalLink
 } from "lucide-react";
 import toast from "react-hot-toast";
 
-const formatDate = (date) => {
+const companyStatusPipeline = [
+    { id: "Lead", label: "Lead Identification" },
+    { id: "Prospect", label: "Professional Prospect" },
+    { id: "Customer", label: "Active Customer" },
+    { id: "Churned", label: "Relationship Ended" }
+];
+
+const formatDate = (date, includeTime = false) => {
     if (!date) return "Not Set";
-    return new Date(date).toLocaleString("en-IN", {
+    const options = {
         day: "numeric",
         month: "short",
         year: "numeric",
-    });
+    };
+    if (includeTime) {
+        options.hour = '2-digit';
+        options.minute = '2-digit';
+    }
+    return new Date(date).toLocaleString("en-IN", options);
 };
 
 export default function CompanyDetails() {
@@ -23,6 +37,7 @@ export default function CompanyDetails() {
     const navigate = useNavigate();
     const [company, setCompany] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState("Activities");
 
     useEffect(() => {
         const fetchCompany = async () => {
@@ -71,116 +86,262 @@ export default function CompanyDetails() {
     }
 
     return (
-        <div className="max-w-4xl mx-auto p-6 space-y-6">
-            {/* Header */}
-            <div className="flex items-center justify-between">
-                <button
-                    onClick={() => navigate(-1)}
-                    className="flex items-center gap-2 text-gray-400 hover:text-gray-900 transition-colors"
-                >
-                    <ArrowLeft size={20} />
-                    <span className="text-sm">Back</span>
-                </button>
-                <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${company.status === "Customer" ? "bg-green-100 text-green-700 border-green-200" :
-                    company.status === "Prospect" ? "bg-blue-100 text-blue-700 border-blue-200" :
-                        company.status === "Churned" ? "bg-red-100 text-red-700 border-red-200" :
-                            "bg-gray-100 text-gray-700 border-gray-200"
-                    }`}>
-                    {company.status || "Lead"}
-                </span>
+        <div className="min-h-screen bg-gray-50/50 p-6 space-y-6">
+            {/* Top Navigation & Breadcrumbs */}
+            <div className="flex items-center justify-between mb-2">
+                <div className="space-y-1">
+                    <div className="flex items-center gap-2 text-xs font-medium text-gray-500">
+                        <span className="font-bold text-gray-900">Companies</span>
+                        <span className="px-1.5 py-0.5 bg-red-100 text-red-600 rounded text-[10px]">89</span>
+                        <ChevronRight size={14} className="text-gray-300" />
+                        <Link to="/dashboard" className="hover:text-red-600">Home</Link>
+                        <ChevronRight size={14} className="text-gray-300" />
+                        <span className="text-gray-400">Companies</span>
+                    </div>
+                </div>
+                <div className="flex items-center gap-2">
+                    <button className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-xs font-semibold text-gray-600 hover:bg-gray-50 transition-colors shadow-sm">
+                        <Download size={14} className="text-gray-400" />
+                        Export
+                        <ChevronRight size={12} className="rotate-90 text-gray-400" />
+                    </button>
+                    <button className="p-1.5 bg-white border border-gray-200 rounded-lg text-gray-400 hover:text-gray-600 transition-colors shadow-sm">
+                        <RotateCw size={16} />
+                    </button>
+                    <button className="p-1.5 bg-white border border-gray-200 rounded-lg text-gray-400 hover:text-gray-600 transition-colors shadow-sm">
+                        <Maximize2 size={16} />
+                    </button>
+                </div>
             </div>
 
-            {/* Content Card */}
-            <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-                <div className="p-6 border-b border-gray-50 bg-gray-50/30 flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center text-white text-xl font-bold border-4 border-white shadow-sm ring-1 ring-gray-100 uppercase">
+            <button onClick={() => navigate(-1)} className="inline-flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-gray-900 transition-colors mb-4">
+                <ArrowLeft size={18} />
+                Back to Companies
+            </button>
+
+            {/* Hero Section */}
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 flex items-center justify-between">
+                <div className="flex items-center gap-6">
+                    <div className="w-20 h-20 rounded-full bg-red-600 border-4 border-white shadow-md flex items-center justify-center text-white text-2xl font-black ring-1 ring-red-100 uppercase">
                         {getInitials(company.name)}
                     </div>
-                    <h1 className="text-2xl font-bold text-gray-900">{company.name}</h1>
-                </div>
-
-                <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12">
-                    {/* Identification */}
-                    <div className="space-y-4 text-sm">
-                        <div>
-                            <label className="text-gray-400 block mb-1">Industry</label>
-                            <div className="flex items-center gap-2 font-medium text-gray-900">
-                                <Layers size={16} className="text-red-400" />
-                                {company.industry || "N/A"}
-                            </div>
+                    <div>
+                        <div className="flex items-center gap-2 mb-1">
+                            <h1 className="text-2xl font-black text-gray-900 leading-none">{company.name}</h1>
+                            <Star size={18} className="text-yellow-400 fill-yellow-400" />
                         </div>
-
-                        <div>
-                            <label className="text-gray-400 block mb-1">Company Size</label>
-                            <div className="flex items-center gap-2 font-medium text-gray-900">
-                                <Users size={16} className="text-red-400" />
-                                {company.size || "N/A"} employees
+                        <div className="space-y-1.5">
+                            <div className="flex items-center gap-2 text-sm text-gray-500 font-medium">
+                                <Layers size={14} className="text-gray-300" />
+                                <span>{company.industry || "General Industry"}</span>
                             </div>
-                        </div>
-
-                        <div>
-                            <label className="text-gray-400 block mb-1">Website</label>
-                            <div className="flex items-center gap-2 font-medium text-red-600">
-                                <Globe size={16} className="text-red-400" />
-                                <a href={company.website?.startsWith('http') ? company.website : `https://${company.website}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
-                                    {company.website || "N/A"}
-                                </a>
+                            <div className="flex items-center gap-2 text-xs text-gray-400 font-medium">
+                                <MapPin size={12} className="text-red-400" />
+                                <span>{company.address || "Main global headquarters"}</span>
                             </div>
-                        </div>
-
-                        <div>
-                            <label className="text-gray-400 block mb-1">Revenue Range</label>
-                            <div className="flex items-center gap-2 font-medium text-gray-900">
-                                <DollarSign size={16} className="text-green-500" />
-                                {company.revenueRange || "N/A"}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Contact & Address */}
-                    <div className="space-y-4 text-sm">
-                        <div>
-                            <label className="text-gray-400 block mb-1">Primary Contact Name</label>
-                            <div className="flex items-center gap-2 font-medium text-gray-900">
-                                <User size={16} className="text-red-400" />
-                                {company.primaryContact || "N/A"}
-                            </div>
-                        </div>
-
-                        <div>
-                            <label className="text-gray-400 block mb-1">Phone</label>
-                            <div className="flex items-center gap-2 font-medium text-gray-900">
-                                <Phone size={16} className="text-red-400" />
-                                {company.phone || "N/A"}
-                            </div>
-                        </div>
-
-                        <div>
-                            <label className="text-gray-400 block mb-1">Office Address</label>
-                            <div className="flex items-start gap-2 font-medium text-gray-900">
-                                <MapPin size={16} className="text-red-400 mt-0.5" />
-                                <span className="flex-1">{company.address || "N/A"}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Notes Section */}
-                    <div className="md:col-span-2 pt-4 border-t border-gray-50">
-                        <label className="text-gray-400 text-sm block mb-2">Internal Notes</label>
-                        <div className="text-sm text-gray-600 bg-gray-50/50 p-4 rounded-lg whitespace-pre-wrap leading-relaxed">
-                            {company.notes || "No operational intelligence available."}
                         </div>
                     </div>
                 </div>
-
-                {/* Metadata */}
-                <div className="bg-gray-50/50 px-6 py-3 border-t border-gray-50 flex flex-wrap items-center justify-between text-[11px] text-gray-400">
-                    <div className="flex items-center gap-4">
-                        <span className="flex items-center gap-1"><Clock size={12} /> Managed by: {company.ownerId ? `${company.ownerId.firstName} ${company.ownerId.lastName}` : "Not Assigned"}</span>
-                        <span className="flex items-center gap-1"><Calendar size={12} /> Registry Date: {formatDate(company.createdAt)}</span>
-                    </div>
-                    <span className="uppercase tracking-wider">REF: {company._id}</span>
+                <div className="flex items-center gap-3">
+                    <span className={`px-4 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider border ${company.status === "Customer" ? "bg-green-50 text-green-700 border-green-100" :
+                            company.status === "Prospect" ? "bg-blue-50 text-blue-700 border-blue-100" :
+                                company.status === "Churned" ? "bg-red-50 text-red-700 border-red-100" :
+                                    "bg-gray-50 text-gray-600 border-gray-100"
+                        }`}>
+                        {company.status || "Lead"} Account
+                    </span>
+                    <button className="p-2 bg-gray-50 text-gray-400 rounded-lg hover:text-gray-600 transition-colors">
+                        <MoreHorizontal size={20} />
+                    </button>
                 </div>
+            </div>
+
+            {/* Main Content Split Layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                {/* Left Column - Information */}
+                <div className="lg:col-span-4 space-y-6">
+                    {/* Company Information */}
+                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                        <div className="px-6 py-4 border-b border-gray-50">
+                            <h3 className="text-sm font-black text-gray-900 uppercase tracking-wider">Operational Identity</h3>
+                        </div>
+                        <div className="p-6 space-y-5">
+                            <div className="space-y-1">
+                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
+                                    <Users size={10} className="text-red-400" /> Company Size
+                                </label>
+                                <p className="text-sm font-bold text-gray-900">{company.size || "1-10"} Employees</p>
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
+                                    <Globe size={10} className="text-red-400" /> Web Presence
+                                </label>
+                                {company.website ? (
+                                    <a href={company.website.startsWith('http') ? company.website : `https://${company.website}`} target="_blank" rel="noopener noreferrer" className="text-sm font-bold text-red-600 hover:underline flex items-center gap-1">
+                                        {company.website} <ExternalLink size={10} />
+                                    </a>
+                                ) : (
+                                    <p className="text-sm font-bold text-gray-300 italic">No website</p>
+                                )}
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
+                                    <DollarSign size={10} className="text-green-500" /> Revenue Range
+                                </label>
+                                <p className="text-sm font-bold text-gray-900">{company.revenueRange || "Private information"}</p>
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
+                                    <User size={10} className="text-red-400" /> Primary Liaison
+                                </label>
+                                <p className="text-sm font-bold text-gray-900">{company.primaryContact || "Unlisted"}</p>
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
+                                    <Phone size={10} className="text-red-400" /> HQ Phone
+                                </label>
+                                <p className="text-sm font-bold text-gray-900">{company.phone || "—"}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Strategic Owner */}
+                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                        <div className="px-6 py-4 border-b border-gray-50 flex items-center justify-between">
+                            <h3 className="text-sm font-black text-gray-900 uppercase tracking-wider">Strategic Owner</h3>
+                        </div>
+                        <div className="p-5">
+                            <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                                <div className="w-10 h-10 rounded-full bg-red-600 flex items-center justify-center text-white text-xs font-bold border-2 border-white shadow-sm ring-1 ring-red-100">
+                                    {company.ownerId?.firstName?.[0]}{company.ownerId?.lastName?.[0]}
+                                </div>
+                                <div>
+                                    <p className="text-sm font-black text-gray-900 leading-none">{company.ownerId?.firstName} {company.ownerId?.lastName || "Not Assigned"}</p>
+                                    <p className="text-[10px] text-gray-400 font-bold mt-1 uppercase tracking-tighter">Account Executive</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Right Column - Status & Interactions */}
+                <div className="lg:col-span-8 space-y-8">
+                    {/* Pipeline Status */}
+                    <div className="space-y-4">
+                        <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest">Account Lifecycle Status</h3>
+                        <div className="flex flex-wrap items-center">
+                            {companyStatusPipeline.map((stage, index) => {
+                                const currentStatusIndex = companyStatusPipeline.findIndex(s => s.id === (company.status || "Lead"));
+                                const isActive = index <= (currentStatusIndex === -1 ? 0 : currentStatusIndex);
+                                return (
+                                    <div key={stage.id} className="flex-1 min-w-[150px] relative group h-10 mb-2 mr-2">
+                                        <div className={`
+                                            h-full w-full flex items-center justify-center text-[10px] font-bold px-4
+                                            transition-all duration-300 cursor-default
+                                            ${isActive
+                                                ? (index === 0 ? "bg-blue-600 text-white" : index === 1 ? "bg-amber-400 text-white" : index === 2 ? "bg-green-600 text-white" : "bg-red-600 text-white")
+                                                : "bg-gray-100 text-gray-400"}
+                                            ${index === 0 ? "rounded-l-lg" : ""}
+                                            ${index === companyStatusPipeline.length - 1 ? "rounded-r-lg" : ""}
+                                            relative z-10
+                                        `}
+                                            style={{
+                                                clipPath: index === 0
+                                                    ? "polygon(0% 0%, 90% 0%, 100% 50%, 90% 100%, 0% 100%)"
+                                                    : index === companyStatusPipeline.length - 1
+                                                        ? "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 10% 50%)"
+                                                        : "polygon(0% 0%, 90% 0%, 100% 50%, 90% 100%, 0% 100%, 10% 50%)"
+                                            }}>
+                                            {stage.label}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    {/* Tabs Section */}
+                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                        <div className="px-6 flex items-center gap-8 border-b border-gray-50 h-14 overflow-x-auto no-scrollbar">
+                            {[
+                                { id: "Activities", icon: Clock },
+                                { id: "Intelligence", icon: FileText },
+                                { id: "Relationships", icon: Users },
+                                { id: "Opportunities", icon: Target },
+                                { id: "Files", icon: Paperclip }
+                            ].map((tab) => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveTab(tab.id)}
+                                    className={`
+                                        flex items-center gap-2 h-full text-xs font-bold transition-all relative border-b-2
+                                        ${activeTab === tab.id ? "text-red-600 border-red-600" : "text-gray-400 border-transparent hover:text-gray-600"}
+                                    `}
+                                >
+                                    <tab.icon size={14} />
+                                    {tab.id}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Tab Content */}
+                        <div className="p-6">
+                            {activeTab === "Activities" && (
+                                <div className="space-y-6">
+                                    <div className="flex items-center justify-between">
+                                        <h4 className="text-base font-black text-gray-900">Corporate Activity</h4>
+                                        <button className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 border border-gray-100 rounded-lg text-xs font-bold text-gray-600 hover:bg-gray-100 transition-all">
+                                            <List size={14} className="text-gray-400" />
+                                            Sort
+                                        </button>
+                                    </div>
+
+                                    {/* Activity Feed */}
+                                    <div className="space-y-6">
+                                        <div className="flex items-start gap-4 p-4 border border-gray-100 rounded-xl hover:bg-gray-50/50 transition-colors">
+                                            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shadow-sm">
+                                                <Building2 size={18} />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <p className="text-sm font-bold text-gray-800">Company record registered in CRM system</p>
+                                                <p className="text-[10px] text-gray-400 font-medium">{formatDate(company.createdAt, true)}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {activeTab === "Intelligence" && (
+                                <div className="space-y-4">
+                                    <h4 className="text-base font-black text-gray-900">Account Intel</h4>
+                                    <div className="p-5 bg-gray-50 border border-gray-100 rounded-2xl text-[13px] text-gray-600 leading-relaxed italic whitespace-pre-wrap">
+                                        {company.notes || "No operational intelligence recorded for this organization."}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Placeholders */}
+                            {["Relationships", "Opportunities", "Files"].includes(activeTab) && (
+                                <div className="py-20 text-center">
+                                    <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
+                                        {activeTab === "Relationships" ? <Users size={30} /> : activeTab === "Opportunities" ? <Target size={30} /> : <Paperclip size={30} />}
+                                    </div>
+                                    <p className="text-sm font-bold text-gray-400 font-black uppercase tracking-widest">Secure Environment</p>
+                                    <p className="text-xs text-gray-300 mt-2">No active {activeTab.toLowerCase()} data point found for this node.</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Sticky Meta Footer */}
+            <div className="flex items-center justify-between pt-6 border-t border-gray-100 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                <div className="flex items-center gap-6">
+                    <span className="flex items-center gap-1.5"><Calendar size={12} className="text-gray-300" /> Registry Datestamp: {formatDate(company.createdAt)}</span>
+                    <span className="flex items-center gap-1.5"><Clock size={12} className="text-gray-300" /> Last System Update: {formatDate(company.updatedAt)}</span>
+                </div>
+                <span>Ref-ID: {company._id}</span>
             </div>
         </div>
     );
