@@ -81,7 +81,6 @@ export default function GlobalSearch({ isOpen, onClose }) {
 
     const basePath = getBasePath();
 
-    console.log("[GlobalSearch] Rendered with role:", user?.role, "basePath:", basePath);
 
     return (
         <div
@@ -91,22 +90,8 @@ export default function GlobalSearch({ isOpen, onClose }) {
         >
             <div
                 className="bg-white rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden pointer-events-auto"
-                onClick={e => {
-                    console.log("[GlobalSearch] Modal Box Clicked (stopped propagation)");
-                    e.stopPropagation();
-                }}
+                onClick={e => e.stopPropagation()}
             >
-                {/* DEBUG TEST BUTTON */}
-                <div
-                    className="bg-blue-500 text-white p-3 text-center font-bold cursor-pointer hover:bg-blue-600"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        console.log("[GlobalSearch] DEBUG TEST BUTTON CLICKED");
-                        window.alert("IF YOU SEE THIS, CLICK EVENTS ARE WORKING IN THE MODAL");
-                    }}
-                >
-                    DEBUG: CLICK HERE TO TEST SEARCH BOX
-                </div>
                 {/* Search input */}
                 <div className="flex items-center gap-3 px-4 py-4 border-b border-gray-100">
                     {loading
@@ -160,10 +145,8 @@ export default function GlobalSearch({ isOpen, onClose }) {
                                     type="button"
                                     className="w-full text-left block px-4 py-3 hover:bg-red-50 cursor-pointer border-b border-gray-50 transition-colors relative z-[1001] pointer-events-auto"
                                     onClick={(e) => {
-                                        console.log("[GlobalSearch] Deal Item Clicked: ", d._id);
                                         e.preventDefault();
                                         e.stopPropagation();
-                                        window.alert("CLICKED DEAL: " + d.name);
                                         const path = `${basePath}/deals/${d._id}`;
                                         navigate(path);
                                         onClose();
@@ -198,10 +181,8 @@ export default function GlobalSearch({ isOpen, onClose }) {
                                     type="button"
                                     className="w-full text-left block px-4 py-3 hover:bg-red-50 cursor-pointer border-b border-gray-50 transition-colors relative z-[1001] pointer-events-auto"
                                     onClick={(e) => {
-                                        console.log("[GlobalSearch] Contact Item Clicked: ", c._id);
                                         e.preventDefault();
                                         e.stopPropagation();
-                                        window.alert("CLICKED CONTACT: " + c.firstName);
                                         const path = `${basePath}/contacts/${c._id}`;
                                         navigate(path);
                                         onClose();
@@ -235,10 +216,8 @@ export default function GlobalSearch({ isOpen, onClose }) {
                                     type="button"
                                     className="w-full text-left block px-4 py-3 hover:bg-red-50 cursor-pointer border-b border-gray-50 transition-colors relative z-[1001] pointer-events-auto"
                                     onClick={(e) => {
-                                        console.log("[GlobalSearch] Company Item Clicked: ", co._id);
                                         e.preventDefault();
                                         e.stopPropagation();
-                                        window.alert("CLICKED COMPANY: " + co.name);
                                         const path = `${basePath}/companies/${co._id}`;
                                         navigate(path);
                                         onClose();
