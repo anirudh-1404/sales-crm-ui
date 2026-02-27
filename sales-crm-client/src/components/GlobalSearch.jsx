@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Search, Briefcase, Building2, ContactRound, X, Loader2 } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 import { getDeals } from "../../API/services/dealService";
 import { getContacts } from "../../API/services/contactService";
 import { getCompanies } from "../../API/services/companyService";
@@ -12,6 +13,7 @@ const stageBadge = {
 };
 
 export default function GlobalSearch({ isOpen, onClose }) {
+    const { user } = useAuth();
     const navigate = useNavigate();
     const [query, setQuery] = useState("");
     const [loading, setLoading] = useState(false);
@@ -69,9 +71,19 @@ export default function GlobalSearch({ isOpen, onClose }) {
 
     if (!isOpen) return null;
 
+    const getBasePath = () => {
+        if (!user) return "/dashboard";
+        if (user.role === "admin") return "/dashboard";
+        if (user.role === "sales_manager") return "/manager";
+        if (user.role === "sales_rep") return "/rep";
+        return "/dashboard";
+    };
+
+    const basePath = getBasePath();
+
     return (
         <div
-            className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4"
+            className="fixed inset-0 z-[9999] flex items-start justify-center pt-20 px-4"
             style={{ background: "rgba(15,15,25,0.65)", backdropFilter: "blur(4px)" }}
             onClick={onClose}
         >
@@ -127,16 +139,17 @@ export default function GlobalSearch({ isOpen, onClose }) {
                                 <span className="ml-auto text-xs text-gray-400">{results.deals.length} result{results.deals.length > 1 ? "s" : ""}</span>
                             </div>
                             {results.deals.map(d => (
-                                <div
+                                <Link
                                     key={d._id}
-                                    className="px-4 py-3 hover:bg-red-50 cursor-pointer border-b border-gray-50 transition-colors"
-                                    onClick={() => {
-                                        navigate(`/dashboard/deals/${d._id}`);
+                                    to={`${basePath}/deals/${d._id}`}
+                                    className="block px-4 py-3 hover:bg-red-50 cursor-pointer border-b border-gray-50 transition-colors"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
                                         onClose();
                                     }}
                                 >
                                     <div className="flex items-center justify-between gap-3">
-                                        <div className="min-w-0">
+                                        <div className="min-w-0 text-left">
                                             <p className="text-sm font-medium text-gray-800 truncate">{d.name}</p>
                                             <p className="text-xs text-gray-400 mt-0.5">{d.companyId?.name || "No company"}</p>
                                         </div>
@@ -145,7 +158,7 @@ export default function GlobalSearch({ isOpen, onClose }) {
                                             <span className="text-xs font-semibold text-gray-700">${d.value?.toLocaleString()}</span>
                                         </div>
                                     </div>
-                                </div>
+                                </Link>
                             ))}
                         </div>
                     )}
@@ -159,15 +172,16 @@ export default function GlobalSearch({ isOpen, onClose }) {
                                 <span className="ml-auto text-xs text-gray-400">{results.contacts.length} result{results.contacts.length > 1 ? "s" : ""}</span>
                             </div>
                             {results.contacts.map(c => (
-                                <div
+                                <Link
                                     key={c._id}
-                                    className="px-4 py-3 hover:bg-red-50 cursor-pointer border-b border-gray-50 transition-colors"
-                                    onClick={() => {
-                                        navigate(`/dashboard/contacts/${c._id}`);
+                                    to={`${basePath}/contacts/${c._id}`}
+                                    className="block px-4 py-3 hover:bg-red-50 cursor-pointer border-b border-gray-50 transition-colors"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
                                         onClose();
                                     }}
                                 >
-                                    <div className="flex items-center gap-3">
+                                    <div className="flex items-center gap-3 text-left">
                                         <div className="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
                                             {`${c.firstName?.[0] || ""}${c.lastName?.[0] || ""}`.toUpperCase()}
                                         </div>
@@ -176,7 +190,7 @@ export default function GlobalSearch({ isOpen, onClose }) {
                                             <p className="text-xs text-gray-400 mt-0.5">{c.jobTitle || c.email || "—"} · {c.companyId?.name || "No company"}</p>
                                         </div>
                                     </div>
-                                </div>
+                                </Link>
                             ))}
                         </div>
                     )}
@@ -190,22 +204,23 @@ export default function GlobalSearch({ isOpen, onClose }) {
                                 <span className="ml-auto text-xs text-gray-400">{results.companies.length} result{results.companies.length > 1 ? "s" : ""}</span>
                             </div>
                             {results.companies.map(co => (
-                                <div
+                                <Link
                                     key={co._id}
-                                    className="px-4 py-3 hover:bg-red-50 cursor-pointer border-b border-gray-50 transition-colors"
-                                    onClick={() => {
-                                        navigate(`/dashboard/companies/${co._id}`);
+                                    to={`${basePath}/companies/${co._id}`}
+                                    className="block px-4 py-3 hover:bg-red-50 cursor-pointer border-b border-gray-50 transition-colors"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
                                         onClose();
                                     }}
                                 >
-                                    <div className="flex items-center justify-between gap-3">
+                                    <div className="flex items-center justify-between gap-3 text-left">
                                         <div className="min-w-0">
                                             <p className="text-sm font-medium text-gray-800 truncate">{co.name}</p>
                                             <p className="text-xs text-gray-400 mt-0.5">{co.industry || "—"} · {co.size || "—"}</p>
                                         </div>
                                         <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold flex-shrink-0 ${co.status === "Active" ? "bg-green-100 text-green-700" : co.status === "Prospect" ? "bg-red-100 text-red-700" : "bg-gray-100 text-gray-500"}`}>{co.status || "—"}</span>
                                     </div>
-                                </div>
+                                </Link>
                             ))}
                         </div>
                     )}

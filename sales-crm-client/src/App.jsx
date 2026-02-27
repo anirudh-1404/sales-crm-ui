@@ -104,6 +104,9 @@ const router = createBrowserRouter([
       { path: "deals", element: <ManagerDeals /> },
       { path: "companies", element: <ManagerCompanies /> },
       { path: "contacts", element: <ManagerContacts /> },
+      { path: "deals/:id", element: <DealDetails /> },
+      { path: "companies/:id", element: <CompanyDetails /> },
+      { path: "contacts/:id", element: <ContactDetails /> },
     ]
   },
   {
@@ -120,6 +123,9 @@ const router = createBrowserRouter([
       { path: "deals", element: <RepDeals /> },
       { path: "companies", element: <RepCompanies /> },
       { path: "contacts", element: <RepContacts /> },
+      { path: "deals/:id", element: <DealDetails /> },
+      { path: "companies/:id", element: <CompanyDetails /> },
+      { path: "contacts/:id", element: <ContactDetails /> },
     ]
   },
 ]);
