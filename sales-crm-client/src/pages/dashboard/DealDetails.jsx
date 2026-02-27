@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getDealById } from "../../API/services/dealService";
+import { getDealById } from "../../../API/services/dealService";
 import {
     Briefcase, Building2, User, DollarSign,
     Calendar, Clock, Target, Info,

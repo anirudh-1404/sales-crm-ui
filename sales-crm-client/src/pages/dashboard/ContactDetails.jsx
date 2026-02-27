@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getContactById } from "../../API/services/contactService";
+import { getContactById } from "../../../API/services/contactService";
 import {
     ContactRound, Building2, User, Phone,
     Mail, Linkedin, MapPin, Calendar,
