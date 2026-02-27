@@ -28,24 +28,30 @@ function DealCard({ deal, onEdit, onDelete }) {
         : null;
 
     return (
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 group hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-default">
+        <div
+            onClick={() => navigate(`/dashboard/deals/${deal._id}`)}
+            className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 group hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
+        >
             {/* Header */}
             <div className="flex items-start justify-between gap-2 mb-3">
-                <p
-                    onClick={() => navigate(`/dashboard/deals/${deal._id}`)}
-                    className="text-sm font-semibold text-gray-800 leading-tight line-clamp-2 cursor-pointer hover:text-red-600 transition-colors"
-                >
+                <p className="text-sm font-semibold text-gray-800 leading-tight line-clamp-2 hover:text-red-600 transition-colors">
                     {deal.name}
                 </p>
                 <div className="flex items-center gap-1 flex-shrink-0">
                     <button
-                        onClick={() => onEdit(deal)}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onEdit(deal);
+                        }}
                         className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition"
                     >
                         <Edit2 size={13} />
                     </button>
                     <button
-                        onClick={() => onDelete(deal)}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onDelete(deal);
+                        }}
                         className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition"
                     >
                         <Trash2 size={13} />
