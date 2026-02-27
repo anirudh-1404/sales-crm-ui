@@ -149,15 +149,6 @@ export default function DealDetails() {
                     </div>
                 </div>
                 <div className="flex items-center gap-3">
-                    <span className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-600 rounded-lg text-[11px] font-bold uppercase tracking-wider border border-red-100">
-                        <Lock size={12} />
-                        Private
-                    </span>
-                    <button className="flex items-center gap-2 px-4 py-1.5 bg-green-600 text-white rounded-lg text-xs font-bold shadow-lg shadow-green-100 hover:bg-green-700 transition-all">
-                        <ThumbsUp size={14} />
-                        Won
-                        <ChevronRight size={12} className="rotate-90 opacity-50" />
-                    </button>
                 </div>
             </div>
 
