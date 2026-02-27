@@ -122,12 +122,6 @@ export default function AdminDashboard() {
         <div className="p-6 space-y-6 max-w-7xl mx-auto">
             {/* Symmetric Navigation Header */}
             <div className="flex items-center gap-4 mb-2">
-                <button
-                    onClick={() => navigate(-1)}
-                    className="p-2 bg-white border border-gray-200 rounded-xl text-gray-400 hover:text-red-600 hover:border-red-100 transition-all shadow-sm group"
-                >
-                    <ArrowLeft size={20} className="group-hover:-translate-x-0.5 transition-transform" />
-                </button>
                 <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-gray-400">
                     <Link to="/dashboard" className="hover:text-red-600 transition-colors">Dashboard</Link>
                     <ChevronRight size={14} className="text-gray-200" />
