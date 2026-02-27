@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
     Users, Link2, Linkedin, CalendarPlus, ChevronDown, Plus, Edit2, Trash2, Search, ExternalLink, Filter, MoreHorizontal, Download, Eye
 } from "lucide-react";
@@ -56,6 +56,7 @@ const Avatar = ({ name }) => {
 };
 
 export default function ContactsDashboard() {
+    const navigate = useNavigate();
     const [contacts, setContacts] = useState([]);
     const [companies, setCompanies] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -191,7 +192,7 @@ export default function ContactsDashboard() {
                                             <tr key={c._id} className="hover:bg-gray-50/50 transition-colors group">
                                                 <td className="px-4 py-3 whitespace-nowrap">
                                                     <div className="flex items-center gap-3 cursor-pointer group/item"
-                                                        onClick={() => { setSelectedContact(c); setIsDetailsModalOpen(true); }}>
+                                                        onClick={() => navigate(`/dashboard/contacts/${c._id}`)}>
                                                         <Avatar name={`${c.firstName} ${c.lastName}`} />
                                                         <div>
                                                             <p className="font-medium text-gray-800 leading-none group-hover/item:text-red-600 transition-colors uppercase text-[11px] font-bold">{c.firstName} {c.lastName}</p>
@@ -199,7 +200,13 @@ export default function ContactsDashboard() {
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td className="px-4 py-3 text-gray-500 font-medium whitespace-nowrap">{c.companyId?.name || c.companyName || "—"}</td>
+                                                <td className="px-4 py-3 text-gray-500 font-medium whitespace-nowrap">
+                                                    {c.companyId?._id ? (
+                                                        <button onClick={() => navigate(`/dashboard/companies/${c.companyId._id}`)} className="hover:text-red-600 hover:underline">
+                                                            {c.companyId.name}
+                                                        </button>
+                                                    ) : (c.companyName || "—")}
+                                                </td>
                                                 <td className="px-4 py-3 text-red-600 font-semibold whitespace-nowrap">{c.ownerId?.firstName || "System"}</td>
                                                 <td className="px-4 py-3 whitespace-nowrap">
                                                     {c.linkedin ? (
@@ -212,7 +219,7 @@ export default function ContactsDashboard() {
                                                 </td>
                                                 <td className="px-4 py-3 whitespace-nowrap">
                                                     <div className="flex items-center gap-2">
-                                                        <button onClick={() => { setSelectedContact(c); setIsDetailsModalOpen(true); }}
+                                                        <button onClick={() => navigate(`/dashboard/contacts/${c._id}`)}
                                                             title="View details"
                                                             className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition">
                                                             <Eye size={16} />

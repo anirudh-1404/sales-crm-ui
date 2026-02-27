@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
     Building2, CheckCircle2, Eye, XCircle, ChevronDown, Plus, Edit2, Trash2, Search
 } from "lucide-react";
@@ -41,6 +41,7 @@ const statusBg = {
 };
 
 export default function CompaniesDashboard() {
+    const navigate = useNavigate();
     const [companies, setCompanies] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
@@ -173,7 +174,7 @@ export default function CompaniesDashboard() {
                                         companies.map((c) => (
                                             <tr key={c._id} className="hover:bg-gray-50/50 transition-colors group">
                                                 <td className="px-4 py-3 font-medium text-gray-800 whitespace-nowrap cursor-pointer hover:text-red-600 transition-colors"
-                                                    onClick={() => { setSelectedCompany(c); setIsDetailsModalOpen(true); }}>
+                                                    onClick={() => navigate(`/dashboard/companies/${c._id}`)}>
                                                     {c.name}
                                                 </td>
                                                 <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{c.industry || "—"}</td>
@@ -183,7 +184,7 @@ export default function CompaniesDashboard() {
                                                 </td>
                                                 <td className="px-4 py-3 whitespace-nowrap">
                                                     <div className="flex items-center gap-2">
-                                                        <button onClick={() => { setSelectedCompany(c); setIsDetailsModalOpen(true); }}
+                                                        <button onClick={() => navigate(`/dashboard/companies/${c._id}`)}
                                                             title="View details"
                                                             className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition">
                                                             <Eye size={16} />

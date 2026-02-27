@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
     Briefcase, Zap, CheckCircle2, DollarSign,
     MoreHorizontal, Plus, Edit2, Trash2,
@@ -47,6 +47,7 @@ const stageBadge = {
 const STAGES = ["Lead", "Qualified", "Proposal", "Negotiation", "Closed Won", "Closed Lost"];
 
 export default function DealsDashboard() {
+    const navigate = useNavigate();
     const [deals, setDeals] = useState([]);
     const [companies, setCompanies] = useState([]);
     const [contacts, setContacts] = useState([]);
@@ -246,12 +247,24 @@ export default function DealsDashboard() {
                                             deals.slice(0, 10).map((d) => (
                                                 <tr key={d._id} className="hover:bg-gray-50/50 transition-colors group">
                                                     <td className="px-4 py-3 font-medium text-gray-800 whitespace-nowrap cursor-pointer hover:text-red-600 transition-colors"
-                                                        onClick={() => { setSelectedDeal(d); setIsDetailsModalOpen(true); }}>
+                                                        onClick={() => navigate(`/dashboard/deals/${d._id}`)}>
                                                         {d.name}
                                                     </td>
                                                     <td className="px-4 py-3 text-red-700 font-semibold whitespace-nowrap">{d.ownerId?.firstName || "System"}</td>
-                                                    <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{d.companyId?.name || d.companyName || "—"}</td>
-                                                    <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{d.contactId ? `${d.contactId.firstName} ${d.contactId.lastName}`.trim() : (d.contactName || "—")}</td>
+                                                    <td className="px-4 py-3 text-gray-500 whitespace-nowrap">
+                                                        {d.companyId?._id ? (
+                                                            <button onClick={() => navigate(`/dashboard/companies/${d.companyId._id}`)} className="hover:text-red-600 hover:underline">
+                                                                {d.companyId.name}
+                                                            </button>
+                                                        ) : (d.companyName || "—")}
+                                                    </td>
+                                                    <td className="px-4 py-3 text-gray-500 whitespace-nowrap">
+                                                        {d.contactId?._id ? (
+                                                            <button onClick={() => navigate(`/dashboard/contacts/${d.contactId._id}`)} className="hover:text-red-600 hover:underline">
+                                                                {`${d.contactId.firstName} ${d.contactId.lastName}`.trim()}
+                                                            </button>
+                                                        ) : (d.contactName || "—")}
+                                                    </td>
                                                     <td className="px-4 py-3">
                                                         <select
                                                             value={d.stage}
@@ -265,7 +278,7 @@ export default function DealsDashboard() {
                                                     <td className="px-4 py-3 whitespace-nowrap">
                                                         <div className="flex items-center gap-2">
                                                             <button
-                                                                onClick={() => { setSelectedDeal(d); setIsDetailsModalOpen(true); }}
+                                                                onClick={() => navigate(`/dashboard/deals/${d._id}`)}
                                                                 title="View details"
                                                                 className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
                                                             >

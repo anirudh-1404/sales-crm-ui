@@ -141,9 +141,24 @@ export default function DealDetails() {
                                     {deal.companyId?.name || deal.companyName || "No Company"}
                                 </button>
                             </div>
-                            <div className="flex items-center gap-2 text-xs text-gray-400">
-                                <MapPin size={12} className="text-gray-300" />
-                                <span>{deal.companyId?.address || "Location not specified"}</span>
+                            <div className="flex items-center gap-4 text-xs">
+                                <div className="flex items-center gap-1.5 text-gray-400">
+                                    <MapPin size={12} className="text-gray-300" />
+                                    <span>{deal.companyId?.address || "Location not specified"}</span>
+                                </div>
+                                <div className="flex items-center gap-1.5 text-red-500 font-bold">
+                                    <User size={12} className="text-red-400" />
+                                    {deal.contactId?._id ? (
+                                        <button
+                                            onClick={() => navigate(`/dashboard/contacts/${deal.contactId._id}`)}
+                                            className="hover:underline"
+                                        >
+                                            {deal.contactId.firstName} {deal.contactId.lastName}
+                                        </button>
+                                    ) : (
+                                        <span>{deal.contactName || "No Contact"}</span>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>

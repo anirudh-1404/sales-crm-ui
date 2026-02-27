@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Building2, User, CalendarDays, DollarSign, Edit2, Trash2 } from "lucide-react";
 
 const STAGE_CONFIG = {
@@ -20,6 +21,7 @@ function formatValue(val) {
 }
 
 function DealCard({ deal, onEdit, onDelete }) {
+    const navigate = useNavigate();
     const cfg = STAGE_CONFIG[deal.stage] || STAGE_CONFIG["Lead"];
     const closeDate = deal.expectedCloseDate
         ? new Date(deal.expectedCloseDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
@@ -29,7 +31,12 @@ function DealCard({ deal, onEdit, onDelete }) {
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 group hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-default">
             {/* Header */}
             <div className="flex items-start justify-between gap-2 mb-3">
-                <p className="text-sm font-semibold text-gray-800 leading-tight line-clamp-2">{deal.name}</p>
+                <p
+                    onClick={() => navigate(`/dashboard/deals/${deal._id}`)}
+                    className="text-sm font-semibold text-gray-800 leading-tight line-clamp-2 cursor-pointer hover:text-red-600 transition-colors"
+                >
+                    {deal.name}
+                </p>
                 <div className="flex items-center gap-1 flex-shrink-0">
                     <button
                         onClick={() => onEdit(deal)}
