@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Users2, ShieldCheck, Briefcase, UserCheck, Edit2, RefreshCw, Plus, X, Search, Trash2, Eye, ArrowLeft, ChevronRight } from "lucide-react";
+import { Users2, ShieldCheck, Briefcase, UserCheck, Edit2, RefreshCw, Plus, X, Search, Trash2, Eye, ArrowLeft, ChevronRight, LayoutGrid, List } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import UserCard from "../../components/cards/UserCard";
 import { getTeamUsers, deactivateUser, activateUser, bulkReassignRecords, softDeleteUser, resendInvitation as apiResendInvitation } from "../../../API/services/userService";
 import UserModal from "../../components/modals/UserModal";
 import UserDetailsModal from "../../components/modals/UserDetailsModal";
@@ -127,6 +128,7 @@ export default function UsersDashboard() {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
+    const [viewMode, setViewMode] = useState("list");
 
     // Modal state
     const [isUserModalOpen, setIsUserModalOpen] = useState(false);
@@ -288,143 +290,179 @@ export default function UsersDashboard() {
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden h-full flex flex-col">
                 <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
                     <h2 className="font-bold text-gray-800">All Users</h2>
-                    <div className="relative">
-                        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                        <input type="text" placeholder="Search users..."
-                            value={search} onChange={e => setSearch(e.target.value)}
-                            className="w-full sm:w-64 text-sm border border-gray-200 rounded-lg pl-9 pr-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-red-400 bg-gray-50/50 transition-all" />
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+                        <div className="relative">
+                            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                            <input type="text" placeholder="Search users..."
+                                value={search} onChange={e => setSearch(e.target.value)}
+                                className="w-full sm:w-64 text-sm border border-gray-200 rounded-lg pl-9 pr-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-red-400 bg-gray-50/50 transition-all" />
+                        </div>
+                        <div className="flex items-center gap-2 bg-gray-100 p-1 rounded-lg self-end sm:self-auto">
+                            <button
+                                onClick={() => setViewMode("list")}
+                                className={`p-1.5 rounded-md transition-all ${viewMode === "list" ? "bg-white text-red-600 shadow-sm" : "text-gray-400 hover:text-gray-600"}`}
+                                title="List View"
+                            >
+                                <List size={16} />
+                            </button>
+                            <button
+                                onClick={() => setViewMode("card")}
+                                className={`p-1.5 rounded-md transition-all ${viewMode === "card" ? "bg-white text-red-600 shadow-sm" : "text-gray-400 hover:text-gray-600"}`}
+                                title="Card View"
+                            >
+                                <LayoutGrid size={16} />
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div className="flex-1 flex flex-col min-h-0">
-                    <div className="flex-1 overflow-x-auto overflow-y-auto custom-scrollbar">
-                        <table className="w-full text-sm">
-                            <thead>
-                                <tr className="border-b border-gray-100 bg-gray-50">
-                                    {["User", "Role", "Reports To", "Status", "Last Login", "Actions"].map(h => (
-                                        <th key={h} className="text-left px-4 py-3 text-gray-500 font-semibold text-xs uppercase tracking-wide whitespace-nowrap">{h}</th>
-                                    ))}
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-50">
-                                {loading && users.length === 0 ? (
-                                    <tr><td colSpan={6} className="text-center py-10 text-gray-400">Loading users...</td></tr>
-                                ) : filtered.length === 0 ? (
-                                    <tr><td colSpan={6} className="text-center py-10 text-gray-400">No users found.</td></tr>
-                                ) : (
-                                    filtered.map((u) => (
-                                        <tr
-                                            key={u._id}
-                                            className="hover:bg-gray-50/50 transition-colors group cursor-pointer"
-                                            onClick={() => { setSelectedUser(u); setIsDetailsModalOpen(true); }}
-                                        >
-                                            <td className="px-4 py-3 whitespace-nowrap">
-                                                <div className="flex items-center gap-3">
-                                                    <Avatar name={`${u.firstName} ${u.lastName}`} />
-                                                    <div>
-                                                        <p className="font-bold text-gray-800 leading-none hover:text-red-600 transition-colors">{u.firstName} {u.lastName}</p>
-                                                        <p className="text-xs text-gray-400 mt-0.5">{u.email}</p>
+                    {viewMode === "list" ? (
+                        <div className="flex-1 overflow-x-auto overflow-y-auto custom-scrollbar">
+                            <table className="w-full text-sm">
+                                <thead>
+                                    <tr className="border-b border-gray-100 bg-gray-50">
+                                        {["User", "Role", "Reports To", "Status", "Last Login", "Actions"].map(h => (
+                                            <th key={h} className="text-left px-4 py-3 text-gray-500 font-semibold text-xs uppercase tracking-wide whitespace-nowrap">{h}</th>
+                                        ))}
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-50">
+                                    {loading && users.length === 0 ? (
+                                        <tr><td colSpan={6} className="text-center py-10 text-gray-400">Loading users...</td></tr>
+                                    ) : filtered.length === 0 ? (
+                                        <tr><td colSpan={6} className="text-center py-10 text-gray-400">No users found.</td></tr>
+                                    ) : (
+                                        filtered.map((u) => (
+                                            <tr
+                                                key={u._id}
+                                                className="hover:bg-gray-50/50 transition-colors group cursor-pointer"
+                                                onClick={() => { setSelectedUser(u); setIsDetailsModalOpen(true); }}
+                                            >
+                                                <td className="px-4 py-3 whitespace-nowrap">
+                                                    <div className="flex items-center gap-3">
+                                                        <Avatar name={`${u.firstName} ${u.lastName}`} />
+                                                        <div>
+                                                            <p className="font-bold text-gray-800 leading-none hover:text-red-600 transition-colors uppercase text-[11px] tracking-wider">{u.firstName} {u.lastName}</p>
+                                                            <p className="text-xs text-gray-400 mt-0.5">{u.email}</p>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </td>
-                                            <td className="px-4 py-3 whitespace-nowrap">
-                                                <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${roleBadge[u.role] || "bg-gray-100 text-gray-600"}`}>
-                                                    {formatRole(u.role)}
-                                                </span>
-                                            </td>
-                                            <td className="px-4 py-3 text-gray-500 text-sm whitespace-nowrap">
-                                                {u.managerId
-                                                    ? `${u.managerId.firstName || ""} ${u.managerId.lastName || ""}`.trim() || "Manager"
-                                                    : "—"}
-                                            </td>
-                                            <td className="px-4 py-3 whitespace-nowrap">
-                                                <div className="flex items-center gap-2">
-                                                    <span className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full ${!u.isActive
-                                                        ? "bg-red-100 text-red-700 border border-red-200"
-                                                        : !u.isSetupComplete
-                                                            ? "bg-amber-100 text-amber-700 border border-amber-200"
-                                                            : "bg-green-100 text-green-700"
-                                                        }`}>
-                                                        <span className={`w-1.5 h-1.5 rounded-full ${!u.isActive ? "bg-red-500 animate-pulse" : !u.isSetupComplete ? "bg-amber-500 animate-pulse" : "bg-green-500"}`} />
-                                                        {!u.isActive ? "Deactivated" : !u.isSetupComplete ? "Pending Invite" : "Active"}
+                                                </td>
+                                                <td className="px-4 py-3 whitespace-nowrap">
+                                                    <span className={`text-[10px] px-2.5 py-1 rounded-full font-bold ${roleBadge[u.role] || "bg-gray-100 text-gray-600"}`}>
+                                                        {formatRole(u.role)}
                                                     </span>
-                                                    {u.isActive && !u.isSetupComplete && (
+                                                </td>
+                                                <td className="px-4 py-3 text-gray-500 text-sm whitespace-nowrap">
+                                                    {u.managerId
+                                                        ? <span className="text-[11px] font-bold text-gray-700 uppercase tracking-tighter">{u.managerId.firstName || ""} {u.managerId.lastName || ""}</span>
+                                                        : "—"}
+                                                </td>
+                                                <td className="px-4 py-3 whitespace-nowrap">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className={`inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1 rounded-full ${!u.isActive
+                                                            ? "bg-red-50 text-red-700 border border-red-100"
+                                                            : !u.isSetupComplete
+                                                                ? "bg-amber-50 text-amber-700 border border-amber-200"
+                                                                : "bg-green-50 text-green-700 border border-green-100"
+                                                            }`}>
+                                                            <span className={`w-1.5 h-1.5 rounded-full ${!u.isActive ? "bg-red-500 animate-pulse" : !u.isSetupComplete ? "bg-amber-500 animate-pulse" : "bg-green-500"}`} />
+                                                            {!u.isActive ? "DEACTIVATED" : !u.isSetupComplete ? "PENDING INVITE" : "ACTIVE"}
+                                                        </span>
+                                                        {u.isActive && !u.isSetupComplete && (
+                                                            <button
+                                                                onClick={(e) => { e.stopPropagation(); handleResendInvite(u); }}
+                                                                className="p-1 px-2 text-[10px] font-bold text-amber-600 hover:bg-amber-50 rounded-lg border border-amber-200 transition"
+                                                                title="Resend invitation link"
+                                                            >
+                                                                RESEND
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </td>
+                                                <td className="px-4 py-3 text-gray-500 text-[10px] font-medium whitespace-nowrap uppercase tracking-tighter">
+                                                    {u.lastLogin ? new Date(u.lastLogin).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "Never"}
+                                                </td>
+                                                <td className="px-4 py-3 whitespace-nowrap" onClick={e => e.stopPropagation()}>
+                                                    <div className="flex items-center gap-1.5">
                                                         <button
-                                                            onClick={(e) => { e.stopPropagation(); handleResendInvite(u); }}
-                                                            className="p-1 px-2 text-[10px] font-bold text-amber-600 hover:bg-amber-50 rounded-lg border border-amber-200 transition"
-                                                            title="Resend invitation link"
-                                                        >
-                                                            RESEND
-                                                        </button>
-                                                    )}
-                                                </div>
-                                            </td>
-                                            <td className="px-4 py-3 text-gray-500 text-xs whitespace-nowrap">
-                                                {u.lastLogin ? new Date(u.lastLogin).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "Never"}
-                                            </td>
-                                            <td className="px-4 py-3 whitespace-nowrap" onClick={e => e.stopPropagation()}>
-                                                <div className="flex items-center gap-1.5">
-                                                    {/* View Details */}
-                                                    <button
-                                                        onClick={() => { setSelectedUser(u); setIsDetailsModalOpen(true); }}
-                                                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
-                                                        title="View profile details"
-                                                    >
-                                                        <Eye size={15} />
-                                                    </button>
-                                                    {/* Edit */}
-                                                    <button
-                                                        onClick={() => { setSelectedUser(u); setIsUserModalOpen(true); }}
-                                                        className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
-                                                        title="Edit user"
-                                                    >
-                                                        <Edit2 size={15} />
-                                                    </button>
-                                                    {/* Reassign (only for non-admins) */}
-                                                    {u.role !== "admin" && (
-                                                        <button
-                                                            onClick={() => { setSelectedUser(u); setIsReassignModalOpen(true); }}
-                                                            className="p-1.5 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition"
-                                                            title="Reassign all records"
-                                                        >
-                                                            <RefreshCw size={15} />
-                                                        </button>
-                                                    )}
-                                                    {/* Soft Delete (non-admins only) */}
-                                                    {u.role !== "admin" && (
-                                                        <button
-                                                            onClick={() => handleSoftDelete(u)}
+                                                            onClick={() => { setSelectedUser(u); setIsDetailsModalOpen(true); }}
                                                             className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
-                                                            title="Move to trash"
+                                                            title="View profile details"
                                                         >
-                                                            <Trash2 size={15} />
+                                                            <Eye size={15} />
                                                         </button>
-                                                    )}
-                                                    {/* Deactivate (active non-admins) */}
-                                                    {u.role !== "admin" && u.isActive && (
                                                         <button
-                                                            onClick={() => handleDeactivate(u)}
-                                                            className="text-[10px] sm:text-xs px-2 sm:px-2.5 py-1 rounded-lg font-semibold border border-red-200 text-red-600 hover:bg-red-50 transition"
+                                                            onClick={() => { setSelectedUser(u); setIsUserModalOpen(true); }}
+                                                            className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                                                            title="Edit user"
                                                         >
-                                                            Deactivate
+                                                            <Edit2 size={15} />
                                                         </button>
-                                                    )}
-                                                    {/* Activate (inactive non-admins) */}
-                                                    {u.role !== "admin" && !u.isActive && (
-                                                        <button
-                                                            onClick={() => handleActivate(u)}
-                                                            className="text-[10px] sm:text-xs px-2 sm:px-2.5 py-1 rounded-lg font-semibold border border-green-300 text-green-700 hover:bg-green-50 transition"
-                                                        >
-                                                            Activate
-                                                        </button>
-                                                    )}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
+                                                        {u.role !== "admin" && (
+                                                            <button
+                                                                onClick={() => { setSelectedUser(u); setIsReassignModalOpen(true); }}
+                                                                className="p-1.5 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition"
+                                                                title="Reassign all records"
+                                                            >
+                                                                <RefreshCw size={15} />
+                                                            </button>
+                                                        )}
+                                                        {u.role !== "admin" && (
+                                                            <button
+                                                                onClick={() => handleSoftDelete(u)}
+                                                                className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                                                                title="Move to trash"
+                                                            >
+                                                                <Trash2 size={15} />
+                                                            </button>
+                                                        )}
+                                                        {u.role !== "admin" && u.isActive && (
+                                                            <button
+                                                                onClick={() => handleDeactivate(u)}
+                                                                className="text-[10px] px-2 py-1 rounded-lg font-bold border border-red-200 text-red-600 hover:bg-red-50 transition uppercase tracking-tighter"
+                                                            >
+                                                                Deactivate
+                                                            </button>
+                                                        )}
+                                                        {u.role !== "admin" && !u.isActive && (
+                                                            <button
+                                                                onClick={() => handleActivate(u)}
+                                                                className="text-[10px] px-2 py-1 rounded-lg font-bold border border-green-300 text-green-700 hover:bg-green-50 transition uppercase tracking-tighter"
+                                                            >
+                                                                Activate
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    ) : (
+                        <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 overflow-y-auto">
+                            {loading && users.length === 0 ? (
+                                <div className="col-span-full py-20 text-center text-gray-400">Loading users...</div>
+                            ) : filtered.length === 0 ? (
+                                <div className="col-span-full py-20 text-center text-gray-400 font-medium">No users found.</div>
+                            ) : (
+                                filtered.map(u => (
+                                    <UserCard
+                                        key={u._id}
+                                        user={u}
+                                        onEdit={(user) => { setSelectedUser(user); setIsUserModalOpen(true); }}
+                                        onDeactivate={handleDeactivate}
+                                        onActivate={handleActivate}
+                                        onDelete={handleSoftDelete}
+                                        onReassign={(user) => { setSelectedUser(user); setIsReassignModalOpen(true); }}
+                                        onView={(user) => { setSelectedUser(user); setIsDetailsModalOpen(true); }}
+                                        onResendInvite={handleResendInvite}
+                                    />
+                                ))
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -496,6 +534,6 @@ export default function UsersDashboard() {
                 confirmLabel={confirmState.confirmLabel}
                 confirmColor={confirmState.confirmColor}
             />
-        </div>
+        </div >
     );
 }
