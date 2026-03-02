@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         fetchProfile();
 
-        // Failsafe: If server doesn't respond in 4s, stop loading to allow redirect to login
+
         const failsafe = setTimeout(() => {
             setLoading(currentLoading => {
                 if (currentLoading) {

@@ -7,7 +7,7 @@ export const initSocket = (server) => {
         cors: {
             origin: [
                 process.env.FRONTEND_URL,
-                "https://sales-crm-ui-87gs.vercel.app",
+                "https://sales-crm-ui-qxyy.vercel.app",
                 "http://localhost:5173"
             ].filter(Boolean),
             methods: ["GET", "POST"],
