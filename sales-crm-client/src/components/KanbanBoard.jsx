@@ -22,6 +22,7 @@ function formatValue(val) {
 
 function DealCard({ deal, onEdit, onDelete }) {
     const navigate = useNavigate();
+    const basePath = window.location.pathname.startsWith('/rep') ? '/rep' : '/dashboard';
     const cfg = STAGE_CONFIG[deal.stage] || STAGE_CONFIG["Lead"];
     const closeDate = deal.expectedCloseDate
         ? new Date(deal.expectedCloseDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
@@ -29,7 +30,7 @@ function DealCard({ deal, onEdit, onDelete }) {
 
     return (
         <div
-            onClick={() => navigate(`/dashboard/deals/${deal._id}`)}
+            onClick={() => navigate(`${basePath}/deals/${deal._id}`)}
             className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 group hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
         >
             {/* Header */}

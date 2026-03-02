@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { Briefcase, Zap, CheckCircle2, XCircle, ChevronDown, Plus, Edit2, Trash2, Building2, Users2, ContactRound, ChevronRight } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import {
+    Briefcase as BriefcaseIcon, Zap as ZapIcon, CheckCircle2 as CheckCircleIcon,
+    DollarSign as DollarSignIcon, ChevronDown as ChevronDownIcon,
+    Plus as PlusIcon, Edit2 as EditIcon, Trash2 as TrashIcon,
+    Building2 as BuildingIcon, ChevronRight as ChevronRightIcon,
+    LayoutList as LayoutListIcon, Kanban as KanbanIcon, Eye as EyeIcon
+} from "lucide-react";
 import { getDeals, createDeal, updateDeal, deleteDeal, updateDealStage } from "../../../API/services/dealService";
 import { getCompanies } from "../../../API/services/companyService";
 import { getContacts } from "../../../API/services/contactService";
+import KanbanBoard from "../../components/KanbanBoard";
 import DealModal from "../../components/modals/DealModal";
-import DealDetailsModal from "../../components/modals/DealDetailsModal";
-import CompanyDetailsModal from "../../components/modals/CompanyDetailsModal";
-import ContactDetailsModal from "../../components/modals/ContactDetailsModal";
 import DeleteConfirmModal from "../../components/modals/DeleteConfirmModal";
 import { toast } from "react-hot-toast";
-import { Eye } from "lucide-react";
 
 const Select = ({ options, value, onChange }) => (
     <div className="relative">
@@ -18,7 +21,7 @@ const Select = ({ options, value, onChange }) => (
             className="appearance-none text-sm font-medium text-gray-700 border border-gray-200 rounded-lg px-3 py-1.5 pr-8 bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-400 hover:border-gray-300 transition">
             {options.map(o => <option key={o}>{o}</option>)}
         </select>
-        <ChevronDown size={14} className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-gray-400" />
+        <ChevronDownIcon size={14} className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-gray-400" />
     </div>
 );
 
@@ -50,22 +53,19 @@ const periodOptions = ["Last 30 Days", "Last 7 Days", "Last 90 Days", "This Year
 const STAGES = ["Lead", "Qualified", "Proposal", "Negotiation", "Closed Won", "Closed Lost"];
 
 export default function ManagerDeals() {
+    const navigate = useNavigate();
     const [deals, setDeals] = useState([]);
     const [companies, setCompanies] = useState([]);
     const [contacts, setContacts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [viewMode, setViewMode] = useState("list"); // "list" | "kanban"
 
     const [stageFilter, setStageFilter] = useState("All Stages");
     const [period, setPeriod] = useState("Last 30 Days");
 
     const [isDealModalOpen, setIsDealModalOpen] = useState(false);
-    const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
-    const [isCompanyDetailsOpen, setIsCompanyDetailsOpen] = useState(false);
-    const [isContactDetailsOpen, setIsContactDetailsOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedDeal, setSelectedDeal] = useState(null);
-    const [selectedCompany, setSelectedCompany] = useState(null);
-    const [selectedContact, setSelectedContact] = useState(null);
 
     const fetchData = async () => {
         setLoading(true);
@@ -139,7 +139,7 @@ export default function ManagerDeals() {
             {/* Symmetric Navigation Header */}
             <div className="flex items-center mb-6 text-[10px] font-black uppercase tracking-[0.12em] text-gray-400">
                 <Link to="/manager/dashboard" className="hover:text-red-600 transition-colors">Dashboard</Link>
-                <ChevronRight size={10} className="mx-1.5 text-gray-200" />
+                <ChevronRightIcon size={10} className="mx-1.5 text-gray-200" />
                 <span className="text-gray-900">Team Deals</span>
             </div>
 
@@ -148,106 +148,146 @@ export default function ManagerDeals() {
                     <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Deal Pipeline</h1>
                     <p className="text-xs sm:text-sm text-gray-400 mt-0.5">Track and manage your team's sales opportunities</p>
                 </div>
+                <div className="flex items-center gap-3">
+                    <div className="flex items-center bg-gray-100 rounded-lg p-1">
+                        <button
+                            onClick={() => setViewMode("list")}
+                            className={`p-1.5 rounded-md transition text-sm flex items-center gap-1.5 font-medium ${viewMode === "list"
+                                ? "bg-white text-gray-800 shadow-sm"
+                                : "text-gray-400 hover:text-gray-600"
+                                }`}
+                        >
+                            <LayoutListIcon size={16} />
+                            <span className="hidden sm:inline text-xs">List</span>
+                        </button>
+                        <button
+                            onClick={() => setViewMode("kanban")}
+                            className={`p-1.5 rounded-md transition text-sm flex items-center gap-1.5 font-medium ${viewMode === "kanban"
+                                ? "bg-white text-gray-800 shadow-sm"
+                                : "text-gray-400 hover:text-gray-600"
+                                }`}
+                        >
+                            <KanbanIcon size={16} />
+                            <span className="hidden sm:inline text-xs">Kanban</span>
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <StatCard icon={Briefcase} label="Team Deals" value={deals.length} color="bg-red-50 text-red-600" />
-                <StatCard icon={Zap} label="Active Deals" value={deals.filter(d => !d.stage.startsWith("Closed")).length} color="bg-orange-50 text-orange-600" />
-                <StatCard label="Closed Won" value={deals.filter(d => d.stage === "Closed Won").length} color="bg-red-600 text-white shadow-sm shadow-red-100" icon={CheckCircle2} />
-                <StatCard icon={Building2} label="Total Value" value={`$${deals.reduce((sum, d) => sum + (d.value || 0), 0).toLocaleString()}`} color="bg-red-50 text-red-600 border border-red-100" />
+                <StatCard icon={BriefcaseIcon} label="Team Deals" value={deals.length} color="bg-red-50 text-red-600" />
+                <StatCard icon={ZapIcon} label="Active Deals" value={deals.filter(d => !d.stage.startsWith("Closed")).length} color="bg-orange-50 text-orange-600" />
+                <StatCard label="Closed Won" value={deals.filter(d => d.stage === "Closed Won").length} color="bg-red-600 text-white shadow-sm shadow-red-100" icon={CheckCircleIcon} />
+                <StatCard icon={BuildingIcon} label="Total Value" value={`$${deals.reduce((sum, d) => sum + (d.value || 0), 0).toLocaleString()}`} color="bg-red-50 text-red-600 border border-red-100" />
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
-                    <h2 className="font-bold text-gray-800">All Team Deals</h2>
-                    <div className="flex flex-wrap items-stretch sm:items-center gap-2">
-                        <div className="flex-1 sm:flex-none">
-                            <Select options={stageOptions} value={stageFilter} onChange={setStageFilter} />
-                        </div>
-                        <div className="flex-1 sm:flex-none">
-                            <Select options={periodOptions} value={period} onChange={setPeriod} />
+            {viewMode === "kanban" ? (
+                <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+                    {loading ? (
+                        <div className="flex items-center justify-center h-40 text-gray-400 text-sm">Loading team pipeline...</div>
+                    ) : (
+                        <KanbanBoard
+                            deals={deals}
+                            onEdit={(d) => { setSelectedDeal(d); setIsDealModalOpen(true); }}
+                            onDelete={(d) => { setSelectedDeal(d); setIsDeleteModalOpen(true); }}
+                        />
+                    )}
+                </div>
+            ) : (
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+                        <h2 className="font-bold text-gray-800">All Team Deals</h2>
+                        <div className="flex flex-wrap items-stretch sm:items-center gap-2">
+                            <div className="flex-1 sm:flex-none">
+                                <Select options={stageOptions} value={stageFilter} onChange={setStageFilter} />
+                            </div>
+                            <div className="flex-1 sm:flex-none">
+                                <Select options={periodOptions} value={period} onChange={setPeriod} />
+                            </div>
                         </div>
                     </div>
+                    <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-350px)] custom-scrollbar">
+                        <table className="w-full text-sm">
+                            <thead>
+                                <tr className="border-b border-gray-100 bg-gray-50">
+                                    {["Deal Name", "Owned By", "Company", "Contact", "Stage", "Value", "Expected Close", "Actions"].map(h => (
+                                        <th key={h} className="text-left px-4 py-3 text-gray-500 font-semibold text-xs uppercase tracking-wide whitespace-nowrap">{h}</th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-50">
+                                {loading && deals.length === 0 ? (
+                                    <tr><td colSpan={8} className="text-center py-10 text-gray-400">Loading team deals...</td></tr>
+                                ) : deals.length === 0 ? (
+                                    <tr><td colSpan={8} className="text-center py-10 text-gray-400">No deals found for your team.</td></tr>
+                                ) : (
+                                    deals.map((d) => (
+                                        <tr key={d._id} className="hover:bg-gray-50/50 transition-colors group">
+                                            <td className="px-4 py-3 font-medium text-gray-800 whitespace-nowrap cursor-pointer hover:text-red-600 transition-colors"
+                                                onClick={() => navigate(`/manager/deals/${d._id}`)}>
+                                                {d.name}
+                                            </td>
+                                            <td className="px-4 py-3 text-red-600 font-bold whitespace-nowrap">{d.ownerId?.firstName || "Unknown"}</td>
+                                            <td className="px-4 py-3 text-gray-500 whitespace-nowrap cursor-pointer hover:text-red-600 transition-colors"
+                                                onClick={() => {
+                                                    if (d.companyId?._id || d.companyId) {
+                                                        navigate(`/manager/companies/${d.companyId?._id || d.companyId}`);
+                                                    }
+                                                }}>
+                                                {d.companyId?.name || d.companyName || "—"}
+                                            </td>
+                                            <td className="px-4 py-3 text-gray-500 whitespace-nowrap cursor-pointer hover:text-red-600 transition-colors"
+                                                onClick={() => {
+                                                    if (d.contactId?._id || d.contactId) {
+                                                        navigate(`/manager/contacts/${d.contactId?._id || d.contactId}`);
+                                                    }
+                                                }}>
+                                                {d.contactId ? `${d.contactId.firstName} ${d.contactId.lastName}`.trim() : (d.contactName || "—")}
+                                            </td>
+                                            <td className="px-4 py-3">
+                                                <select
+                                                    value={d.stage}
+                                                    onChange={e => handleMoveStage(d._id, e.target.value)}
+                                                    className={`text-[11px] px-2 py-1 rounded-full font-bold border-none cursor-pointer focus:ring-0 whitespace-nowrap ${getStageStyles(d.stage)}`}
+                                                >
+                                                    {STAGES.map(s => <option key={s} value={s}>{s}</option>)}
+                                                </select>
+                                            </td>
+                                            <td className="px-4 py-3 font-semibold text-gray-800 whitespace-nowrap">
+                                                ${d.value?.toLocaleString()}
+                                            </td>
+                                            <td className="px-4 py-3 text-gray-500 text-xs whitespace-nowrap">{d.expectedCloseDate ? new Date(d.expectedCloseDate).toLocaleDateString() : "—"}</td>
+                                            <td className="px-4 py-3 whitespace-nowrap">
+                                                <div className="flex items-center gap-2">
+                                                    <button
+                                                        onClick={() => navigate(`/manager/deals/${d._id}`)}
+                                                        title="View details"
+                                                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                                                    >
+                                                        <EyeIcon size={16} />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => { setSelectedDeal(d); setIsDealModalOpen(true); }}
+                                                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                                                    >
+                                                        <EditIcon size={16} />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => { setSelectedDeal(d); setIsDeleteModalOpen(true); }}
+                                                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                                                    >
+                                                        <TrashIcon size={16} />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-350px)] custom-scrollbar">
-                    <table className="w-full text-sm">
-                        <thead>
-                            <tr className="border-b border-gray-100 bg-gray-50">
-                                {["Deal Name", "Owned By", "Company", "Contact", "Stage", "Value", "Expected Close", "Actions"].map(h => (
-                                    <th key={h} className="text-left px-4 py-3 text-gray-500 font-semibold text-xs uppercase tracking-wide whitespace-nowrap">{h}</th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-50">
-                            {loading && deals.length === 0 ? (
-                                <tr><td colSpan={8} className="text-center py-10 text-gray-400">Loading team deals...</td></tr>
-                            ) : deals.length === 0 ? (
-                                <tr><td colSpan={8} className="text-center py-10 text-gray-400">No deals found for your team.</td></tr>
-                            ) : (
-                                deals.map((d) => (
-                                    <tr key={d._id} className="hover:bg-gray-50/50 transition-colors group">
-                                        <td className="px-4 py-3 font-medium text-gray-800 whitespace-nowrap cursor-pointer hover:text-red-600 transition-colors"
-                                            onClick={() => { setSelectedDeal(d); setIsDetailsModalOpen(true); }}>
-                                            {d.name}
-                                        </td>
-                                        <td className="px-4 py-3 text-red-600 font-bold whitespace-nowrap">{d.ownerId?.firstName || "Unknown"}</td>
-                                        <td className="px-4 py-3 text-gray-500 whitespace-nowrap cursor-pointer hover:text-red-600 transition-colors"
-                                            onClick={() => {
-                                                const comp = companies.find(c => c._id === (d.companyId?._id || d.companyId));
-                                                if (comp) { setSelectedCompany(comp); setIsCompanyDetailsOpen(true); }
-                                            }}>
-                                            {d.companyId?.name || d.companyName || "—"}
-                                        </td>
-                                        <td className="px-4 py-3 text-gray-500 whitespace-nowrap cursor-pointer hover:text-red-600 transition-colors"
-                                            onClick={() => {
-                                                const cont = contacts.find(c => c._id === (d.contactId?._id || d.contactId));
-                                                if (cont) { setSelectedContact(cont); setIsContactDetailsOpen(true); }
-                                            }}>
-                                            {d.contactId ? `${d.contactId.firstName} ${d.contactId.lastName}`.trim() : (d.contactName || "—")}
-                                        </td>
-                                        <td className="px-4 py-3">
-                                            <select
-                                                value={d.stage}
-                                                onChange={e => handleMoveStage(d._id, e.target.value)}
-                                                className={`text-[11px] px-2 py-1 rounded-full font-bold border-none cursor-pointer focus:ring-0 whitespace-nowrap ${getStageStyles(d.stage)}`}
-                                            >
-                                                {STAGES.map(s => <option key={s} value={s}>{s}</option>)}
-                                            </select>
-                                        </td>
-                                        <td className="px-4 py-3 font-semibold text-gray-800 whitespace-nowrap">
-                                            ${d.value?.toLocaleString()}
-                                        </td>
-                                        <td className="px-4 py-3 text-gray-500 text-xs whitespace-nowrap">{d.expectedCloseDate ? new Date(d.expectedCloseDate).toLocaleDateString() : "—"}</td>
-                                        <td className="px-4 py-3 whitespace-nowrap">
-                                            <div className="flex items-center gap-2">
-                                                <button
-                                                    onClick={() => { setSelectedDeal(d); setIsDetailsModalOpen(true); }}
-                                                    title="View details"
-                                                    className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
-                                                >
-                                                    <Eye size={16} />
-                                                </button>
-                                                <button
-                                                    onClick={() => { setSelectedDeal(d); setIsDealModalOpen(true); }}
-                                                    className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
-                                                >
-                                                    <Edit2 size={16} />
-                                                </button>
-                                                <button
-                                                    onClick={() => { setSelectedDeal(d); setIsDeleteModalOpen(true); }}
-                                                    className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
-                                                >
-                                                    <Trash2 size={16} />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            )}
 
             <DealModal
                 isOpen={isDealModalOpen}
@@ -256,24 +296,6 @@ export default function ManagerDeals() {
                 onSave={handleSaveDeal}
                 companies={companies}
                 contacts={contacts}
-            />
-
-            <DealDetailsModal
-                isOpen={isDetailsModalOpen}
-                onClose={() => setIsDetailsModalOpen(false)}
-                deal={selectedDeal}
-            />
-
-            <CompanyDetailsModal
-                isOpen={isCompanyDetailsOpen}
-                onClose={() => setIsCompanyDetailsOpen(false)}
-                company={selectedCompany}
-            />
-
-            <ContactDetailsModal
-                isOpen={isContactDetailsOpen}
-                onClose={() => setIsContactDetailsOpen(false)}
-                contact={selectedContact}
             />
 
             <DeleteConfirmModal

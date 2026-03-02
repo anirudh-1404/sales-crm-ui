@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-    Building2, CheckCircle2, Eye, XCircle, ChevronDown, Plus, Edit2, Trash2, Search, ArrowLeft, ChevronRight
+    Building2, CheckCircle2, Eye, XCircle, ChevronDown, Plus, Edit2, Trash2, Search, ArrowLeft, ChevronRight,
+    LayoutGrid, List, Mail, Phone, MapPin, Star, MoreVertical, ExternalLink
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { getCompanies, createCompany, updateCompany, deleteCompany } from "../../../API/services/companyService";
@@ -42,11 +43,99 @@ const statusBg = {
     Churned: "bg-red-100 text-red-600",
 };
 
+const CompanyCard = ({ company, onEdit, onDelete, onView }) => {
+    return (
+        <div
+            onClick={() => onView(company)}
+            className="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all group overflow-hidden flex flex-col h-full cursor-pointer hover:border-red-200"
+        >
+            <div className="p-5 flex-1">
+                <div className="flex justify-between items-start mb-4">
+                    <div className="flex gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-100 flex items-center justify-center text-gray-400 group-hover:from-red-50 group-hover:to-red-100 group-hover:border-red-100 group-hover:text-red-500 transition-all duration-300">
+                            <Building2 size={24} />
+                        </div>
+                        <div>
+                            <h3 className="font-bold text-gray-800 group-hover:text-red-600 transition-colors cursor-pointer">
+                                {company.name}
+                            </h3>
+                            <div className="flex items-center gap-1 mt-1">
+                                <Star size={12} className="text-orange-400 fill-orange-400" />
+                                <span className="text-xs font-bold text-gray-500">4.5</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="relative group/menu">
+                        <button
+                            onClick={(e) => e.stopPropagation()}
+                            className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition"
+                        >
+                            <MoreVertical size={18} />
+                        </button>
+                        <div className="absolute right-0 top-full pt-1 hidden group-hover/menu:block z-10 w-32">
+                            <div className="bg-white rounded-lg shadow-xl border border-gray-100 py-1 overflow-hidden">
+                                <button onClick={(e) => { e.stopPropagation(); onView(company); }} className="w-full text-left px-3 py-1.5 text-xs text-gray-600 hover:bg-gray-50 flex items-center gap-2">
+                                    <Eye size={14} /> View
+                                </button>
+                                <button onClick={(e) => { e.stopPropagation(); onEdit(company); }} className="w-full text-left px-3 py-1.5 text-xs text-gray-600 hover:bg-gray-50 flex items-center gap-2">
+                                    <Edit2 size={14} /> Edit
+                                </button>
+                                <button onClick={(e) => { e.stopPropagation(); onDelete(company); }} className="w-full text-left px-3 py-1.5 text-xs text-red-600 hover:bg-red-50 flex items-center gap-2">
+                                    <Trash2 size={14} /> Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="space-y-3 pt-4 border-t border-gray-50">
+                    <div className="flex items-center gap-3 text-gray-500">
+                        <Phone size={14} className="flex-shrink-0" />
+                        <span className="text-xs">{company.phone || "—"}</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-gray-500">
+                        <MapPin size={14} className="flex-shrink-0" />
+                        <span className="text-xs">{company.address || "—"}</span>
+                    </div>
+                </div>
+
+                <div className="flex flex-wrap gap-2 mt-5">
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${statusBg[company.status] || "bg-gray-100 text-gray-600"}`}>
+                        {company.status}
+                    </span>
+                    {company.industry && (
+                        <span className="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase bg-gray-50 text-gray-500 border border-gray-100">
+                            {company.industry}
+                        </span>
+                    )}
+                </div>
+            </div>
+
+            <div className="px-5 py-3 bg-gray-50/50 border-t border-gray-100 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-full bg-red-100 flex items-center justify-center text-[10px] font-bold text-red-700 uppercase">
+                        {company.ownerId?.firstName?.[0] || "S"}
+                    </div>
+                    <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">
+                        {company.ownerId?.firstName || "System"}
+                    </span>
+                </div>
+                <div className="flex items-center gap-2">
+                    <Mail size={12} className="text-gray-400 hover:text-red-500 cursor-pointer" />
+                    <Phone size={12} className="text-gray-400 hover:text-red-500 cursor-pointer" />
+                    <ExternalLink size={12} className="text-gray-400 hover:text-red-500 cursor-pointer" />
+                </div>
+            </div>
+        </div>
+    );
+};
+
 export default function CompaniesDashboard() {
     const navigate = useNavigate();
     const [companies, setCompanies] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
+    const [viewMode, setViewMode] = useState("grid");
 
     // Modal states
     const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
@@ -159,7 +248,23 @@ export default function CompaniesDashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
                 <div className="lg:col-span-3 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden h-full flex flex-col">
                     <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                        <h2 className="font-bold text-gray-800">All Companies</h2>
+                        <div className="flex items-center gap-3">
+                            <h2 className="font-bold text-gray-800">All Companies</h2>
+                            <div className="flex items-center bg-gray-100 p-1 rounded-lg">
+                                <button
+                                    onClick={() => setViewMode("list")}
+                                    className={`p-1 rounded-md transition ${viewMode === "list" ? "bg-white text-red-600 shadow-sm" : "text-gray-400 hover:text-gray-600"}`}
+                                >
+                                    <List size={16} />
+                                </button>
+                                <button
+                                    onClick={() => setViewMode("grid")}
+                                    className={`p-1 rounded-md transition ${viewMode === "grid" ? "bg-white text-red-600 shadow-sm" : "text-gray-400 hover:text-gray-600"}`}
+                                >
+                                    <LayoutGrid size={16} />
+                                </button>
+                            </div>
+                        </div>
                         <div className="w-full sm:w-64 relative">
                             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                             <input type="text" placeholder="Search companies..." value={search} onChange={e => setSearch(e.target.value)}
@@ -167,52 +272,70 @@ export default function CompaniesDashboard() {
                         </div>
                     </div>
                     <div className="flex-1 flex flex-col min-h-0">
-                        <div className="flex-1 overflow-x-auto overflow-y-auto custom-scrollbar">
-                            <table className="w-full text-sm">
-                                <thead>
-                                    <tr className="border-b border-gray-100 bg-gray-50">
-                                        {["Company", "Industry", "Owner", "Status", "Actions"].map(h => (
-                                            <th key={h} className="text-left px-4 py-3 text-gray-500 font-semibold text-xs uppercase tracking-wide whitespace-nowrap">{h}</th>
-                                        ))}
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-50">
+                        <div className="flex-1 overflow-x-auto overflow-y-auto custom-scrollbar p-4">
+                            {viewMode === "list" ? (
+                                <table className="w-full text-sm">
+                                    <thead>
+                                        <tr className="border-b border-gray-100 bg-gray-50">
+                                            {["Company", "Industry", "Owner", "Status", "Actions"].map(h => (
+                                                <th key={h} className="text-left px-4 py-3 text-gray-500 font-semibold text-xs uppercase tracking-wide whitespace-nowrap">{h}</th>
+                                            ))}
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-gray-50">
+                                        {loading && companies.length === 0 ? (
+                                            <tr><td colSpan={5} className="text-center py-10 text-gray-400">Loading companies...</td></tr>
+                                        ) : (
+                                            companies.map((c) => (
+                                                <tr key={c._id} className="hover:bg-gray-50/50 transition-colors group">
+                                                    <td className="px-4 py-3 font-medium text-gray-800 whitespace-nowrap cursor-pointer hover:text-red-600 transition-colors"
+                                                        onClick={() => navigate(`/dashboard/companies/${c._id}`)}>
+                                                        {c.name}
+                                                    </td>
+                                                    <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{c.industry || "—"}</td>
+                                                    <td className="px-4 py-3 text-red-700 font-bold whitespace-nowrap">{c.ownerId?.firstName || "System"}</td>
+                                                    <td className="px-4 py-3 whitespace-nowrap">
+                                                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${statusBg[c.status] || "bg-gray-100 text-gray-600"}`}>{c.status}</span>
+                                                    </td>
+                                                    <td className="px-4 py-3 whitespace-nowrap">
+                                                        <div className="flex items-center gap-2">
+                                                            <button onClick={() => navigate(`/dashboard/companies/${c._id}`)}
+                                                                title="View details"
+                                                                className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition">
+                                                                <Eye size={16} />
+                                                            </button>
+                                                            <button onClick={() => { setSelectedCompany(c); setIsCompanyModalOpen(true); }}
+                                                                className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition">
+                                                                <Edit2 size={16} />
+                                                            </button>
+                                                            <button onClick={() => { setSelectedCompany(c); setIsDeleteModalOpen(true); }}
+                                                                className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition">
+                                                                <Trash2 size={16} />
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        )}
+                                    </tbody>
+                                </table>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                                     {loading && companies.length === 0 ? (
-                                        <tr><td colSpan={5} className="text-center py-10 text-gray-400">Loading companies...</td></tr>
+                                        <div className="col-span-full text-center py-10 text-gray-400">Loading companies...</div>
                                     ) : (
                                         companies.map((c) => (
-                                            <tr key={c._id} className="hover:bg-gray-50/50 transition-colors group">
-                                                <td className="px-4 py-3 font-medium text-gray-800 whitespace-nowrap cursor-pointer hover:text-red-600 transition-colors"
-                                                    onClick={() => navigate(`/dashboard/companies/${c._id}`)}>
-                                                    {c.name}
-                                                </td>
-                                                <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{c.industry || "—"}</td>
-                                                <td className="px-4 py-3 text-red-700 font-bold whitespace-nowrap">{c.ownerId?.firstName || "System"}</td>
-                                                <td className="px-4 py-3 whitespace-nowrap">
-                                                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${statusBg[c.status] || "bg-gray-100 text-gray-600"}`}>{c.status}</span>
-                                                </td>
-                                                <td className="px-4 py-3 whitespace-nowrap">
-                                                    <div className="flex items-center gap-2">
-                                                        <button onClick={() => navigate(`/dashboard/companies/${c._id}`)}
-                                                            title="View details"
-                                                            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition">
-                                                            <Eye size={16} />
-                                                        </button>
-                                                        <button onClick={() => { setSelectedCompany(c); setIsCompanyModalOpen(true); }}
-                                                            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition">
-                                                            <Edit2 size={16} />
-                                                        </button>
-                                                        <button onClick={() => { setSelectedCompany(c); setIsDeleteModalOpen(true); }}
-                                                            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition">
-                                                            <Trash2 size={16} />
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
+                                            <CompanyCard
+                                                key={c._id}
+                                                company={c}
+                                                onEdit={(company) => { setSelectedCompany(company); setIsCompanyModalOpen(true); }}
+                                                onDelete={(company) => { setSelectedCompany(company); setIsDeleteModalOpen(true); }}
+                                                onView={(company) => navigate(`/dashboard/companies/${company._id}`)}
+                                            />
                                         ))
                                     )}
-                                </tbody>
-                            </table>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

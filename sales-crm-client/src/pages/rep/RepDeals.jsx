@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { Briefcase, Zap, CheckCircle2, DollarSign, ChevronDown, Plus, Edit2, Trash2, ChevronRight } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import {
+    Briefcase, Zap, CheckCircle2, DollarSign,
+    ChevronDown, Plus, Edit2, Trash2,
+    ChevronRight, LayoutList, Kanban, Eye
+} from "lucide-react";
 import { getDeals, createDeal, updateDeal, deleteDeal, updateDealStage } from "../../../API/services/dealService";
 import { getCompanies } from "../../../API/services/companyService";
 import { getContacts } from "../../../API/services/contactService";
+import KanbanBoard from "../../components/KanbanBoard";
 import DealModal from "../../components/modals/DealModal";
-import DealDetailsModal from "../../components/modals/DealDetailsModal";
-import CompanyDetailsModal from "../../components/modals/CompanyDetailsModal";
-import ContactDetailsModal from "../../components/modals/ContactDetailsModal";
 import DeleteConfirmModal from "../../components/modals/DeleteConfirmModal";
 import { toast } from "react-hot-toast";
-import { Eye } from "lucide-react";
 
 const Select = ({ options, value, onChange }) => (
     <div className="relative">
@@ -25,12 +26,6 @@ const Select = ({ options, value, onChange }) => (
 const Card = ({ children, className = "" }) => (
     <div className={`bg-white rounded-xl border border-gray-100 shadow-sm ${className}`}>{children}</div>
 );
-const CardHeader = ({ title, children }) => (
-    <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-        <h3 className="font-semibold text-gray-800 text-base">{title}</h3>
-        <div className="flex items-center gap-2">{children}</div>
-    </div>
-);
 
 const stageBadge = {
     Lead: "bg-red-50 text-red-600 border border-red-100", Qualified: "bg-orange-100 text-orange-700",
@@ -42,21 +37,18 @@ const stageOptions = ["All Stages", "Lead", "Qualified", "Proposal", "Negotiatio
 const STAGES = ["Lead", "Qualified", "Proposal", "Negotiation", "Closed Won", "Closed Lost"];
 
 export default function RepDeals() {
+    const navigate = useNavigate();
     const [deals, setDeals] = useState([]);
     const [companies, setCompanies] = useState([]);
     const [contacts, setContacts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [stageFilter, setStageFilter] = useState("All Stages");
+    const [viewMode, setViewMode] = useState("list"); // "list" | "kanban"
 
     // Modal states
     const [isDealModalOpen, setIsDealModalOpen] = useState(false);
-    const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
-    const [isCompanyDetailsOpen, setIsCompanyDetailsOpen] = useState(false);
-    const [isContactDetailsOpen, setIsContactDetailsOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedDeal, setSelectedDeal] = useState(null);
-    const [selectedCompany, setSelectedCompany] = useState(null);
-    const [selectedContact, setSelectedContact] = useState(null);
 
     const fetchData = async () => {
         setLoading(true);
@@ -146,6 +138,37 @@ export default function RepDeals() {
                     <h1 className="text-xl sm:text-2xl font-bold text-gray-800">My Pipeline</h1>
                     <p className="text-xs sm:text-sm text-gray-400 mt-0.5">Manage and track your sales opportunities</p>
                 </div>
+                <div className="flex items-center gap-3">
+                    <div className="flex items-center bg-gray-100 rounded-lg p-1">
+                        <button
+                            onClick={() => setViewMode("list")}
+                            className={`p-1.5 rounded-md transition text-sm flex items-center gap-1.5 font-medium ${viewMode === "list"
+                                ? "bg-white text-gray-800 shadow-sm"
+                                : "text-gray-400 hover:text-gray-600"
+                                }`}
+                        >
+                            <LayoutList size={16} />
+                            <span className="hidden sm:inline text-xs">List</span>
+                        </button>
+                        <button
+                            onClick={() => setViewMode("kanban")}
+                            className={`p-1.5 rounded-md transition text-sm flex items-center gap-1.5 font-medium ${viewMode === "kanban"
+                                ? "bg-white text-gray-800 shadow-sm"
+                                : "text-gray-400 hover:text-gray-600"
+                                }`}
+                        >
+                            <Kanban size={16} />
+                            <span className="hidden sm:inline text-xs">Kanban</span>
+                        </button>
+                    </div>
+                    <button
+                        onClick={() => { setSelectedDeal(null); setIsDealModalOpen(true); }}
+                        className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-700 transition shadow-md shadow-red-100"
+                    >
+                        <Plus size={18} />
+                        <span>Add Deal</span>
+                    </button>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -162,89 +185,105 @@ export default function RepDeals() {
                 ))}
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
-                    <h2 className="font-bold text-gray-800">My Pipeline</h2>
-                    <div className="w-full sm:w-auto">
-                        <Select options={stageOptions} value={stageFilter} onChange={setStageFilter} />
+            {viewMode === "kanban" ? (
+                <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+                    {loading ? (
+                        <div className="flex items-center justify-center h-40 text-gray-400 text-sm">Loading pipeline...</div>
+                    ) : (
+                        <KanbanBoard
+                            deals={deals}
+                            onEdit={(d) => { setSelectedDeal(d); setIsDealModalOpen(true); }}
+                            onDelete={(d) => { setSelectedDeal(d); setIsDeleteModalOpen(true); }}
+                        />
+                    )}
+                </div>
+            ) : (
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+                        <h2 className="font-bold text-gray-800">My Pipeline</h2>
+                        <div className="w-full sm:w-auto">
+                            <Select options={stageOptions} value={stageFilter} onChange={setStageFilter} />
+                        </div>
+                    </div>
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                            <thead>
+                                <tr className="border-b border-gray-100 bg-gray-50">
+                                    {["Deal Name", "Company", "Contact", "Stage", "Value", "Expected Close", "Actions"].map(h => (
+                                        <th key={h} className="text-left px-4 py-3 text-gray-500 font-semibold text-xs uppercase tracking-wide whitespace-nowrap">{h}</th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-50">
+                                {loading && deals.length === 0 ? (
+                                    <tr><td colSpan={7} className="text-center py-10 text-gray-400">Loading deals...</td></tr>
+                                ) : deals.length === 0 ? (
+                                    <tr><td colSpan={7} className="text-center py-10 text-gray-400">No deals found.</td></tr>
+                                ) : (
+                                    deals.map((d) => (
+                                        <tr key={d._id} className="hover:bg-gray-50/50 transition-colors group">
+                                            <td className="px-4 py-3 font-medium text-gray-800 whitespace-nowrap cursor-pointer hover:text-red-600 transition-colors"
+                                                onClick={() => navigate(`/rep/deals/${d._id}`)}>
+                                                {d.name}
+                                            </td>
+                                            <td className="px-4 py-3 text-gray-500 whitespace-nowrap cursor-pointer hover:text-red-600 transition-colors"
+                                                onClick={() => {
+                                                    if (d.companyId?._id || d.companyId) {
+                                                        navigate(`/rep/companies/${d.companyId?._id || d.companyId}`);
+                                                    }
+                                                }}>
+                                                {d.companyId?.name || d.companyName || "—"}
+                                            </td>
+                                            <td className="px-4 py-3 text-gray-500 whitespace-nowrap cursor-pointer hover:text-red-600 transition-colors"
+                                                onClick={() => {
+                                                    if (d.contactId?._id || d.contactId) {
+                                                        navigate(`/rep/contacts/${d.contactId?._id || d.contactId}`);
+                                                    }
+                                                }}>
+                                                {d.contactId ? `${d.contactId.firstName} ${d.contactId.lastName}` : (d.contactName || "—")}
+                                            </td>
+                                            <td className="px-4 py-3">
+                                                <select
+                                                    value={d.stage}
+                                                    onChange={e => handleMoveStage(d._id, e.target.value)}
+                                                    className={`text-[11px] px-2 py-1 rounded-full font-bold border-none cursor-pointer focus:ring-0 whitespace-nowrap ${stageBadge[d.stage]}`}
+                                                >
+                                                    {STAGES.map(s => <option key={s} value={s}>{s}</option>)}
+                                                </select>
+                                            </td>
+                                            <td className="px-4 py-3 font-semibold text-gray-800 whitespace-nowrap">${d.value?.toLocaleString()}</td>
+                                            <td className="px-4 py-3 text-gray-500 text-xs whitespace-nowrap">{d.expectedCloseDate ? new Date(d.expectedCloseDate).toLocaleDateString() : "—"}</td>
+                                            <td className="px-4 py-3 whitespace-nowrap">
+                                                <div className="flex items-center gap-2">
+                                                    <button
+                                                        onClick={() => navigate(`/rep/deals/${d._id}`)}
+                                                        title="View details"
+                                                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                                                    >
+                                                        <Eye size={16} />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => { setSelectedDeal(d); setIsDealModalOpen(true); }}
+                                                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                                                    >
+                                                        <Edit2 size={16} />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => { setSelectedDeal(d); setIsDeleteModalOpen(true); }}
+                                                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                                                    >
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-                <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                        <thead>
-                            <tr className="border-b border-gray-100 bg-gray-50">
-                                {["Deal Name", "Company", "Contact", "Stage", "Value", "Expected Close", "Actions"].map(h => (
-                                    <th key={h} className="text-left px-4 py-3 text-gray-500 font-semibold text-xs uppercase tracking-wide whitespace-nowrap">{h}</th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-50">
-                            {loading && deals.length === 0 ? (
-                                <tr><td colSpan={7} className="text-center py-10 text-gray-400">Loading deals...</td></tr>
-                            ) : deals.length === 0 ? (
-                                <tr><td colSpan={7} className="text-center py-10 text-gray-400">No deals found.</td></tr>
-                            ) : (
-                                deals.map((d) => (
-                                    <tr key={d._id} className="hover:bg-gray-50/50 transition-colors group">
-                                        <td className="px-4 py-3 font-medium text-gray-800 whitespace-nowrap cursor-pointer hover:text-red-600 transition-colors"
-                                            onClick={() => { setSelectedDeal(d); setIsDetailsModalOpen(true); }}>
-                                            {d.name}
-                                        </td>
-                                        <td className="px-4 py-3 text-gray-500 whitespace-nowrap cursor-pointer hover:text-red-600 transition-colors"
-                                            onClick={() => {
-                                                const comp = companies.find(c => c._id === (d.companyId?._id || d.companyId));
-                                                if (comp) { setSelectedCompany(comp); setIsCompanyDetailsOpen(true); }
-                                            }}>
-                                            {d.companyId?.name || d.companyName || "—"}
-                                        </td>
-                                        <td className="px-4 py-3 text-gray-500 whitespace-nowrap cursor-pointer hover:text-red-600 transition-colors"
-                                            onClick={() => {
-                                                const cont = contacts.find(c => c._id === (d.contactId?._id || d.contactId));
-                                                if (cont) { setSelectedContact(cont); setIsContactDetailsOpen(true); }
-                                            }}>
-                                            {d.contactId ? `${d.contactId.firstName} ${d.contactId.lastName}` : (d.contactName || "—")}
-                                        </td>
-                                        <td className="px-4 py-3">
-                                            <select
-                                                value={d.stage}
-                                                onChange={e => handleMoveStage(d._id, e.target.value)}
-                                                className={`text-[11px] px-2 py-1 rounded-full font-bold border-none cursor-pointer focus:ring-0 whitespace-nowrap ${stageBadge[d.stage]}`}
-                                            >
-                                                {STAGES.map(s => <option key={s} value={s}>{s}</option>)}
-                                            </select>
-                                        </td>
-                                        <td className="px-4 py-3 font-semibold text-gray-800 whitespace-nowrap">${d.value?.toLocaleString()}</td>
-                                        <td className="px-4 py-3 text-gray-500 text-xs whitespace-nowrap">{d.expectedCloseDate ? new Date(d.expectedCloseDate).toLocaleDateString() : "—"}</td>
-                                        <td className="px-4 py-3 whitespace-nowrap">
-                                            <div className="flex items-center gap-2">
-                                                <button
-                                                    onClick={() => { setSelectedDeal(d); setIsDetailsModalOpen(true); }}
-                                                    title="View details"
-                                                    className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
-                                                >
-                                                    <Eye size={16} />
-                                                </button>
-                                                <button
-                                                    onClick={() => { setSelectedDeal(d); setIsDealModalOpen(true); }}
-                                                    className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
-                                                >
-                                                    <Edit2 size={16} />
-                                                </button>
-                                                <button
-                                                    onClick={() => { setSelectedDeal(d); setIsDeleteModalOpen(true); }}
-                                                    className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
-                                                >
-                                                    <Trash2 size={16} />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            )}
 
             {/* Modals */}
             <DealModal
@@ -255,24 +294,6 @@ export default function RepDeals() {
                 companies={companies}
                 contacts={contacts}
                 freeText={true}
-            />
-
-            <DealDetailsModal
-                isOpen={isDetailsModalOpen}
-                onClose={() => setIsDetailsModalOpen(false)}
-                deal={selectedDeal}
-            />
-
-            <CompanyDetailsModal
-                isOpen={isCompanyDetailsOpen}
-                onClose={() => setIsCompanyDetailsOpen(false)}
-                company={selectedCompany}
-            />
-
-            <ContactDetailsModal
-                isOpen={isContactDetailsOpen}
-                onClose={() => setIsContactDetailsOpen(false)}
-                contact={selectedContact}
             />
 
             <DeleteConfirmModal

@@ -82,13 +82,16 @@ export default function ContactDetails() {
         );
     }
 
+    const basePath = window.location.pathname.startsWith('/rep') ? '/rep' :
+        window.location.pathname.startsWith('/manager') ? '/manager' : '/dashboard';
+
     return (
         <div className="min-h-screen bg-gray-50/50 p-6 space-y-6">
             {/* Symmetric Navigation Header */}
             <div className="flex items-center mb-1.5 text-[10px] font-black uppercase tracking-[0.12em] text-gray-400">
-                <Link to="/dashboard" className="hover:text-red-600 transition-colors">Dashboard</Link>
+                <Link to={basePath} className="hover:text-red-600 transition-colors">Dashboard</Link>
                 <ChevronRight size={10} className="mx-1.5 text-gray-200" />
-                <Link to="/dashboard/contacts" className="hover:text-red-600 transition-colors">Contacts</Link>
+                <Link to={`${basePath}/contacts`} className="hover:text-red-600 transition-colors">Contacts</Link>
                 <ChevronRight size={10} className="mx-1.5 text-gray-200" />
                 <span className="text-gray-900">View Details</span>
             </div>

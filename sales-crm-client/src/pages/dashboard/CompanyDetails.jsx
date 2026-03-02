@@ -7,7 +7,7 @@ import {
     ChevronRight, Download, RotateCw, Maximize2,
     Star, Layers, Users, Target, Info, DollarSign,
     MoreHorizontal, List, FileText, Paperclip,
-    Loader2, ExternalLink, History
+    Loader2, ExternalLink
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -84,13 +84,16 @@ export default function CompanyDetails() {
         );
     }
 
+    const basePath = window.location.pathname.startsWith('/rep') ? '/rep' :
+        window.location.pathname.startsWith('/manager') ? '/manager' : '/dashboard';
+
     return (
         <div className="min-h-screen bg-gray-50/50 p-6 space-y-6">
             {/* Symmetric Navigation Header */}
             <div className="flex items-center mb-1.5 text-[10px] font-black uppercase tracking-[0.12em] text-gray-400">
-                <Link to="/dashboard" className="hover:text-red-600 transition-colors">Dashboard</Link>
+                <Link to={basePath} className="hover:text-red-600 transition-colors">Dashboard</Link>
                 <ChevronRight size={10} className="mx-1.5 text-gray-200" />
-                <Link to="/dashboard/companies" className="hover:text-red-600 transition-colors">Companies</Link>
+                <Link to={`${basePath}/companies`} className="hover:text-red-600 transition-colors">Companies</Link>
                 <ChevronRight size={10} className="mx-1.5 text-gray-200" />
                 <span className="text-gray-900">View Details</span>
             </div>
@@ -140,7 +143,7 @@ export default function CompanyDetails() {
                             </div>
                             <div className="space-y-1">
                                 <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
-                                    <Globe size={10} className="text-red-400" /> Web Presence
+                                    <Globe size={10} className="text-red-400" /> Website
                                 </label>
                                 {company.website ? (
                                     <a href={company.website.startsWith('http') ? company.website : `https://${company.website}`} target="_blank" rel="noopener noreferrer" className="text-sm font-bold text-red-600 hover:underline flex items-center gap-1">
@@ -158,13 +161,13 @@ export default function CompanyDetails() {
                             </div>
                             <div className="space-y-1">
                                 <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
-                                    <User size={10} className="text-red-400" /> Primary Liaison
+                                    <User size={10} className="text-red-400" /> Notes
                                 </label>
-                                <p className="text-sm font-bold text-gray-900">{company.primaryContact || "Unlisted"}</p>
+                                <p className="text-sm font-bold text-gray-900">{company.notes || "No notes recorded"}</p>
                             </div>
                             <div className="space-y-1">
                                 <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
-                                    <Phone size={10} className="text-red-400" /> HQ Phone
+                                    <Phone size={10} className="text-red-400" /> Phone
                                 </label>
                                 <p className="text-sm font-bold text-gray-900">{company.phone || "—"}</p>
                             </div>
@@ -251,24 +254,6 @@ export default function CompanyDetails() {
                                 </div>
                             </div>
 
-                            {/* Activity Feed */}
-                            <div className="space-y-6 pt-6 border-t border-gray-50">
-                                <div className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
-                                    <History size={10} /> System Interactions
-                                </div>
-
-                                <div className="space-y-6">
-                                    <div className="flex items-start gap-4 p-4 border border-gray-50/50 rounded-xl bg-gray-50/20 hover:bg-gray-50 transition-colors group">
-                                        <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shadow-sm border-2 border-white transition-transform group-hover:rotate-12">
-                                            <Building2 size={18} />
-                                        </div>
-                                        <div className="space-y-1">
-                                            <p className="text-sm font-bold text-gray-800">Company node registered in Registry</p>
-                                            <p className="text-[10px] text-gray-400 font-medium">{formatDate(company.createdAt, true)}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
 
                             {/* Cross-Linking Stats */}
                             <div className="pt-8 grid grid-cols-2 gap-4">
