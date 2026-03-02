@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Users, Building2, MapPin, Mail, Phone, ExternalLink, Plus, Edit2, Trash2, Search, Linkedin, ChevronRight } from "lucide-react";
+import { Users, Building2, MapPin, Mail, Phone, ExternalLink, Plus, Edit2, Trash2, Search, Linkedin, ChevronRight, LayoutGrid, List } from "lucide-react";
 import { Link } from "react-router-dom";
 import { getContacts, createContact, updateContact, deleteContact } from "../../../API/services/contactService";
 import { getCompanies } from "../../../API/services/companyService";
 import ContactModal from "../../components/modals/ContactModal";
 import ContactDetailsModal from "../../components/modals/ContactDetailsModal";
 import DeleteConfirmModal from "../../components/modals/DeleteConfirmModal";
+import ContactCard from "../../components/cards/ContactCard";
 import { toast } from "react-hot-toast";
 import { Eye } from "lucide-react";
 
@@ -35,6 +36,7 @@ export default function RepContacts() {
     const [companies, setCompanies] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
+    const [viewMode, setViewMode] = useState("list"); // "list" | "card"
 
     // Modal states
     const [isContactModalOpen, setIsContactModalOpen] = useState(false);
@@ -142,7 +144,23 @@ export default function RepContacts() {
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
-                    <h2 className="font-bold text-gray-800">My Contacts</h2>
+                    <div className="flex items-center gap-3">
+                        <h2 className="font-bold text-gray-800">My Contacts</h2>
+                        <div className="flex items-center bg-gray-100 p-1 rounded-lg">
+                            <button
+                                onClick={() => setViewMode("list")}
+                                className={`p-1 rounded-md transition ${viewMode === "list" ? "bg-white text-red-600 shadow-sm" : "text-gray-400 hover:text-gray-600"}`}
+                            >
+                                <List size={16} />
+                            </button>
+                            <button
+                                onClick={() => setViewMode("card")}
+                                className={`p-1 rounded-md transition ${viewMode === "card" ? "bg-white text-red-600 shadow-sm" : "text-gray-400 hover:text-gray-600"}`}
+                            >
+                                <LayoutGrid size={16} />
+                            </button>
+                        </div>
+                    </div>
                     <div className="relative">
                         <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                         <input type="text" placeholder="Search contact, company..."
@@ -150,76 +168,97 @@ export default function RepContacts() {
                             className="w-full sm:w-64 text-sm border border-gray-200 rounded-lg pl-9 pr-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-red-400 bg-gray-50/50" />
                     </div>
                 </div>
-                <div className="overflow-x-auto min-h-[300px]">
-                    <table className="w-full text-sm">
-                        <thead>
-                            <tr className="border-b border-gray-100 bg-gray-50">
-                                {["Contact", "Job Title", "Company", "Phone", "LinkedIn", "Actions"].map(h => (
-                                    <th key={h} className="text-left px-4 py-3 text-gray-500 font-semibold text-xs uppercase tracking-wide whitespace-nowrap">{h}</th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-50">
+                <div className="overflow-x-auto p-4 min-h-[300px]">
+                    {viewMode === "list" ? (
+                        <table className="w-full text-sm">
+                            <thead>
+                                <tr className="border-b border-gray-100 bg-gray-50">
+                                    {["Contact", "Job Title", "Company", "Phone", "LinkedIn", "Actions"].map(h => (
+                                        <th key={h} className="text-left px-4 py-3 text-gray-500 font-semibold text-xs uppercase tracking-wide whitespace-nowrap">{h}</th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-50">
+                                {loading && contacts.length === 0 ? (
+                                    <tr><td colSpan={6} className="text-center py-10 text-gray-400">Loading contacts...</td></tr>
+                                ) : contacts.length === 0 ? (
+                                    <tr><td colSpan={6} className="text-center py-10 text-gray-400">No contacts found.</td></tr>
+                                ) : (
+                                    contacts.map((c) => (
+                                        <tr key={c._id} className="hover:bg-gray-50/50 transition-colors group">
+                                            <td className="px-4 py-3 whitespace-nowrap">
+                                                <div className="flex items-center gap-3 cursor-pointer group/item"
+                                                    onClick={() => { setSelectedContact(c); setIsDetailsModalOpen(true); }}>
+                                                    <Avatar name={`${c.firstName} ${c.lastName}`} />
+                                                    <div>
+                                                        <p className="font-medium text-gray-800 leading-none group-hover/item:text-red-600 transition-colors uppercase text-[11px] font-bold">{c.firstName} {c.lastName}</p>
+                                                        <p className="text-xs text-gray-400 mt-0.5">{c.email}</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{c.jobTitle || "—"}</td>
+                                            <td className="px-4 py-3 whitespace-nowrap">
+                                                <span className="text-xs px-2.5 py-1 rounded-full bg-red-50 text-red-700 font-medium border border-red-100">{c.companyId?.name || "—"}</span>
+                                            </td>
+                                            <td className="px-4 py-3 text-gray-500 text-xs whitespace-nowrap">{c.phone || c.mobile || "—"}</td>
+                                            <td className="px-4 py-3 whitespace-nowrap">
+                                                {c.linkedin ? (
+                                                    <span className="text-xs text-blue-600 hover:underline flex items-center gap-1 cursor-pointer"
+                                                        onClick={() => { setSelectedContact(c); setIsDetailsModalOpen(true); }}>
+                                                        <Eye size={12} /> View Details
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-xs text-gray-400">—</span>
+                                                )}
+                                            </td>
+                                            <td className="px-4 py-3 whitespace-nowrap">
+                                                <div className="flex items-center gap-2">
+                                                    <button
+                                                        onClick={() => { setSelectedContact(c); setIsDetailsModalOpen(true); }}
+                                                        title="View details"
+                                                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                                                    >
+                                                        <Eye size={16} />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => { setSelectedContact(c); setIsContactModalOpen(true); }}
+                                                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                                                    >
+                                                        <Edit2 size={16} />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => { setSelectedContact(c); setIsDeleteModalOpen(true); }}
+                                                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                                                    >
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                             {loading && contacts.length === 0 ? (
-                                <tr><td colSpan={6} className="text-center py-10 text-gray-400">Loading contacts...</td></tr>
+                                <div className="col-span-full text-center py-10 text-gray-400">Loading contacts...</div>
                             ) : contacts.length === 0 ? (
-                                <tr><td colSpan={6} className="text-center py-10 text-gray-400">No contacts found.</td></tr>
+                                <div className="col-span-full text-center py-10 text-gray-400">No contacts found.</div>
                             ) : (
                                 contacts.map((c) => (
-                                    <tr key={c._id} className="hover:bg-gray-50/50 transition-colors group">
-                                        <td className="px-4 py-3 whitespace-nowrap">
-                                            <div className="flex items-center gap-3 cursor-pointer group/item"
-                                                onClick={() => { setSelectedContact(c); setIsDetailsModalOpen(true); }}>
-                                                <Avatar name={`${c.firstName} ${c.lastName}`} />
-                                                <div>
-                                                    <p className="font-medium text-gray-800 leading-none group-hover/item:text-red-600 transition-colors uppercase text-[11px] font-bold">{c.firstName} {c.lastName}</p>
-                                                    <p className="text-xs text-gray-400 mt-0.5">{c.email}</p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{c.jobTitle || "—"}</td>
-                                        <td className="px-4 py-3 whitespace-nowrap">
-                                            <span className="text-xs px-2.5 py-1 rounded-full bg-red-50 text-red-700 font-medium border border-red-100">{c.companyId?.name || "—"}</span>
-                                        </td>
-                                        <td className="px-4 py-3 text-gray-500 text-xs whitespace-nowrap">{c.phone || c.mobile || "—"}</td>
-                                        <td className="px-4 py-3 whitespace-nowrap">
-                                            {c.linkedin ? (
-                                                <span className="text-xs text-blue-600 hover:underline flex items-center gap-1 cursor-pointer"
-                                                    onClick={() => { setSelectedContact(c); setIsDetailsModalOpen(true); }}>
-                                                    <Eye size={12} /> View Details
-                                                </span>
-                                            ) : (
-                                                <span className="text-xs text-gray-400">—</span>
-                                            )}
-                                        </td>
-                                        <td className="px-4 py-3 whitespace-nowrap">
-                                            <div className="flex items-center gap-2">
-                                                <button
-                                                    onClick={() => { setSelectedContact(c); setIsDetailsModalOpen(true); }}
-                                                    title="View details"
-                                                    className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
-                                                >
-                                                    <Eye size={16} />
-                                                </button>
-                                                <button
-                                                    onClick={() => { setSelectedContact(c); setIsContactModalOpen(true); }}
-                                                    className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
-                                                >
-                                                    <Edit2 size={16} />
-                                                </button>
-                                                <button
-                                                    onClick={() => { setSelectedContact(c); setIsDeleteModalOpen(true); }}
-                                                    className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
-                                                >
-                                                    <Trash2 size={16} />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
+                                    <ContactCard
+                                        key={c._id}
+                                        contact={c}
+                                        basePath="/rep"
+                                        onEdit={(contact) => { setSelectedContact(contact); setIsContactModalOpen(true); }}
+                                        onDelete={(contact) => { setSelectedContact(contact); setIsDeleteModalOpen(true); }}
+                                        onView={(contact) => { setSelectedContact(contact); setIsDetailsModalOpen(true); }}
+                                    />
                                 ))
                             )}
-                        </tbody>
-                    </table>
+                        </div>
+                    )}
                 </div>
             </div>
 
