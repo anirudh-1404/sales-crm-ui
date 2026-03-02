@@ -474,7 +474,17 @@ export const getDeals = async (req, res, next) => {
 
         //pagination
         const skip = (page - 1) * limit;
-        const deals = await Deal.find(filter).populate("ownerId", "firstName email").populate("companyId", "name industry").populate("contactId", "firstName lastName email").sort(sort).skip(skip).limit(Number(limit));
+        const deals = await Deal.find(filter)
+            .populate("ownerId", "firstName email")
+            .populate("companyId", "name industry")
+            .populate("contactId", "firstName lastName email")
+            .populate({
+                path: 'stageHistory.changedBy',
+                select: 'firstName lastName email'
+            })
+            .sort(sort)
+            .skip(skip)
+            .limit(Number(limit));
 
         const total = await Deal.countDocuments(filter);
 
@@ -499,7 +509,11 @@ export const getDealById = async (req, res, next) => {
         const deal = await Deal.findById(id)
             .populate("ownerId", "firstName lastName email")
             .populate("companyId", "name industry size website address phone")
-            .populate("contactId", "firstName lastName email jobTitle phone mobile linkedin");
+            .populate("contactId", "firstName lastName email jobTitle phone mobile linkedin")
+            .populate({
+                path: 'stageHistory.changedBy',
+                select: 'firstName lastName email'
+            });
 
         if (!deal) {
             return res.status(404).json({ message: "Deal not found!" });

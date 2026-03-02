@@ -233,7 +233,7 @@ export default function DealDetails() {
                                                 <span className="text-[9px] font-bold text-gray-400">{formatDate(history.changedAt)}</span>
                                             </div>
                                             <p className="text-[10px] text-gray-500 font-medium">
-                                                By {history.changedBy?.firstName} {history.changedBy?.lastName || ""}
+                                                By {history.changedBy?.firstName ? `${history.changedBy.firstName} ${history.changedBy.lastName || ""}` : (typeof history.changedBy === 'string' ? "System" : "Unknown")}
                                             </p>
                                         </div>
                                     </div>

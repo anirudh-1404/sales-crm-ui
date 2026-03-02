@@ -14,6 +14,7 @@ import { getTeamUsers } from "../../../API/services/userService";
 import { useAuth } from "../../context/AuthContext";
 import DealModal from "../../components/modals/DealModal";
 import DealDetailsModal from "../../components/modals/DealDetailsModal";
+import ContactDetailsModal from "../../components/modals/ContactDetailsModal";
 import DeleteConfirmModal from "../../components/modals/DeleteConfirmModal";
 import { toast } from "react-hot-toast";
 
@@ -60,8 +61,10 @@ export default function DealsDashboard() {
     // Modal states
     const [isDealModalOpen, setIsDealModalOpen] = useState(false);
     const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+    const [isContactDetailsModalOpen, setIsContactDetailsModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedDeal, setSelectedDeal] = useState(null);
+    const [selectedContact, setSelectedContact] = useState(null);
     const [viewMode, setViewMode] = useState("list"); // "list" | "kanban"
 
     const fetchData = async () => {
@@ -269,7 +272,10 @@ export default function DealsDashboard() {
                                                     </td>
                                                     <td className="px-4 py-3 text-gray-500 whitespace-nowrap">
                                                         {d.contactId?._id ? (
-                                                            <button onClick={() => navigate(`/dashboard/contacts/${d.contactId._id}`)} className="hover:text-red-600 hover:underline">
+                                                            <button
+                                                                onClick={() => { setSelectedContact(d.contactId); setIsContactDetailsModalOpen(true); }}
+                                                                className="hover:text-red-600 hover:underline"
+                                                            >
                                                                 {`${d.contactId.firstName} ${d.contactId.lastName}`.trim()}
                                                             </button>
                                                         ) : (d.contactName || "—")}
@@ -364,6 +370,12 @@ export default function DealsDashboard() {
                 isOpen={isDetailsModalOpen}
                 onClose={() => setIsDetailsModalOpen(false)}
                 deal={selectedDeal}
+            />
+
+            <ContactDetailsModal
+                isOpen={isContactDetailsModalOpen}
+                onClose={() => setIsContactDetailsModalOpen(false)}
+                contact={selectedContact}
             />
 
             <DeleteConfirmModal

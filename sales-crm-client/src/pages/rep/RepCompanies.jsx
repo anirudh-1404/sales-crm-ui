@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Building2, CheckCircle2, Eye, XCircle, Plus, Edit2, Trash2, Search, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { getCompanies, createCompany, updateCompany, deleteCompany } from "../../../API/services/companyService";
@@ -25,6 +26,7 @@ const statusBg = {
 };
 
 export default function RepCompanies() {
+    const navigate = useNavigate();
     const [companies, setCompanies] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
@@ -156,7 +158,7 @@ export default function RepCompanies() {
                                 companies.map((c) => (
                                     <tr key={c._id} className="hover:bg-gray-50/50 transition-colors group">
                                         <td className="px-4 py-3 font-medium text-gray-800 cursor-pointer hover:text-red-600 transition-colors"
-                                            onClick={() => { setSelectedCompany(c); setIsDetailsModalOpen(true); }}>
+                                            onClick={() => navigate(`/rep/companies/${c._id}`)}>
                                             {c.name}
                                         </td>
                                         <td className="px-4 py-3 text-gray-600">{c.industry || "—"}</td>
@@ -168,7 +170,7 @@ export default function RepCompanies() {
                                         <td className="px-4 py-3">
                                             <div className="flex items-center gap-2">
                                                 <button
-                                                    onClick={() => { setSelectedCompany(c); setIsDetailsModalOpen(true); }}
+                                                    onClick={() => navigate(`/rep/companies/${c._id}`)}
                                                     title="View details"
                                                     className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
                                                 >

@@ -10,6 +10,7 @@ import { getCompanies } from "../../../API/services/companyService";
 import { getContacts } from "../../../API/services/contactService";
 import KanbanBoard from "../../components/KanbanBoard";
 import DealModal from "../../components/modals/DealModal";
+import ContactDetailsModal from "../../components/modals/ContactDetailsModal";
 import DeleteConfirmModal from "../../components/modals/DeleteConfirmModal";
 import { toast } from "react-hot-toast";
 
@@ -47,8 +48,10 @@ export default function RepDeals() {
 
     // Modal states
     const [isDealModalOpen, setIsDealModalOpen] = useState(false);
+    const [isContactDetailsModalOpen, setIsContactDetailsModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedDeal, setSelectedDeal] = useState(null);
+    const [selectedContact, setSelectedContact] = useState(null);
 
     const fetchData = async () => {
         setLoading(true);
@@ -236,8 +239,9 @@ export default function RepDeals() {
                                             </td>
                                             <td className="px-4 py-3 text-gray-500 whitespace-nowrap cursor-pointer hover:text-red-600 transition-colors"
                                                 onClick={() => {
-                                                    if (d.contactId?._id || d.contactId) {
-                                                        navigate(`/rep/contacts/${d.contactId?._id || d.contactId}`);
+                                                    if (d.contactId) {
+                                                        setSelectedContact(d.contactId);
+                                                        setIsContactDetailsModalOpen(true);
                                                     }
                                                 }}>
                                                 {d.contactId ? `${d.contactId.firstName} ${d.contactId.lastName}` : (d.contactName || "—")}
@@ -294,6 +298,12 @@ export default function RepDeals() {
                 companies={companies}
                 contacts={contacts}
                 freeText={true}
+            />
+
+            <ContactDetailsModal
+                isOpen={isContactDetailsModalOpen}
+                onClose={() => setIsContactDetailsModalOpen(false)}
+                contact={selectedContact}
             />
 
             <DeleteConfirmModal
