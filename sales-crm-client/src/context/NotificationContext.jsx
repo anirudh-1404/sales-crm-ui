@@ -47,10 +47,6 @@ export const NotificationProvider = ({ children }) => {
                 setNotifications(prev => [notification, ...prev]);
                 if (!notification.isRead) {
                     setUnreadCount(prev => prev + 1);
-                    toast.success(notification.message, {
-                        icon: "🔔",
-                        duration: 5000
-                    });
                 }
             });
 
