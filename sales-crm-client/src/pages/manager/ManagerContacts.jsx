@@ -126,6 +126,13 @@ export default function ManagerContacts() {
                     <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Contact Network</h1>
                     <p className="text-xs sm:text-sm text-gray-400 mt-0.5">Manage and view contacts across your entire team</p>
                 </div>
+                <button
+                    onClick={() => { setSelectedContact(null); setIsContactModalOpen(true); }}
+                    className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-700 transition shadow-md shadow-red-100"
+                >
+                    <Plus size={18} />
+                    <span>Add Contact</span>
+                </button>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">

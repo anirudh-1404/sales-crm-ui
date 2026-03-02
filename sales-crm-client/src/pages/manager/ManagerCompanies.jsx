@@ -106,6 +106,13 @@ export default function ManagerCompanies() {
                     <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Company Portfolio</h1>
                     <p className="text-xs sm:text-sm text-gray-400 mt-0.5">Manage and view companies across your entire team</p>
                 </div>
+                <button
+                    onClick={() => { setSelectedCompany(null); setIsCompanyModalOpen(true); }}
+                    className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-700 transition shadow-md shadow-red-100"
+                >
+                    <Plus size={18} />
+                    <span>Add Company</span>
+                </button>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
