@@ -9,9 +9,17 @@ import companyRoutes from "./routes/companyRoutes.js"
 import contactRoutes from "./routes/contactRoutes.js"
 import dealRoutes from "./routes/dealRoutes.js"
 import auditLogRoutes from "./routes/auditLogRoutes.js"
+import notificationRoutes from "./routes/notificationRoutes.js"
 // console.log("MONGO_URI:", process.env.MONGO_URI);
 
+import http from "http";
+import { initSocket } from "./utils/socket.js";
+
 const app = express();
+const server = http.createServer(app);
+
+// Initialize Socket.io
+initSocket(server);
 
 app.set("trust proxy", 1);
 
@@ -58,6 +66,7 @@ app.use("/api/companies", companyRoutes);
 app.use("/api/contacts", contactRoutes);
 app.use("/api/deals", dealRoutes);
 app.use("/api/audit-logs", auditLogRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 // Catch-all route for debugging 404s
 app.use((req, res) => {
@@ -70,6 +79,6 @@ app.use((req, res) => {
 
 connectdb()
 
-app.listen(process.env.PORT, () => {
+server.listen(process.env.PORT, () => {
     console.log(`Server running on port ${process.env.PORT}`)
 })

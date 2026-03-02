@@ -8,6 +8,7 @@ import Logo from "./Logo";
 import { useAuth } from "../context/AuthContext";
 import GlobalSearch from "./GlobalSearch";
 import LogoutConfirmModal from "./LogoutConfirmModal";
+import NotificationDropdown from "./NotificationDropdown";
 
 
 const SidebarLink = ({ to, icon: IconComp, label, onClick }) => (
@@ -128,10 +129,7 @@ const SalesRepLayout = () => {
                     </button>
                     <div className="flex-1" />
                     <div className="flex items-center gap-1">
-                        <button className="relative p-2 rounded-lg hover:bg-gray-100 text-gray-500 transition">
-                            <Bell size={18} />
-                            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
-                        </button>
+                        <NotificationDropdown />
                     </div>
                     <div className="flex items-center gap-2 sm:gap-3 sm:pl-3 sm:border-l border-gray-100">
                         <div className="relative flex-shrink-0">

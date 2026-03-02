@@ -10,6 +10,7 @@ import SetPassword from "./pages/auth/SetPassword";
 import Successpage from "./pages/auth/Successpage";
 
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import { NotificationProvider } from "./context/NotificationContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 // Admin dashboard
@@ -135,9 +136,11 @@ import SessionTimeoutManager from "./components/SessionTimeoutManager";
 const App = () => {
   return (
     <AuthProvider>
-      <SessionTimeoutManager>
-        <RouterProvider router={router} />
-      </SessionTimeoutManager>
+      <NotificationProvider>
+        <SessionTimeoutManager>
+          <RouterProvider router={router} />
+        </SessionTimeoutManager>
+      </NotificationProvider>
     </AuthProvider>
   )
 }

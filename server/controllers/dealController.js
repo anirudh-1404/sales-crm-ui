@@ -3,6 +3,8 @@ import { Deal } from "../models/dealSchema.js";
 import User from "../models/userSchema.js";
 import { Company } from "../models/companySchema.js";
 import { logAction } from "../utils/auditLogger.js";
+import { Notification } from "../models/notificationSchema.js";
+import { emitNotification } from "../utils/socket.js";
 
 export const createDeal = async (req, res, next) => {
     try {
@@ -74,6 +76,20 @@ export const createDeal = async (req, res, next) => {
             details: { newValues: deal },
             req
         });
+
+        // Create Notification
+        const owner = await User.findById(deal.ownerId);
+        const notification = await Notification.create({
+            recipientId: deal.ownerId,
+            senderId: userId,
+            entityId: deal._id,
+            entityType: "Deal",
+            type: "deal_created",
+            message: `New deal "${deal.name}" has been created and assigned to you.`,
+            teamId: owner?.managerId || (role === "sales_manager" ? userId : null)
+        });
+        emitNotification(notification);
+
         return;
 
     } catch (error) {
@@ -193,6 +209,35 @@ export const updateDealInformation = async (req, res, next) => {
             },
             req
         });
+
+        // Notification for reassignment
+        if (req.body.ownerId && req.body.ownerId !== deal.ownerId.toString()) {
+            const newOwner = await User.findById(req.body.ownerId);
+            const notification = await Notification.create({
+                recipientId: req.body.ownerId,
+                senderId: userId,
+                entityId: deal._id,
+                entityType: "Deal",
+                type: "deal_reassigned",
+                message: `Deal "${deal.name}" has been reassigned to you.`,
+                teamId: newOwner?.managerId || null
+            });
+            emitNotification(notification);
+        } else if (req.body.stage && req.body.stage !== deal.stage) {
+            // Notification for stage change
+            const owner = await User.findById(deal.ownerId);
+            const notification = await Notification.create({
+                recipientId: deal.ownerId,
+                senderId: userId,
+                entityId: deal._id,
+                entityType: "Deal",
+                type: "deal_updated",
+                message: `Deal "${deal.name}" stage updated to ${req.body.stage}.`,
+                teamId: owner?.managerId || null
+            });
+            emitNotification(notification);
+        }
+
         return;
 
 
@@ -283,6 +328,20 @@ export const moveDealStage = async (req, res, next) => {
             details: { message: `Stage moved to ${newStage}`, newStage },
             req
         });
+
+        // Create Notification
+        const owner = await User.findById(deal.ownerId);
+        const notification = await Notification.create({
+            recipientId: deal.ownerId,
+            senderId: userId,
+            entityId: deal._id,
+            entityType: "Deal",
+            type: "deal_updated",
+            message: `Deal "${deal.name}" moved to ${newStage}.`,
+            teamId: owner?.managerId || null
+        });
+        emitNotification(notification);
+
         return;
 
     } catch (error) {
