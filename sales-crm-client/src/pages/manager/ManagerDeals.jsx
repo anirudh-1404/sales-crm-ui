@@ -5,8 +5,9 @@ import {
     DollarSign as DollarSignIcon, ChevronDown as ChevronDownIcon,
     Plus as PlusIcon, Edit2 as EditIcon, Trash2 as TrashIcon,
     Building2 as BuildingIcon, ChevronRight as ChevronRightIcon,
-    LayoutList as LayoutListIcon, Kanban as KanbanIcon, Eye as EyeIcon
+    LayoutList as LayoutListIcon, LayoutGrid as LayoutGridIcon, Kanban as KanbanIcon, Eye as EyeIcon, Search as SearchIcon
 } from "lucide-react";
+import DealCard from "../../components/cards/DealCard";
 import { getDeals, createDeal, updateDeal, deleteDeal, updateDealStage } from "../../../API/services/dealService";
 import { getCompanies } from "../../../API/services/companyService";
 import { getContacts } from "../../../API/services/contactService";
@@ -129,7 +130,7 @@ export default function ManagerDeals() {
     const handleMoveStage = async (id, newStage) => {
         try {
             await updateDealStage(id, newStage);
-            toast.success(`Moved to ${newStage}`);
+            // toast.success(`Moved to ${newStage}`);
             fetchData();
         } catch (error) {
             console.error(error);
@@ -155,23 +156,33 @@ export default function ManagerDeals() {
                     <div className="flex items-center bg-gray-100 rounded-lg p-1">
                         <button
                             onClick={() => setViewMode("list")}
-                            className={`p-1.5 rounded-md transition text-sm flex items-center gap-1.5 font-medium ${viewMode === "list"
-                                ? "bg-white text-gray-800 shadow-sm"
+                            title="List View"
+                            className={`p-1.5 rounded-md transition text-sm flex items-center justify-center font-medium ${viewMode === "list"
+                                ? "bg-white text-red-600 shadow-sm"
                                 : "text-gray-400 hover:text-gray-600"
                                 }`}
                         >
-                            <LayoutListIcon size={16} />
-                            <span className="hidden sm:inline text-xs">List</span>
+                            <LayoutListIcon size={18} />
+                        </button>
+                        <button
+                            onClick={() => setViewMode("card")}
+                            title="Card View"
+                            className={`p-1.5 rounded-md transition text-sm flex items-center justify-center font-medium ${viewMode === "card"
+                                ? "bg-white text-red-600 shadow-sm"
+                                : "text-gray-400 hover:text-gray-600"
+                                }`}
+                        >
+                            <LayoutGridIcon size={18} />
                         </button>
                         <button
                             onClick={() => setViewMode("kanban")}
-                            className={`p-1.5 rounded-md transition text-sm flex items-center gap-1.5 font-medium ${viewMode === "kanban"
-                                ? "bg-white text-gray-800 shadow-sm"
+                            title="Kanban View"
+                            className={`p-1.5 rounded-md transition text-sm flex items-center justify-center font-medium ${viewMode === "kanban"
+                                ? "bg-white text-red-600 shadow-sm"
                                 : "text-gray-400 hover:text-gray-600"
                                 }`}
                         >
-                            <KanbanIcon size={16} />
-                            <span className="hidden sm:inline text-xs">Kanban</span>
+                            <KanbanIcon size={18} />
                         </button>
                     </div>
                 </div>
@@ -195,6 +206,34 @@ export default function ManagerDeals() {
                             onDelete={(d) => { setSelectedDeal(d); setIsDeleteModalOpen(true); }}
                         />
                     )}
+                </div>
+            ) : viewMode === "card" ? (
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+                    <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+                        <h2 className="font-bold text-gray-800">Team Deals Grid</h2>
+                        <div className="flex flex-wrap items-stretch sm:items-center gap-2">
+                            <div className="flex-1 sm:flex-none">
+                                <Select options={stageOptions} value={stageFilter} onChange={setStageFilter} />
+                            </div>
+                        </div>
+                    </div>
+                    <div className="p-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 overflow-y-auto max-h-[calc(100vh-350px)] custom-scrollbar">
+                        {loading && deals.length === 0 ? (
+                            <div className="col-span-full text-center py-10 text-gray-400">Loading deals...</div>
+                        ) : deals.length === 0 ? (
+                            <div className="col-span-full text-center py-10 text-gray-400">No deals found.</div>
+                        ) : (
+                            deals.map((d) => (
+                                <DealCard
+                                    key={d._id}
+                                    deal={d}
+                                    onEdit={(deal) => { setSelectedDeal(deal); setIsDealModalOpen(true); }}
+                                    onDelete={(deal) => { setSelectedDeal(deal); setIsDeleteModalOpen(true); }}
+                                    onView={(deal) => navigate(`/manager/deals/${deal._id}`)}
+                                />
+                            ))
+                        )}
+                    </div>
                 </div>
             ) : (
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">

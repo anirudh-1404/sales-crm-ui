@@ -109,7 +109,7 @@ export default function RepDeals() {
     const handleMoveStage = async (id, newStage) => {
         try {
             await updateDealStage(id, newStage);
-            toast.success(`Moved to ${newStage}`);
+            // toast.success(`Moved to ${newStage}`);
             fetchData();
         } catch (error) {
             console.error(error);
@@ -145,23 +145,23 @@ export default function RepDeals() {
                     <div className="flex items-center bg-gray-100 rounded-lg p-1">
                         <button
                             onClick={() => setViewMode("list")}
-                            className={`p-1.5 rounded-md transition text-sm flex items-center gap-1.5 font-medium ${viewMode === "list"
-                                ? "bg-white text-gray-800 shadow-sm"
+                            title="List View"
+                            className={`p-1.5 rounded-md transition text-sm flex items-center justify-center font-medium ${viewMode === "list"
+                                ? "bg-white text-red-600 shadow-sm"
                                 : "text-gray-400 hover:text-gray-600"
                                 }`}
                         >
-                            <LayoutList size={16} />
-                            <span className="hidden sm:inline text-xs">List</span>
+                            <LayoutList size={18} />
                         </button>
                         <button
                             onClick={() => setViewMode("kanban")}
-                            className={`p-1.5 rounded-md transition text-sm flex items-center gap-1.5 font-medium ${viewMode === "kanban"
-                                ? "bg-white text-gray-800 shadow-sm"
+                            title="Kanban View"
+                            className={`p-1.5 rounded-md transition text-sm flex items-center justify-center font-medium ${viewMode === "kanban"
+                                ? "bg-white text-red-600 shadow-sm"
                                 : "text-gray-400 hover:text-gray-600"
                                 }`}
                         >
-                            <Kanban size={16} />
-                            <span className="hidden sm:inline text-xs">Kanban</span>
+                            <Kanban size={18} />
                         </button>
                     </div>
                     <button

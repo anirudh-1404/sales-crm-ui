@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Plus, Users2, CheckCircle2, XCircle, UserCheck, Search, Eye, ChevronRight } from "lucide-react";
+import { Users2, Search, Plus, Eye, LayoutList, LayoutGrid, CheckCircle2, XCircle, UserCheck, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { getTeamUsers, deactivateUser, activateUser } from "../../../API/services/userService";
 import UserModal from "../../components/modals/UserModal";
@@ -7,6 +7,7 @@ import UserDetailsModal from "../../components/modals/UserDetailsModal";
 import DeactivateModal from "../../components/modals/DeactivateModal";
 import { useAuth } from "../../context/AuthContext";
 import ConfirmDialog from "../../components/modals/ConfirmDialog";
+import UserCard from "../../components/cards/UserCard";
 import { toast } from "react-hot-toast";
 
 const Card = ({ children, className = "" }) => (
@@ -44,6 +45,7 @@ export default function ManagerTeam() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
     const [selectedMember, setSelectedMember] = useState(null);
+    const [viewMode, setViewMode] = useState("list"); // "list" | "card"
     const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
     const [confirmState, setConfirmState] = useState({ isOpen: false, title: "", message: "", confirmLabel: "", confirmColor: "", onConfirm: null });
     const openConfirm = (opts) => setConfirmState({ isOpen: true, ...opts });
@@ -157,90 +159,137 @@ export default function ManagerTeam() {
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
                     <h2 className="font-bold text-gray-800">Team Members</h2>
-                    <div className="relative">
-                        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                        <input type="text" placeholder="Search member..."
-                            value={search} onChange={e => setSearch(e.target.value)}
-                            className="w-full sm:w-64 text-sm border border-gray-200 rounded-lg pl-9 pr-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-red-400 bg-gray-50/50" />
+                    <div className="flex items-center gap-3">
+                        <div className="flex items-center bg-gray-100 rounded-lg p-1">
+                            <button
+                                onClick={() => setViewMode("list")}
+                                title="List View"
+                                className={`p-1.5 rounded-md transition text-sm flex items-center justify-center font-medium ${viewMode === "list"
+                                    ? "bg-white text-red-600 shadow-sm"
+                                    : "text-gray-400 hover:text-gray-600"
+                                    }`}
+                            >
+                                <LayoutList size={18} />
+                            </button>
+                            <button
+                                onClick={() => setViewMode("card")}
+                                title="Card View"
+                                className={`p-1.5 rounded-md transition text-sm flex items-center justify-center font-medium ${viewMode === "card"
+                                    ? "bg-white text-red-600 shadow-sm"
+                                    : "text-gray-400 hover:text-gray-600"
+                                    }`}
+                            >
+                                <LayoutGrid size={18} />
+                            </button>
+                        </div>
+                        <div className="relative">
+                            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                            <input type="text" placeholder="Search member..."
+                                value={search} onChange={e => setSearch(e.target.value)}
+                                className="w-full sm:w-64 text-sm border border-gray-200 rounded-lg pl-9 pr-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-red-400 bg-gray-50/50" />
+                        </div>
                     </div>
                 </div>
-                <div className="overflow-x-auto min-h-[300px]">
-                    <table className="w-full text-sm">
-                        <thead>
-                            <tr className="border-b border-gray-100 bg-gray-50">
-                                {["Member", "Role", "Reports To", "Status", "Last Login", "Action"].map(h => (
-                                    <th key={h} className="text-left px-4 py-3 text-gray-500 font-semibold text-xs uppercase tracking-wide whitespace-nowrap">{h}</th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-50">
-                            {loading ? (
-                                <tr><td colSpan={6} className="text-center py-10 text-gray-400">Loading team...</td></tr>
-                            ) : filtered.length === 0 ? (
-                                <tr><td colSpan={6} className="text-center py-10 text-gray-400">No members found.</td></tr>
-                            ) : (
-                                filtered.map((m) => (
-                                    <tr
-                                        key={m._id}
-                                        className="hover:bg-gray-50/50 transition-colors cursor-pointer group"
-                                        onClick={() => { setSelectedMember(m); setIsDetailsModalOpen(true); }}
-                                    >
-                                        <td className="px-4 py-3 whitespace-nowrap">
-                                            <div className="flex items-center gap-3">
-                                                <Avatar name={`${m.firstName} ${m.lastName}`} />
-                                                <div>
-                                                    <p className="font-bold text-gray-800 leading-none group-hover:text-red-600 transition-colors uppercase">{m.firstName} {m.lastName}</p>
-                                                    <p className="text-xs text-gray-400 mt-0.5">{m.email}</p>
+                {viewMode === "list" ? (
+                    <div className="overflow-x-auto min-h-[300px]">
+                        <table className="w-full text-sm">
+                            <thead>
+                                <tr className="border-b border-gray-100 bg-gray-50">
+                                    {["Member", "Role", "Reports To", "Status", "Last Login", "Action"].map(h => (
+                                        <th key={h} className="text-left px-4 py-3 text-gray-500 font-semibold text-xs uppercase tracking-wide whitespace-nowrap">{h}</th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-50">
+                                {loading ? (
+                                    <tr><td colSpan={6} className="text-center py-10 text-gray-400">Loading team...</td></tr>
+                                ) : filtered.length === 0 ? (
+                                    <tr><td colSpan={6} className="text-center py-10 text-gray-400">No members found.</td></tr>
+                                ) : (
+                                    filtered.map((m) => (
+                                        <tr
+                                            key={m._id}
+                                            className="hover:bg-gray-50/50 transition-colors cursor-pointer group"
+                                            onClick={() => { setSelectedMember(m); setIsDetailsModalOpen(true); }}
+                                        >
+                                            <td className="px-4 py-3 whitespace-nowrap">
+                                                <div className="flex items-center gap-3">
+                                                    <Avatar name={`${m.firstName} ${m.lastName}`} />
+                                                    <div>
+                                                        <p className="font-bold text-gray-800 leading-none group-hover:text-red-600 transition-colors uppercase">{m.firstName} {m.lastName}</p>
+                                                        <p className="text-xs text-gray-400 mt-0.5">{m.email}</p>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-4 py-3 whitespace-nowrap">
-                                            <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${roleBadge[m.role] || "bg-red-100 text-red-700"}`}>
-                                                {formatRole(m.role)}
-                                            </span>
-                                        </td>
-                                        <td className="px-4 py-3 text-gray-500 text-sm whitespace-nowrap">
-                                            {m.managerId ? `${m.managerId.firstName || "Manager"} ${m.managerId.lastName || ""}`.trim() : "—"}
-                                        </td>
-                                        <td className="px-4 py-3 whitespace-nowrap">
-                                            <span className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full ${m.isActive
-                                                ? "bg-green-100 text-green-700"
-                                                : "bg-red-100 text-red-700 border border-red-200"
-                                                }`}>
-                                                <span className={`w-1.5 h-1.5 rounded-full ${m.isActive ? "bg-green-500" : "bg-red-500 animate-pulse"}`} />
-                                                {m.isActive ? "Active" : "Deactivated"}
-                                            </span>
-                                        </td>
-                                        <td className="px-4 py-3 text-gray-500 text-xs whitespace-nowrap">
-                                            {m.lastLogin ? new Date(m.lastLogin).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "Never"}
-                                        </td>
-                                        <td className="px-4 py-3 whitespace-nowrap" onClick={e => e.stopPropagation()}>
-                                            <div className="flex items-center gap-1.5">
-                                                <button
-                                                    onClick={() => { setSelectedMember(m); setIsDetailsModalOpen(true); }}
-                                                    className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
-                                                    title="View profile details"
-                                                >
-                                                    <Eye size={15} />
-                                                </button>
-                                                {m.role === "sales_rep" ? (
+                                            </td>
+                                            <td className="px-4 py-3 whitespace-nowrap">
+                                                <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${roleBadge[m.role] || "bg-red-100 text-red-700"}`}>
+                                                    {formatRole(m.role)}
+                                                </span>
+                                            </td>
+                                            <td className="px-4 py-3 text-gray-500 text-sm whitespace-nowrap">
+                                                {m.managerId ? `${m.managerId.firstName || "Manager"} ${m.managerId.lastName || ""}`.trim() : "—"}
+                                            </td>
+                                            <td className="px-4 py-3 whitespace-nowrap">
+                                                <span className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full ${m.isActive
+                                                    ? "bg-green-100 text-green-700"
+                                                    : "bg-red-100 text-red-700 border border-red-200"
+                                                    }`}>
+                                                    <span className={`w-1.5 h-1.5 rounded-full ${m.isActive ? "bg-green-500" : "bg-red-500 animate-pulse"}`} />
+                                                    {m.isActive ? "Active" : "Deactivated"}
+                                                </span>
+                                            </td>
+                                            <td className="px-4 py-3 text-gray-500 text-xs whitespace-nowrap">
+                                                {m.lastLogin ? new Date(m.lastLogin).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "Never"}
+                                            </td>
+                                            <td className="px-4 py-3 whitespace-nowrap" onClick={e => e.stopPropagation()}>
+                                                <div className="flex items-center gap-1.5">
                                                     <button
-                                                        onClick={() => handleToggleActive(m)}
-                                                        className={`text-xs px-3 py-1.5 rounded-lg font-semibold border transition ${m.isActive ? "border-red-200 text-red-600 hover:bg-red-50" : "border-green-200 text-green-600 hover:bg-green-50"}`}
+                                                        onClick={() => { setSelectedMember(m); setIsDetailsModalOpen(true); }}
+                                                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                                                        title="View profile details"
                                                     >
-                                                        {m.isActive ? "Deactivate" : "Activate"}
+                                                        <Eye size={15} />
                                                     </button>
-                                                ) : (
-                                                    <span className="text-xs text-gray-400">—</span>
-                                                )}
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
-                </div>
+                                                    {m.role === "sales_rep" ? (
+                                                        <button
+                                                            onClick={() => handleToggleActive(m)}
+                                                            className={`text-xs px-3 py-1.5 rounded-lg font-semibold border transition ${m.isActive ? "border-red-200 text-red-600 hover:bg-red-50" : "border-green-200 text-green-600 hover:bg-green-50"}`}
+                                                        >
+                                                            {m.isActive ? "Deactivate" : "Activate"}
+                                                        </button>
+                                                    ) : (
+                                                        <span className="text-xs text-gray-400">—</span>
+                                                    )}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                ) : (
+                    <div className="p-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto max-h-[calc(100vh-350px)] custom-scrollbar">
+                        {loading ? (
+                            <div className="col-span-full text-center py-10 text-gray-400">Loading team cards...</div>
+                        ) : filtered.length === 0 ? (
+                            <div className="col-span-full text-center py-10 text-gray-400">No members found.</div>
+                        ) : (
+                            filtered.map(m => (
+                                <UserCard
+                                    key={m._id}
+                                    user={m}
+                                    onView={(u) => { setSelectedMember(u); setIsDetailsModalOpen(true); }}
+                                    onEdit={() => { /* Edit not directly supported in manager team view yet */ }}
+                                    onDeactivate={(u) => { setSelectedMember(u); setIsDeactivateModalOpen(true); }}
+                                    onActivate={handleActivate}
+                                    onReassign={(u) => { /* Reassign not directly supported in manager team view yet */ }}
+                                    onDelete={() => { /* Delete not supported for managers */ }}
+                                />
+                            ))
+                        )}
+                    </div>
+                )}
             </div>
 
             <UserModal

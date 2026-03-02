@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Users2, ShieldCheck, Briefcase, UserCheck, Edit2, RefreshCw, Plus, X, Search, Trash2, Eye, ArrowLeft, ChevronRight, LayoutGrid, List } from "lucide-react";
+import { Users2, ShieldCheck, Briefcase, UserCheck, Edit2, RefreshCw, Plus, X, Search, Trash2, Eye, ArrowLeft, ChevronRight, LayoutGrid, LayoutList } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import UserCard from "../../components/cards/UserCard";
 import { getTeamUsers, deactivateUser, activateUser, bulkReassignRecords, softDeleteUser, resendInvitation as apiResendInvitation } from "../../../API/services/userService";
@@ -300,17 +300,17 @@ export default function UsersDashboard() {
                         <div className="flex items-center gap-2 bg-gray-100 p-1 rounded-lg self-end sm:self-auto">
                             <button
                                 onClick={() => setViewMode("list")}
-                                className={`p-1.5 rounded-md transition-all ${viewMode === "list" ? "bg-white text-red-600 shadow-sm" : "text-gray-400 hover:text-gray-600"}`}
+                                className={`p-1.5 rounded-md transition-all flex items-center justify-center ${viewMode === "list" ? "bg-white text-red-600 shadow-sm" : "text-gray-400 hover:text-gray-600"}`}
                                 title="List View"
                             >
-                                <List size={16} />
+                                <LayoutList size={18} />
                             </button>
                             <button
                                 onClick={() => setViewMode("card")}
-                                className={`p-1.5 rounded-md transition-all ${viewMode === "card" ? "bg-white text-red-600 shadow-sm" : "text-gray-400 hover:text-gray-600"}`}
+                                className={`p-1.5 rounded-md transition-all flex items-center justify-center ${viewMode === "card" ? "bg-white text-red-600 shadow-sm" : "text-gray-400 hover:text-gray-600"}`}
                                 title="Card View"
                             >
-                                <LayoutGrid size={16} />
+                                <LayoutGrid size={18} />
                             </button>
                         </div>
                     </div>

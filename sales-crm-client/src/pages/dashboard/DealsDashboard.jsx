@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import {
     Briefcase, Zap, CheckCircle2, DollarSign,
     MoreHorizontal, Plus, Edit2, Trash2,
-    LayoutDashboard, Users, Building2, LayoutList, Kanban, Eye, ArrowLeft, ChevronRight
+    LayoutDashboard, Users, Building2, LayoutList, Kanban, Eye, ArrowLeft, ChevronRight, LayoutGrid
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import KanbanBoard from "../../components/KanbanBoard";
@@ -125,7 +125,7 @@ export default function DealsDashboard() {
     const handleMoveStage = async (id, newStage) => {
         try {
             await updateDealStage(id, newStage);
-            toast.success(`Moved to ${newStage}`);
+            // toast.success(`Moved to ${newStage}`);
             fetchData();
         } catch (error) {
             console.error(error);
@@ -166,24 +166,22 @@ export default function DealsDashboard() {
                         <button
                             onClick={() => setViewMode("list")}
                             title="List View"
-                            className={`p-1.5 rounded-md transition text-sm flex items-center gap-1.5 font-medium ${viewMode === "list"
-                                ? "bg-white text-gray-800 shadow-sm"
+                            className={`p-1.5 rounded-md transition text-sm flex items-center justify-center font-medium ${viewMode === "list"
+                                ? "bg-white text-red-600 shadow-sm"
                                 : "text-gray-400 hover:text-gray-600"
                                 }`}
                         >
-                            <LayoutList size={16} />
-                            <span className="hidden sm:inline text-xs">List</span>
+                            <LayoutList size={18} />
                         </button>
                         <button
                             onClick={() => setViewMode("kanban")}
                             title="Kanban View"
-                            className={`p-1.5 rounded-md transition text-sm flex items-center gap-1.5 font-medium ${viewMode === "kanban"
-                                ? "bg-white text-gray-800 shadow-sm"
+                            className={`p-1.5 rounded-md transition text-sm flex items-center justify-center font-medium ${viewMode === "kanban"
+                                ? "bg-white text-red-600 shadow-sm"
                                 : "text-gray-400 hover:text-gray-600"
                                 }`}
                         >
-                            <Kanban size={16} />
-                            <span className="hidden sm:inline text-xs">Kanban</span>
+                            <Kanban size={18} />
                         </button>
                     </div>
                     <button
